@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>DukaFlow - Create Account</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<style>
+
+.register-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 25px;
+}
+
+.register-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.register-card h1 {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.register-card p {
+    text-align: center;
+}
+
+.register-card label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.register-card input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.password-box {
+    position: relative;
+    width: 100%;
+}
+
+.password-box input {
+    padding-right: 45px;
+}
+
+.show-password {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px !important;
+    margin: 0 !important;
+    padding: 7px !important;
+    background: transparent !important;
+    color: #555 !important;
+    border: none;
+    cursor: pointer;
+}
+
+.register-card button.create-button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: green;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.register-card button.create-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#registerMessage {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.login-link {
+    margin-top: 20px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="register-container">
+
+<div class="register-card">
+
+<h1>DukaFlow</h1>
+
+<p>Create your business account</p>
+
+
+<form id="registerForm">
+
+
+<label>
+Full Name
+</label>
+
+<input
+    type="text"
+    id="fullName"
+    placeholder="Enter your full name"
+    autocomplete="name"
+    required
+>
+
+
+<label>
+Business Name
+</label>
+
+<input
+    type="text"
+    id="businessName"
+    placeholder="Enter your business name"
+    autocomplete="organization"
+    required
+>
+
+
+<label>
+Email
+</label>
+
+<input
+    type="email"
+    id="email"
+    placeholder="Enter your email"
+    autocomplete="email"
+    required
+>
+
+
+<label>
+Username
+</label>
+
+<input
+    type="text"
+    id="username"
+    placeholder="Choose a username"
+    autocomplete="username"
+    required
+>
+
+
+<label>
+Password
+</label>
+
+<div class="password-box">
+
+<input
+    type="password"
+    id="password"
+    placeholder="Create a password"
+    minlength="6"
+    autocomplete="new-password"
+    required
+>
+
+<button
+    type="button"
+    class="show-password"
+    id="showPassword"
+>
+👁️
+</button>
+
+</div>
+
+
+<label>
+Confirm Password
+</label>
+
+<div class="password-box">
+
+<input
+    type="password"
+    id="confirmPassword"
+    placeholder="Confirm your password"
+    minlength="6"
+    autocomplete="new-password"
+    required
+>
+
+<button
+    type="button"
+    class="show-password"
+    id="showConfirmPassword"
+>
+👁️
+</button>
+
+</div>
+
+
+<button
+    type="submit"
+    class="create-button"
+    id="registerButton"
+>
+CREATE ACCOUNT
+</button>
+
+
+</form>
+
+
+<p id="registerMessage"></p>
+
+
+<p class="login-link">
+
+Already have an account?
+
+<a href="login.html">
+Login
+</a>
+
+</p>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     SUPABASE
+===================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+console.log(
+    "DukaFlow registration script loaded"
+);
+
+
+// =====================================================
+// SUPABASE CONNECTION
+// =====================================================
+
+const SUPABASE_URL =
+    "https://uwfghbctckinymatcbro.supabase.co";
+
+
+const SUPABASE_KEY =
+    "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+// =====================================================
+// ELEMENTS
+// =====================================================
+
+const form =
+    document.getElementById(
+        "registerForm"
+    );
+
+
+const fullNameInput =
+    document.getElementById(
+        "fullName"
+    );
+
+
+const businessNameInput =
+    document.getElementById(
+        "businessName"
+    );
+
+
+const emailInput =
+    document.getElementById(
+        "email"
+    );
+
+
+const usernameInput =
+    document.getElementById(
+        "username"
+    );
+
+
+const passwordInput =
+    document.getElementById(
+        "password"
+    );
+
+
+const confirmPasswordInput =
+    document.getElementById(
+        "confirmPassword"
+    );
+
+
+const message =
+    document.getElementById(
+        "registerMessage"
+    );
+
+
+const button =
+    document.getElementById(
+        "registerButton"
+    );
+
+
+// =====================================================
+// SHOW / HIDE PASSWORD
+// =====================================================
+
+document
+    .getElementById("showPassword")
+    .addEventListener(
+        "click",
+        function() {
+
+            if (
+                passwordInput.type ===
+                "password"
+            ) {
+
+                passwordInput.type =
+                    "text";
+
+                this.innerHTML =
+                    "🙈";
+
+            }
+
+            else {
+
+                passwordInput.type =
+                    "password";
+
+                this.innerHTML =
+                    "👁️";
+
+            }
+
+        }
+    );
+
+
+document
+    .getElementById("showConfirmPassword")
+    .addEventListener(
+        "click",
+        function() {
+
+            if (
+                confirmPasswordInput.type ===
+                "password"
+            ) {
+
+                confirmPasswordInput.type =
+                    "text";
+
+                this.innerHTML =
+                    "🙈";
+
+            }
+
+            else {
+
+                confirmPasswordInput.type =
+                    "password";
+
+                this.innerHTML =
+                    "👁️";
+
+            }
+
+        }
+    );
+
+
+// =====================================================
+// REGISTRATION
+// =====================================================
+
+form.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const fullName =
+            fullNameInput.value
+                .trim();
+
+
+        const businessName =
+            businessNameInput.value
+                .trim();
+
+
+        const email =
+            emailInput.value
+                .trim()
+                .toLowerCase();
+
+
+        const username =
+            usernameInput.value
+                .trim();
+
+
+        const password =
+            passwordInput.value;
+
+
+        const confirmPassword =
+            confirmPasswordInput.value;
+
+
+        // =================================================
+        // VALIDATION
+        // =================================================
+
+        if (!fullName) {
+
+            message.innerHTML =
+                "❌ Enter your full name.";
+
+            return;
+
+        }
+
+
+        if (!businessName) {
+
+            message.innerHTML =
+                "❌ Enter your business name.";
+
+            return;
+
+        }
+
+
+        if (!email) {
+
+            message.innerHTML =
+                "❌ Enter your email.";
+
+            return;
+
+        }
+
+
+        if (!username) {
+
+            message.innerHTML =
+                "❌ Choose a username.";
+
+            return;
+
+        }
+
+
+        if (
+            password !==
+            confirmPassword
+        ) {
+
+            message.innerHTML =
+                "❌ Passwords do not match.";
+
+            return;
+
+        }
+
+
+        if (
+            password.length < 6
+        ) {
+
+            message.innerHTML =
+                "❌ Password must be at least 6 characters.";
+
+            return;
+
+        }
+
+
+        // =================================================
+        // START
+        // =================================================
+
+        button.disabled =
+            true;
+
+
+        button.innerHTML =
+            "CREATING ACCOUNT...";
+
+
+        message.innerHTML =
+            "Please wait...";
+
+
+        try {
+
+
+            // =================================================
+            // CREATE AUTH ACCOUNT
+            // =================================================
+
+            const {
+                data,
+                error
+            } =
+            await supabaseClient
+                .auth
+                .signUp({
+
+                    email:
+                        email,
+
+                    password:
+                        password,
+
+                    options: {
+
+                        emailRedirectTo:
+                            window.location.origin +
+                            "/login.html",
+
+                        data: {
+
+                            full_name:
+                                fullName,
+
+                            username:
+                                username,
+
+                            business_name:
+                                businessName
+
+                        }
+
+                    }
+
+                });
+
+
+            // =================================================
+            // ERROR
+            // =================================================
+
+            if (error) {
+
+                console.error(
+                    "Supabase registration error:",
+                    error
+                );
+
+
+                message.innerHTML =
+                    "❌ " +
+                    error.message;
+
+
+                button.disabled =
+                    false;
+
+
+                button.innerHTML =
+                    "CREATE ACCOUNT";
+
+
+                return;
+
+            }
+
+
+            console.log(
+                "Supabase user created:",
+                data.user
+            );
+
+
+            // =================================================
+            // SUCCESS
+            // =================================================
+
+            if (data.user) {
+
+                message.innerHTML =
+                    "✅ Account created successfully!";
+
+
+                form.reset();
+
+
+                button.innerHTML =
+                    "ACCOUNT CREATED";
+
+
+                setTimeout(
+                    function() {
+
+                        window.location.href =
+                            "login.html";
+
+                    },
+                    2000
+                );
+
+            }
+
+            else {
+
+                message.innerHTML =
+                    "⚠️ Please check your email to verify your account.";
+
+
+                button.disabled =
+                    false;
+
+
+                button.innerHTML =
+                    "CREATE ACCOUNT";
+
+            }
+
+        }
+
+
+        catch(error) {
+
+            console.error(
+                "Unexpected registration error:",
+                error
+            );
+
+
+            message.innerHTML =
+                "❌ Something went wrong. Check your connection and try again.";
+
+
+            button.disabled =
+                false;
+
+
+            button.innerHTML =
+                "CREATE ACCOUNT";
+
+        }
+
+    });
+
+</script>
+
+</body>
+
+</html>

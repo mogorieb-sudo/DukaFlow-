@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>DukaFlow - Team</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<style>
+
+.team-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.team-header h1 {
+    margin: 0;
+}
+
+.back-button {
+    text-decoration: none;
+    background: #eee;
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+.worker-form {
+    display: flex;
+    gap: 10px;
+}
+
+.worker-form input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.worker-form button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: green;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.worker-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#message {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.worker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.worker:last-child {
+    border-bottom: none;
+}
+
+.worker-info {
+    flex: 1;
+}
+
+.worker-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.worker-email {
+    font-size: 14px;
+    color: #777;
+}
+
+.worker-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.badge-staff {
+    background: #e8f5e9;
+    color: green;
+}
+
+.badge-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.remove-button {
+    border: none;
+    background: #dc3545;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.remove-button:hover {
+    opacity: 0.85;
+}
+
+.remove-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.empty {
+    color: #777;
+    text-align: center;
+    padding: 25px;
+}
+
+.loading {
+    color: #777;
+    text-align: center;
+    padding: 20px;
+}
+
+@media (max-width: 600px) {
+
+    .worker-form {
+        flex-direction: column;
+    }
+
+    .team-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .worker {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .worker-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="team-container">
+
+
+    <!-- ==============================
+         HEADER
+    =============================== -->
+
+    <div class="team-header">
+
+        <h1>👥 My Team</h1>
+
+        <a
+            href="index.html"
+            class="back-button"
+        >
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- ==============================
+         INVITE STAFF
+    =============================== -->
+
+    <div class="card">
+
+        <h2>Invite Staff</h2>
+
+        <p>
+            Enter the staff member's email address.
+            They will receive an invitation and join
+            your business as staff.
+        </p>
+
+        <form
+            id="workerForm"
+            class="worker-form"
+        >
+
+            <input
+                type="email"
+                id="workerEmail"
+                placeholder="Staff email address"
+                autocomplete="email"
+                required
+            >
+
+            <button
+                type="submit"
+                id="inviteButton"
+            >
+                INVITE STAFF
+            </button>
+
+        </form>
+
+        <div id="message"></div>
+
+    </div>
+
+
+    <!-- ==============================
+         TEAM MEMBERS
+    =============================== -->
+
+    <div class="card">
+
+        <h2>Team Members</h2>
+
+        <div id="teamList">
+
+            <div class="loading">
+                Loading team...
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script type="module">
+
+import {
+    createClient
+} from "https://esm.sh/@supabase/supabase-js@2";
+
+
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+    "https://uwfghbctckinymatcbro.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+const supabase =
+    createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const workerForm =
+    document.getElementById(
+        "workerForm"
+    );
+
+const workerEmail =
+    document.getElementById(
+        "workerEmail"
+    );
+
+const inviteButton =
+    document.getElementById(
+        "inviteButton"
+    );
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+const teamList =
+    document.getElementById(
+        "teamList"
+    );
+
+
+/* =========================================
+   GET CURRENT USER + ADMIN PROFILE
+========================================= */
+
+async function getCurrentProfile() {
+
+    const {
+        data: {
+            user
+        },
+        error: userError
+    } =
+        await supabase.auth.getUser();
+
+
+    if (
+        userError ||
+        !user
+    ) {
+
+        window.location.href =
+            "login.html";
+
+        return null;
+
+    }
+
+
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await supabase
+            .from("profiles")
+            .select(
+                "user_id, full_name, role, business_id"
+            )
+            .eq(
+                "user_id",
+                user.id
+            )
+            .single();
+
+
+    if (
+        profileError ||
+        !profile
+    ) {
+
+        console.error(
+            profileError
+        );
+
+        message.innerHTML =
+            "❌ Unable to load your DukaFlow profile.";
+
+        return null;
+
+    }
+
+
+    if (
+        profile.role !==
+        "admin"
+    ) {
+
+        alert(
+            "Only business administrators can access the Team page."
+        );
+
+        window.location.href =
+            "index.html";
+
+        return null;
+
+    }
+
+
+    if (
+        !profile.business_id
+    ) {
+
+        message.innerHTML =
+            "❌ Your account is not linked to a business.";
+
+        return null;
+
+    }
+
+
+    return {
+        user,
+        profile
+    };
+
+}
+
+
+/* =========================================
+   LOAD TEAM
+========================================= */
+
+async function loadTeam() {
+
+    teamList.innerHTML =
+        '<div class="loading">Loading team...</div>';
+
+
+    const current =
+        await getCurrentProfile();
+
+
+    if (!current)
+        return;
+
+
+    const businessId =
+        current.profile.business_id;
+
+
+    /* ---------------------------------------
+       ACTIVE STAFF
+    --------------------------------------- */
+
+    const {
+        data: staff,
+        error: staffError
+    } =
+        await supabase
+            .from("profiles")
+            .select(
+                "user_id, full_name, role, business_id"
+            )
+            .eq(
+                "business_id",
+                businessId
+            )
+            .eq(
+                "role",
+                "staff"
+            )
+            .order(
+                "full_name",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (staffError) {
+
+        console.error(
+            staffError
+        );
+
+        teamList.innerHTML =
+            '<div class="empty">Unable to load staff members.</div>';
+
+        return;
+
+    }
+
+
+    /* ---------------------------------------
+       PENDING INVITATIONS
+    --------------------------------------- */
+
+    const {
+        data: invitations,
+        error: invitationError
+    } =
+        await supabase
+            .from("invitations")
+            .select(
+                "id, email, role, status, created_at, expires_at"
+            )
+            .eq(
+                "business_id",
+                businessId
+            )
+            .eq(
+                "status",
+                "pending"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (invitationError) {
+
+        console.error(
+            invitationError
+        );
+
+    }
+
+
+    let html = "";
+
+
+    /* =======================================
+       ACTIVE STAFF
+    ======================================= */
+
+    if (
+        staff &&
+        staff.length > 0
+    ) {
+
+        staff.forEach(
+            function(member) {
+
+                html += `
+
+                    <div class="worker">
+
+                        <div class="worker-info">
+
+                            <div class="worker-name">
+                                ${escapeHtml(
+                                    member.full_name ||
+                                    "Staff Member"
+                                )}
+                            </div>
+
+                            <div class="worker-email">
+                                Active staff member
+                            </div>
+
+                        </div>
+
+                        <div class="worker-actions">
+
+                            <span class="badge badge-staff">
+                                STAFF
+                            </span>
+
+                            <button
+                                class="remove-button"
+                                onclick="removeStaff('${member.user_id}')"
+                            >
+                                REMOVE
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+    }
+
+
+    /* =======================================
+       PENDING INVITATIONS
+    ======================================= */
+
+    if (
+        invitations &&
+        invitations.length > 0
+    ) {
+
+        invitations.forEach(
+            function(invitation) {
+
+                html += `
+
+                    <div class="worker">
+
+                        <div class="worker-info">
+
+                            <div class="worker-name">
+                                ${escapeHtml(
+                                    invitation.email
+                                )}
+                            </div>
+
+                            <div class="worker-email">
+                                Invitation pending
+                            </div>
+
+                        </div>
+
+                        <div class="worker-actions">
+
+                            <span class="badge badge-pending">
+                                PENDING
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+    }
+
+
+    /* =======================================
+       EMPTY
+    ======================================= */
+
+    if (!html) {
+
+        html =
+            '<div class="empty">No staff members or pending invitations yet.</div>';
+
+    }
+
+
+    teamList.innerHTML =
+        html;
+
+}
+
+
+/* =========================================
+   INVITE STAFF
+========================================= */
+
+workerForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const current =
+            await getCurrentProfile();
+
+
+        if (!current)
+            return;
+
+
+        const email =
+            workerEmail.value
+                .trim()
+                .toLowerCase();
+
+
+        if (!email)
+            return;
+
+
+        inviteButton.disabled =
+            true;
+
+        inviteButton.innerHTML =
+            "SENDING...";
+
+        message.innerHTML =
+            "⏳ Sending staff invitation...";
+
+
+        try {
+
+            /*
+             IMPORTANT:
+             Invitation is sent through the
+             rapid-worker Edge Function.
+            */
+
+            const {
+                data,
+                error
+            } =
+                await supabase.functions.invoke(
+                    "rapid-worker",
+                    {
+                        body: {
+                            email: email
+                        }
+                    }
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "rapid-worker error:",
+                    error
+                );
+
+                throw new Error(
+                    "The invitation could not be sent."
+                );
+
+            }
+
+
+            if (
+                !data ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data?.error ||
+                    "The invitation could not be sent."
+                );
+
+            }
+
+
+            message.innerHTML =
+                "✅ Staff invitation sent successfully.";
+
+
+            workerEmail.value =
+                "";
+
+
+            await loadTeam();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Invitation error:",
+                error
+            );
+
+
+            message.innerHTML =
+                "❌ " +
+                (
+                    error.message ||
+                    "Something went wrong while sending the invitation."
+                );
+
+        }
+
+        finally {
+
+            inviteButton.disabled =
+                false;
+
+            inviteButton.innerHTML =
+                "INVITE STAFF";
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   REMOVE STAFF
+========================================= */
+
+async function removeStaff(
+    userId
+) {
+
+    const confirmed =
+        confirm(
+            "Remove this staff member?\n\nTheir DukaFlow profile and login account will be deleted."
+        );
+
+
+    if (!confirmed)
+        return;
+
+
+    message.innerHTML =
+        "⏳ Removing staff member...";
+
+
+    try {
+
+        /*
+         Get active session first.
+        */
+
+        const {
+            data: {
+                session
+            },
+            error: sessionError
+        } =
+            await supabase.auth.getSession();
+
+
+        if (
+            sessionError ||
+            !session
+        ) {
+
+            throw new Error(
+                "Your login session has expired. Please log in again."
+            );
+
+        }
+
+
+        /*
+         Call remove-staff Edge Function.
+        */
+
+        const {
+            data,
+            error
+        } =
+            await supabase.functions.invoke(
+                "remove-staff",
+                {
+                    body: {
+                        user_id: userId
+                    }
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "remove-staff error:",
+                error
+            );
+
+            throw new Error(
+                "Could not remove the staff member."
+            );
+
+        }
+
+
+        if (
+            !data ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data?.error ||
+                "Could not remove the staff member."
+            );
+
+        }
+
+
+        message.innerHTML =
+            "✅ Staff member removed successfully.";
+
+
+        await loadTeam();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Remove staff error:",
+            error
+        );
+
+
+        message.innerHTML =
+            "❌ " +
+            (
+                error.message ||
+                "Something went wrong while removing staff."
+            );
+
+    }
+
+}
+
+
+/* =========================================
+   MAKE removeStaff AVAILABLE TO HTML
+========================================= */
+
+window.removeStaff =
+    removeStaff;
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+loadTeam();
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,2512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>DukaFlow - Manage Users</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<script src="notifications.js"></script>
+
+<style>
+
+/* =========================================================
+   DUKAFLOW USERS PAGE
+========================================================= */
+
+:root {
+
+    --green: #087f3f;
+    --green-dark: #056331;
+    --green-light: #eaf8f0;
+
+    --blue: #1769aa;
+    --blue-light: #eef5ff;
+
+    --red: #b42318;
+    --red-light: #fff4f3;
+
+    --purple: #6941c6;
+    --purple-light: #f4f0ff;
+
+    --orange: #c66a00;
+    --orange-light: #fff7e8;
+
+    --text: #17211b;
+    --muted: #6b756f;
+    --border: #e4e9e6;
+    --white: #ffffff;
+
+}
+
+
+/* =========================================================
+   TOP NOTIFICATION
+========================================================= */
+
+.top-notification {
+
+    position: fixed;
+
+    top: 20px;
+
+    left: 50%;
+
+    transform:
+        translate(-50%, -130px);
+
+    z-index: 9999;
+
+    min-width: 300px;
+
+    max-width: 90%;
+
+    padding: 14px 18px;
+
+    border-radius: 10px;
+
+    background: white;
+
+    box-shadow:
+        0 10px 35px
+        rgba(0,0,0,0.16);
+
+    border-left:
+        5px solid
+        var(--green);
+
+    font-weight: 600;
+
+    opacity: 0;
+
+    transition:
+        all 0.3s ease;
+
+}
+
+.top-notification.show {
+
+    transform:
+        translate(-50%, 0);
+
+    opacity: 1;
+
+}
+
+.top-notification.success {
+
+    border-left-color:
+        var(--green);
+
+}
+
+.top-notification.error {
+
+    border-left-color:
+        var(--red);
+
+}
+
+.top-notification.warning {
+
+    border-left-color:
+        #d88900;
+
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #087f3f,
+            #0aa35a
+        );
+
+    color: white;
+
+    padding: 24px;
+
+    border-radius: 16px;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 10px 28px
+        rgba(8,127,63,0.18);
+
+}
+
+.page-header h1 {
+
+    margin:
+        0 0 6px;
+
+    font-size: 29px;
+
+}
+
+.page-header p {
+
+    margin: 0;
+
+    opacity: 0.9;
+
+    font-size: 15px;
+
+}
+
+
+/* =========================================================
+   GENERAL CARDS
+========================================================= */
+
+.card {
+
+    background: white;
+
+    padding: 22px;
+
+    border-radius: 14px;
+
+    margin-bottom: 22px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0,0,0,0.07);
+
+    border:
+        1px solid
+        var(--border);
+
+}
+
+.card h2 {
+
+    margin:
+        0 0 18px;
+
+    color:
+        var(--text);
+
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-group {
+
+    margin-bottom: 15px;
+
+}
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-weight: bold;
+
+    color:
+        var(--text);
+
+}
+
+.form-group input,
+
+.form-group select {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    border:
+        1px solid
+        #ccc;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    background: white;
+
+}
+
+.form-group input:focus,
+
+.form-group select:focus {
+
+    outline: none;
+
+    border-color:
+        var(--green);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(8,127,63,0.10);
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+button {
+
+    border: none;
+
+    padding:
+        11px 17px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        all 0.18s ease;
+
+}
+
+button:disabled {
+
+    opacity: 0.6;
+
+    cursor:
+        not-allowed;
+
+}
+
+.primary-button {
+
+    background:
+        linear-gradient(
+            135deg,
+            #087f3f,
+            #0a9950
+        );
+
+    color: white;
+
+}
+
+.primary-button:hover {
+
+    transform:
+        translateY(-1px);
+
+}
+
+.cancel-button {
+
+    background:
+        #f1f3f2;
+
+    color:
+        #444;
+
+}
+
+.cancel-button:hover {
+
+    background:
+        #e6e9e7;
+
+}
+
+
+/* =========================================================
+   USERS LIST
+========================================================= */
+
+.users-list {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        8px;
+
+}
+
+
+/* =========================================================
+   COMPACT USER CARD
+========================================================= */
+
+.user-item {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    padding:
+        10px 12px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-left:
+        4px solid
+        var(--green);
+
+    border-radius:
+        10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f0faf4,
+            #ffffff
+        );
+
+    box-shadow:
+        0 2px 8px
+        rgba(0,0,0,0.045);
+
+    transition:
+        all 0.18s ease;
+
+}
+
+
+/* Alternating subtle colors */
+
+.user-item:nth-child(even) {
+
+    border-left-color:
+        #6941c6;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f7f4ff,
+            #ffffff
+        );
+
+}
+
+
+.user-item:hover {
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 14px
+        rgba(0,0,0,0.08);
+
+}
+
+
+/* =========================================================
+   USER AVATAR
+========================================================= */
+
+.user-avatar {
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    min-width:
+        38px;
+
+    border-radius:
+        50%;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #087f3f,
+            #18a865
+        );
+
+    color:
+        white;
+
+    font-weight:
+        900;
+
+    font-size:
+        15px;
+
+    box-shadow:
+        0 3px 8px
+        rgba(8,127,63,0.20);
+
+}
+
+
+.user-item:nth-child(even)
+.user-avatar {
+
+    background:
+        linear-gradient(
+            135deg,
+            #6941c6,
+            #8b65df
+        );
+
+}
+
+
+/* =========================================================
+   USER INFORMATION
+========================================================= */
+
+.user-info {
+
+    min-width:
+        0;
+
+    flex:
+        1;
+
+}
+
+.user-name {
+
+    font-weight:
+        800;
+
+    color:
+        var(--text);
+
+    font-size:
+        14px;
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+}
+
+.user-email {
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+    margin-top:
+        2px;
+
+}
+
+.user-status {
+
+    color:
+        #777;
+
+    font-size:
+        10px;
+
+    margin-top:
+        2px;
+
+}
+
+
+/* =========================================================
+   ROLE BADGE
+========================================================= */
+
+.user-role {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        5px 8px;
+
+    border-radius:
+        15px;
+
+    background:
+        var(--green-light);
+
+    color:
+        var(--green);
+
+    font-weight:
+        800;
+
+    font-size:
+        10px;
+
+    text-transform:
+        uppercase;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* Admin role */
+
+.user-role.admin {
+
+    background:
+        var(--purple-light);
+
+    color:
+        var(--purple);
+
+}
+
+
+/* Staff role */
+
+.user-role.staff {
+
+    background:
+        var(--green-light);
+
+    color:
+        var(--green);
+
+}
+
+
+/* =========================================================
+   USER ACTIONS
+========================================================= */
+
+.user-actions {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        5px;
+
+}
+
+
+/* Compact buttons */
+
+.user-actions button {
+
+    padding:
+        6px 8px;
+
+    border-radius:
+        6px;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* Edit */
+
+.edit-user-button {
+
+    background:
+        var(--blue-light);
+
+    color:
+        var(--blue);
+
+}
+
+.edit-user-button:hover {
+
+    background:
+        #dcecff;
+
+}
+
+
+/* Remove */
+
+.remove-staff-button {
+
+    background:
+        var(--red-light);
+
+    color:
+        var(--red);
+
+}
+
+.remove-staff-button:hover {
+
+    background:
+        #ffe3e0;
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+
+    padding:
+        30px 20px;
+
+    text-align:
+        center;
+
+    color:
+        var(--muted);
+
+    border:
+        1px dashed
+        var(--border);
+
+    border-radius:
+        11px;
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal-overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    background:
+        rgba(0,0,0,0.45);
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        20px;
+
+    z-index:
+        9000;
+
+}
+
+.modal-overlay.show {
+
+    display:
+        flex;
+
+}
+
+.modal {
+
+    width:
+        100%;
+
+    max-width:
+        430px;
+
+    background:
+        white;
+
+    border-radius:
+        15px;
+
+    padding:
+        23px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,0.20);
+
+    animation:
+        modalIn 0.2s ease;
+
+}
+
+@keyframes modalIn {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(10px)
+            scale(0.98);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+.modal h2 {
+
+    margin:
+        0 0 8px;
+
+    color:
+        var(--text);
+
+}
+
+.modal p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
+
+}
+
+.modal-actions {
+
+    display:
+        flex;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        9px;
+
+    margin-top:
+        20px;
+
+}
+
+.danger-button {
+
+    background:
+        var(--red);
+
+    color:
+        white;
+
+}
+
+.danger-button:hover {
+
+    background:
+        #941b12;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .user-item {
+
+        gap:
+            8px;
+
+        padding:
+            9px;
+
+    }
+
+    .user-avatar {
+
+        width:
+            34px;
+
+        height:
+            34px;
+
+        min-width:
+            34px;
+
+        font-size:
+            13px;
+
+    }
+
+    .user-role {
+
+        padding:
+            4px 7px;
+
+        font-size:
+            9px;
+
+    }
+
+    .user-actions {
+
+        gap:
+            4px;
+
+    }
+
+    .user-actions button {
+
+        padding:
+            5px 6px;
+
+        font-size:
+            10px;
+
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .page-header {
+
+        padding:
+            20px;
+
+        border-radius:
+            13px;
+
+    }
+
+    .page-header h1 {
+
+        font-size:
+            25px;
+
+    }
+
+    .card {
+
+        padding:
+            17px;
+
+    }
+
+    .modal {
+
+        padding:
+            20px;
+
+    }
+
+    .user-item {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            auto 1fr auto;
+
+        gap:
+            8px;
+
+    }
+
+    .user-actions {
+
+        grid-column:
+            2 / 4;
+
+        justify-content:
+            flex-end;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .user-email,
+    .user-status {
+
+        font-size:
+            9px;
+
+    }
+
+    .user-actions button {
+
+        padding:
+            5px;
+
+        font-size:
+            9px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     TOP NOTIFICATION
+========================================================= -->
+
+<div
+    id="topNotification"
+    class="top-notification"
+></div>
+
+
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+const SUPABASE_URL =
+    "https://uwfghbctckinymatcbro.supabase.co";
+
+
+const SUPABASE_KEY =
+    "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+
+window.supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+</script>
+
+
+<!-- =========================================================
+     AUTH
+========================================================= -->
+
+<script src="auth-guard.js"></script>
+
+<script src="role-guard.js"></script>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================= -->
+
+<nav class="main-nav">
+
+<a href="index.html">
+    🏠 Dashboard
+</a>
+
+<a href="products.html">
+    📦 Products
+</a>
+
+<a href="sales.html">
+    💰 Sales
+</a>
+
+<a href="expenses.html">
+    💸 Expenses
+</a>
+
+<a href="reports.html">
+    📊 Reports
+</a>
+
+<a
+    href="users.html"
+    id="manageUsersLink"
+>
+    👥 Manage Users
+</a>
+
+</nav>
+
+
+<div class="page-container">
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<div class="page-header">
+
+<h1>
+    👥 Manage Users
+</h1>
+
+<p>
+    Invite, edit and manage staff access to your business.
+</p>
+
+</div>
+
+
+<!-- =========================================================
+     INVITE STAFF
+========================================================= -->
+
+<div class="card">
+
+<h2>
+    ➕ Invite Staff
+</h2>
+
+<div class="form-group">
+
+<label for="inviteEmail">
+    Staff Email
+</label>
+
+<input
+    type="email"
+    id="inviteEmail"
+    placeholder="staff@email.com"
+    autocomplete="email"
+>
+
+</div>
+
+<button
+    id="inviteButton"
+    class="primary-button"
+    onclick="inviteStaff()"
+>
+
+    SEND INVITATION
+
+</button>
+
+</div>
+
+
+<!-- =========================================================
+     BUSINESS USERS
+========================================================= -->
+
+<div class="card">
+
+<h2>
+    👥 Business Users
+</h2>
+
+<div
+    id="usersList"
+    class="users-list"
+>
+
+    Loading users...
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =========================================================
+     EDIT USER MODAL
+========================================================= -->
+
+<div
+    id="editModal"
+    class="modal-overlay"
+>
+
+<div class="modal">
+
+<h2>
+    ✏️ Edit User
+</h2>
+
+<p>
+    Update this user's business profile.
+</p>
+
+<div class="form-group">
+
+<label for="editName">
+    Full Name
+</label>
+
+<input
+    type="text"
+    id="editName"
+    placeholder="Full name"
+>
+
+</div>
+
+<div class="form-group">
+
+<label for="editRole">
+    Role
+</label>
+
+<select id="editRole">
+
+<option value="staff">
+    Staff
+</option>
+
+<option value="admin">
+    Admin
+</option>
+
+</select>
+
+</div>
+
+<div class="modal-actions">
+
+<button
+    type="button"
+    class="cancel-button"
+    onclick="closeEditModal()"
+>
+
+    CANCEL
+
+</button>
+
+<button
+    type="button"
+    id="saveEditButton"
+    class="primary-button"
+    onclick="saveUserEdit()"
+>
+
+    SAVE CHANGES
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     REMOVE USER MODAL
+========================================================= -->
+
+<div
+    id="removeModal"
+    class="modal-overlay"
+>
+
+<div class="modal">
+
+<h2>
+    🗑️ Remove User
+</h2>
+
+<p id="removeText">
+    Are you sure you want to remove this user?
+</p>
+
+<div class="modal-actions">
+
+<button
+    type="button"
+    class="cancel-button"
+    onclick="closeRemoveModal()"
+>
+
+    CANCEL
+
+</button>
+
+<button
+    type="button"
+    id="confirmRemoveButton"
+    class="danger-button"
+    onclick="confirmRemoveUser()"
+>
+
+    REMOVE USER
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+
+// =========================================================
+// RAPID WORKER EDGE FUNCTION
+// =========================================================
+
+const INVITE_FUNCTION_NAME =
+    "rapid-worker";
+
+
+// =========================================================
+// REMOVE USER EDGE FUNCTION
+// =========================================================
+
+const REMOVE_FUNCTION_NAME =
+    "remove-staff";
+
+
+// =========================================================
+// CURRENT ADMIN
+// =========================================================
+
+let currentUser = null;
+
+let currentProfile = null;
+
+
+// =========================================================
+// SELECTED USER
+// =========================================================
+
+let selectedUser = null;
+
+
+// =========================================================
+// NOTIFICATION
+// =========================================================
+
+let notificationTimer = null;
+
+
+function showNotification(
+    message,
+    type = "success"
+) {
+
+    const notification =
+        document.getElementById(
+            "topNotification"
+        );
+
+    notification.textContent =
+        message;
+
+    notification.className =
+        "top-notification " +
+        type +
+        " show";
+
+    clearTimeout(
+        notificationTimer
+    );
+
+    notificationTimer =
+        setTimeout(
+            function() {
+
+                notification.classList.remove(
+                    "show"
+                );
+
+            },
+            3500
+        );
+
+}
+
+
+// =========================================================
+// START
+// =========================================================
+
+async function startUsersPage() {
+
+    try {
+
+        const allowed =
+            await requireAdmin();
+
+        if (!allowed) {
+
+            return;
+
+        }
+
+        const {
+            data:
+            {
+                user
+            }
+        } =
+        await window.supabaseClient
+            .auth
+            .getUser();
+
+        if (!user) {
+
+            window.location.replace(
+                "login.html"
+            );
+
+            return;
+
+        }
+
+        currentUser =
+            user;
+
+        const {
+            data:
+            profile,
+            error
+        } =
+        await window.supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .single();
+
+        if (error) {
+
+            console.error(
+                "Profile error:",
+                error
+            );
+
+            document.getElementById(
+                "usersList"
+            ).innerHTML =
+                "❌ Unable to load your profile.";
+
+            return;
+
+        }
+
+        currentProfile =
+            profile;
+
+        await loadUsers();
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Users page error:",
+            error
+        );
+
+        document.getElementById(
+            "usersList"
+        ).innerHTML =
+            "❌ Unable to load users.";
+
+    }
+
+}
+
+
+// =========================================================
+// LOAD USERS
+// =========================================================
+
+async function loadUsers() {
+
+    const usersList =
+        document.getElementById(
+            "usersList"
+        );
+
+    usersList.innerHTML =
+        "Loading users...";
+
+    const {
+        data,
+        error
+    } =
+    await window.supabaseClient
+        .from("profiles")
+        .select(
+            "user_id, full_name, role"
+        )
+        .eq(
+            "business_id",
+            currentProfile.business_id
+        );
+
+    if (error) {
+
+        console.error(
+            "Load users error:",
+            error
+        );
+
+        usersList.innerHTML =
+            "❌ Unable to load users.";
+
+        return;
+
+    }
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        usersList.innerHTML =
+            '<div class="empty-state">' +
+            'No business users found.' +
+            '</div>';
+
+        return;
+
+    }
+
+    usersList.innerHTML =
+        "";
+
+    data.forEach(
+        function(profile) {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "user-item";
+
+            const isCurrentUser =
+                profile.user_id ===
+                currentUser.id;
+
+            const role =
+                profile.role ||
+                "staff";
+
+
+            /* USER INITIAL */
+
+            const name =
+                profile.full_name ||
+                "Unnamed User";
+
+            const initial =
+                name
+                    .charAt(0)
+                    .toUpperCase();
+
+
+            item.innerHTML =
+
+                '<div class="user-avatar">' +
+                escapeHTML(initial) +
+                '</div>' +
+
+                '<div class="user-info">' +
+
+                '<div class="user-name">' +
+                escapeHTML(name) +
+                '</div>' +
+
+                '<div class="user-email">' +
+                (
+                    isCurrentUser
+                        ? "Your account"
+                        : "Business staff member"
+                ) +
+                '</div>' +
+
+                '<div class="user-status">' +
+                (
+                    isCurrentUser
+                        ? "Currently signed in"
+                        : "Active business user"
+                ) +
+                '</div>' +
+
+                '</div>' +
+
+                '<div class="user-role ' +
+                escapeHTML(role) +
+                '">' +
+
+                (
+                    role === "admin"
+                        ? "👑 ADMIN"
+                        : "👤 STAFF"
+                ) +
+
+                '</div>' +
+
+                '<div class="user-actions">' +
+
+                '<button' +
+                ' type="button"' +
+                ' class="edit-user-button"' +
+                ' onclick="openEditModal(' +
+                '\'' +
+                escapeJS(
+                    profile.user_id
+                ) +
+                '\',' +
+                '\'' +
+                escapeJS(name) +
+                '\',' +
+                '\'' +
+                escapeJS(role) +
+                '\')"' +
+                '>' +
+                '✏️ Edit' +
+                '</button>' +
+
+                (
+                    isCurrentUser
+                    ? ""
+                    :
+                    '<button' +
+                    ' type="button"' +
+                    ' class="remove-staff-button"' +
+                    ' onclick="openRemoveModal(' +
+                    '\'' +
+                    escapeJS(
+                        profile.user_id
+                    ) +
+                    '\',' +
+                    '\'' +
+                    escapeJS(name) +
+                    '\')"' +
+                    '>' +
+                    '🗑️ Remove' +
+                    '</button>'
+                ) +
+
+                '</div>';
+
+
+            usersList.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+// =========================================================
+// INVITE STAFF
+// =========================================================
+
+async function inviteStaff() {
+
+    const emailInput =
+        document.getElementById(
+            "inviteEmail"
+        );
+
+    const email =
+        emailInput.value
+            .trim()
+            .toLowerCase();
+
+    const button =
+        document.getElementById(
+            "inviteButton"
+        );
+
+    if (!email) {
+
+        showNotification(
+            "❌ Enter a staff email.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (
+        !emailPattern.test(email)
+    ) {
+
+        showNotification(
+            "❌ Enter a valid email address.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "SENDING...";
+
+    try {
+
+        const {
+            data:
+            {
+                session
+            }
+        } =
+        await window.supabaseClient
+            .auth
+            .getSession();
+
+        if (!session) {
+
+            throw new Error(
+                "Your login session has expired. Please log in again."
+            );
+
+        }
+
+        const {
+            data,
+            error
+        } =
+        await window.supabaseClient
+            .functions
+            .invoke(
+                INVITE_FUNCTION_NAME,
+                {
+                    body: {
+                        email: email
+                    }
+                }
+            );
+
+        if (error) {
+
+            console.error(
+                "Rapid worker response:",
+                error
+            );
+
+            console.error(
+                "Rapid worker data:",
+                data
+            );
+
+            const returnedError =
+                data &&
+                typeof data === "object"
+                    ? (
+                        data.error ||
+                        data.message ||
+                        ""
+                    )
+                    : "";
+
+            if (returnedError) {
+
+                throw new Error(
+                    returnedError
+                );
+
+            }
+
+            throw new Error(
+                error.message ||
+                "The invitation request failed."
+            );
+
+        }
+
+        if (!data) {
+
+            throw new Error(
+                "The invitation function returned no response."
+            );
+
+        }
+
+        if (
+            data.success !== true
+        ) {
+
+            throw new Error(
+                data.error ||
+                data.message ||
+                "The invitation could not be sent."
+            );
+
+        }
+
+        showNotification(
+            "✅ Invitation sent successfully.",
+            "success"
+        );
+
+        emailInput.value =
+            "";
+
+        await loadUsers();
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Invite staff error:",
+            error
+        );
+
+        showNotification(
+            "❌ " +
+            (
+                error.message ||
+                "Failed to send invitation."
+            ),
+            "error"
+        );
+
+    }
+
+    finally {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "SEND INVITATION";
+
+    }
+
+}
+
+
+// =========================================================
+// OPEN EDIT MODAL
+// =========================================================
+
+function openEditModal(
+    userId,
+    fullName,
+    role
+) {
+
+    selectedUser = {
+
+        userId:
+            userId,
+
+        fullName:
+            fullName,
+
+        role:
+            role
+
+    };
+
+    document.getElementById(
+        "editName"
+    ).value =
+        fullName;
+
+    document.getElementById(
+        "editRole"
+    ).value =
+        role === "admin"
+            ? "admin"
+            : "staff";
+
+    document.getElementById(
+        "editModal"
+    ).classList.add(
+        "show"
+    );
+
+}
+
+
+// =========================================================
+// CLOSE EDIT MODAL
+// =========================================================
+
+function closeEditModal() {
+
+    selectedUser =
+        null;
+
+    document.getElementById(
+        "editModal"
+    ).classList.remove(
+        "show"
+    );
+
+}
+
+
+// =========================================================
+// SAVE USER EDIT
+// =========================================================
+
+async function saveUserEdit() {
+
+    if (!selectedUser) {
+
+        return;
+
+    }
+
+    const name =
+        document.getElementById(
+            "editName"
+        ).value
+        .trim();
+
+    const role =
+        document.getElementById(
+            "editRole"
+        ).value;
+
+    const button =
+        document.getElementById(
+            "saveEditButton"
+        );
+
+    if (!name) {
+
+        showNotification(
+            "❌ Enter the user's full name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "SAVING...";
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+        await window.supabaseClient
+            .from("profiles")
+            .update({
+
+                full_name:
+                    name,
+
+                role:
+                    role
+
+            })
+            .eq(
+                "user_id",
+                selectedUser.userId
+            )
+            .eq(
+                "business_id",
+                currentProfile.business_id
+            )
+            .select();
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            throw new Error(
+                "User could not be updated. Check your database permissions."
+            );
+
+        }
+
+        closeEditModal();
+
+        showNotification(
+            "✅ User updated successfully.",
+            "success"
+        );
+
+        await loadUsers();
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Edit user error:",
+            error
+        );
+
+        showNotification(
+            "❌ " +
+            (
+                error.message ||
+                "Failed to update user."
+            ),
+            "error"
+        );
+
+    }
+
+    finally {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "SAVE CHANGES";
+
+    }
+
+}
+
+
+// =========================================================
+// OPEN REMOVE MODAL
+// =========================================================
+
+function openRemoveModal(
+    userId,
+    userName
+) {
+
+    if (
+        userId ===
+        currentUser.id
+    ) {
+
+        showNotification(
+            "❌ You cannot remove your own admin account.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    selectedUser = {
+
+        userId:
+            userId,
+
+        fullName:
+            userName
+
+    };
+
+    document.getElementById(
+        "removeText"
+    ).textContent =
+        "Are you sure you want to remove " +
+        userName +
+        " from this business?";
+
+    document.getElementById(
+        "removeModal"
+    ).classList.add(
+        "show"
+    );
+
+}
+
+
+// =========================================================
+// CLOSE REMOVE MODAL
+// =========================================================
+
+function closeRemoveModal() {
+
+    selectedUser =
+        null;
+
+    document.getElementById(
+        "removeModal"
+    ).classList.remove(
+        "show"
+    );
+
+}
+
+
+// =========================================================
+// CONFIRM REMOVE USER
+// =========================================================
+
+async function confirmRemoveUser() {
+
+    if (!selectedUser) {
+
+        return;
+
+    }
+
+    const userId =
+        selectedUser.userId;
+
+    if (
+        userId ===
+        currentUser.id
+    ) {
+
+        closeRemoveModal();
+
+        showNotification(
+            "❌ You cannot remove your own account.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    const button =
+        document.getElementById(
+            "confirmRemoveButton"
+        );
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "REMOVING...";
+
+    try {
+
+        const {
+            data:
+            {
+                session
+            }
+        } =
+        await window.supabaseClient
+            .auth
+            .getSession();
+
+        if (!session) {
+
+            throw new Error(
+                "Your login session has expired. Please log in again."
+            );
+
+        }
+
+        const {
+            data,
+            error
+        } =
+        await window.supabaseClient
+            .functions
+            .invoke(
+                REMOVE_FUNCTION_NAME,
+                {
+                    body: {
+
+                        user_id:
+                            userId
+
+                    }
+                }
+            );
+
+        console.log(
+            "Remove user response:",
+            data
+        );
+
+        if (error) {
+
+            console.error(
+                "Remove user error:",
+                error
+            );
+
+            const returnedError =
+                data &&
+                typeof data === "object"
+                    ? (
+                        data.error ||
+                        data.message ||
+                        ""
+                    )
+                    : "";
+
+            throw new Error(
+                returnedError ||
+                error.message ||
+                "Failed to remove user."
+            );
+
+        }
+
+        if (
+            data &&
+            data.success === false
+        ) {
+
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Failed to remove user."
+            );
+
+        }
+
+        closeRemoveModal();
+
+        showNotification(
+            "✅ User removed successfully.",
+            "success"
+        );
+
+        await loadUsers();
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Remove user exception:",
+            error
+        );
+
+        showNotification(
+            "❌ " +
+            (
+                error.message ||
+                "Failed to remove user."
+            ),
+            "error"
+        );
+
+    }
+
+    finally {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "REMOVE USER";
+
+    }
+
+}
+
+
+// =========================================================
+// SAFE HTML
+// =========================================================
+
+function escapeHTML(value) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        value;
+
+    return div.innerHTML;
+
+}
+
+
+// =========================================================
+// SAFE JAVASCRIPT STRING
+// =========================================================
+
+function escapeJS(value) {
+
+    return String(value)
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        )
+        .replace(
+            /"/g,
+            '\\"'
+        )
+        .replace(
+            /\r?\n/g,
+            "\\n"
+        );
+
+}
+
+
+// =========================================================
+// CLOSE MODALS OUTSIDE
+// =========================================================
+
+document
+    .getElementById(
+        "editModal"
+    )
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                this
+            ) {
+
+                closeEditModal();
+
+            }
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "removeModal"
+    )
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                this
+            ) {
+
+                closeRemoveModal();
+
+            }
+
+        }
+    );
+
+
+// =========================================================
+// ESCAPE KEY
+// =========================================================
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key ===
+            "Escape"
+        ) {
+
+            closeEditModal();
+
+            closeRemoveModal();
+
+        }
+
+    }
+);
+
+
+// =========================================================
+// ACTIVE NAV
+// =========================================================
+
+document
+    .querySelectorAll(
+        ".main-nav a"
+    )
+    .forEach(
+        function(link) {
+
+            if (
+                link.getAttribute(
+                    "href"
+                ) ===
+                "users.html"
+            ) {
+
+                link.classList.add(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+
+// =========================================================
+// RUN
+// =========================================================
+
+async function initializeUsersPage() {
+
+    try {
+
+        const {
+            data: {
+                session
+            },
+            error
+        } =
+        await window.supabaseClient
+            .auth
+            .getSession();
+
+        if (error || !session) {
+
+            window.location.replace(
+                "login.html"
+            );
+
+            return;
+
+        }
+
+        await startUsersPage();
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Users page initialization error:",
+            error
+        );
+
+        const usersList =
+            document.getElementById(
+                "usersList"
+            );
+
+        if (usersList) {
+
+            usersList.innerHTML =
+                "❌ Unable to load users.";
+
+        }
+
+    }
+
+}
+
+
+initializeUsersPage();
+
+</script>
+
+
+</body>
+
+</html>

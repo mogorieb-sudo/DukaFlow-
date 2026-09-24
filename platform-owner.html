@@ -1,0 +1,3264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="theme-color"
+    content="#087f3f"
+>
+
+<title>DukaFlow — Platform Owner</title>
+
+<link
+    rel="icon"
+    href="icon-192.png"
+>
+
+<style>
+
+/* =========================================================
+   DUKAFLOW PLATFORM OWNER DASHBOARD
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+:root {
+
+    --green:
+        #087f3f;
+
+    --green-dark:
+        #056331;
+
+    --green-light:
+        #eaf8f0;
+
+    --text:
+        #17211b;
+
+    --muted:
+        #6b756f;
+
+    --border:
+        #e1e9e4;
+
+    --white:
+        #ffffff;
+
+    --page:
+        #f3f7f5;
+
+    --shadow:
+        0 8px 25px
+        rgba(8, 50, 28, 0.07);
+
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        var(--page);
+
+    color:
+        var(--text);
+
+    min-height:
+        100vh;
+
+}
+
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+
+    background:
+        linear-gradient(
+            135deg,
+            #056331 0%,
+            #087f3f 48%,
+            #0aa35a 100%
+        );
+
+    color:
+        white;
+
+    padding:
+        15px 24px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    box-shadow:
+        0 5px 22px
+        rgba(0,0,0,0.14);
+
+    position:
+        sticky;
+
+    top:
+        0;
+
+    z-index:
+        100;
+
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.brand {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    min-width:
+        0;
+
+}
+
+
+.brand-icon {
+
+    width:
+        45px;
+
+    height:
+        45px;
+
+    border-radius:
+        13px;
+
+    background:
+        rgba(255,255,255,0.16);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.22);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    font-size:
+        22px;
+
+    flex-shrink:
+        0;
+
+}
+
+
+.brand h1 {
+
+    font-size:
+        20px;
+
+    font-weight:
+        850;
+
+    letter-spacing:
+        -0.4px;
+
+}
+
+
+.brand p {
+
+    font-size:
+        11px;
+
+    margin-top:
+        2px;
+
+    opacity:
+        0.78;
+
+}
+
+
+/* =========================================================
+   TOP ACTIONS
+========================================================= */
+
+.top-actions {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    flex-wrap:
+        wrap;
+
+}
+
+
+.top-btn {
+
+    border:
+        none;
+
+    cursor:
+        pointer;
+
+    min-height:
+        40px;
+
+    padding:
+        9px 13px;
+
+    border-radius:
+        9px;
+
+    font-size:
+        12px;
+
+    font-weight:
+        800;
+
+    text-decoration:
+        none;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    white-space:
+        nowrap;
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease;
+
+}
+
+
+.top-btn:hover {
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+.business-btn {
+
+    color:
+        white;
+
+    background:
+        rgba(255,255,255,0.17);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.28);
+
+}
+
+
+.business-btn:hover {
+
+    background:
+        rgba(255,255,255,0.25);
+
+}
+
+
+.refresh-btn {
+
+    color:
+        white;
+
+    background:
+        rgba(255,255,255,0.17);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.28);
+
+}
+
+
+.refresh-btn:hover {
+
+    background:
+        rgba(255,255,255,0.25);
+
+}
+
+
+.logout-btn {
+
+    background:
+        white;
+
+    color:
+        #b42318;
+
+}
+
+
+.logout-btn:hover {
+
+    background:
+        #fff5f4;
+
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.container {
+
+    width:
+        min(
+            1400px,
+            calc(100% - 32px)
+        );
+
+    margin:
+        28px auto 45px;
+
+}
+
+
+/* =========================================================
+   WELCOME
+========================================================= */
+
+.welcome {
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #f4fbf7 100%
+        );
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        19px;
+
+    padding:
+        22px 24px;
+
+    margin-bottom:
+        20px;
+
+    box-shadow:
+        var(--shadow);
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+
+}
+
+
+.welcome::after {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    width:
+        150px;
+
+    height:
+        150px;
+
+    border-radius:
+        50%;
+
+    right:
+        -55px;
+
+    top:
+        -75px;
+
+    background:
+        rgba(8,127,63,0.08);
+
+}
+
+
+.welcome h2 {
+
+    font-size:
+        26px;
+
+    font-weight:
+        850;
+
+    letter-spacing:
+        -0.7px;
+
+    position:
+        relative;
+
+    z-index:
+        1;
+
+}
+
+
+.welcome p {
+
+    margin-top:
+        5px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        13px;
+
+    position:
+        relative;
+
+    z-index:
+        1;
+
+}
+
+
+/* =========================================================
+   PLATFORM LABEL
+========================================================= */
+
+.platform-label {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        6px 10px;
+
+    border-radius:
+        20px;
+
+    background:
+        #e8f7ee;
+
+    color:
+        var(--green);
+
+    font-size:
+        11px;
+
+    font-weight:
+        850;
+
+    margin-bottom:
+        10px;
+
+}
+
+
+/* =========================================================
+   STAT GRID
+========================================================= */
+
+.stats-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap:
+        15px;
+
+    margin-bottom:
+        20px;
+
+}
+
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+.stat-card {
+
+    min-height:
+        145px;
+
+    padding:
+        19px;
+
+    border-radius:
+        17px;
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+
+    color:
+        white;
+
+    box-shadow:
+        0 9px 25px
+        rgba(0,0,0,0.09);
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+
+}
+
+
+.stat-card:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 13px 30px
+        rgba(0,0,0,0.12);
+
+}
+
+
+.stat-card::after {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    width:
+        115px;
+
+    height:
+        115px;
+
+    border-radius:
+        50%;
+
+    right:
+        -42px;
+
+    bottom:
+        -55px;
+
+    background:
+        rgba(255,255,255,0.13);
+
+}
+
+
+.stat-card::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    width:
+        45px;
+
+    height:
+        45px;
+
+    border-radius:
+        50%;
+
+    right:
+        35px;
+
+    top:
+        -22px;
+
+    background:
+        rgba(255,255,255,0.06);
+
+}
+
+
+.businesses-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #087f3f,
+            #10a85d
+        );
+
+}
+
+
+.users-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #1769aa,
+            #318ed2
+        );
+
+}
+
+
+.products-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #007c73,
+            #18a99b
+        );
+
+}
+
+
+.sales-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #6742b9,
+            #8c67e2
+        );
+
+}
+
+
+.expenses-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #b83225,
+            #df604b
+        );
+
+}
+
+
+.payments-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #9b6500,
+            #d99a18
+        );
+
+}
+
+
+.stat-content {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+}
+
+
+.stat-top {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+}
+
+
+.stat-icon {
+
+    width:
+        43px;
+
+    height:
+        43px;
+
+    border-radius:
+        12px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        rgba(255,255,255,0.16);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.18);
+
+    font-size:
+        20px;
+
+}
+
+
+.stat-label {
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        0.6px;
+
+    opacity:
+        0.84;
+
+}
+
+
+.stat-value {
+
+    margin-top:
+        13px;
+
+    font-size:
+        30px;
+
+    line-height:
+        1;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        -1px;
+
+}
+
+
+.stat-sub {
+
+    margin-top:
+        7px;
+
+    font-size:
+        11px;
+
+    opacity:
+        0.78;
+
+}
+
+
+/* =========================================================
+   SUBSCRIPTION STATUS
+========================================================= */
+
+.status-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap:
+        15px;
+
+    margin-bottom:
+        22px;
+
+}
+
+
+.status-card {
+
+    border-radius:
+        17px;
+
+    padding:
+        17px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        13px;
+
+    border:
+        1px solid
+        var(--border);
+
+    box-shadow:
+        var(--shadow);
+
+    background:
+        white;
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+
+}
+
+
+.status-card::after {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    width:
+        75px;
+
+    height:
+        75px;
+
+    border-radius:
+        50%;
+
+    right:
+        -28px;
+
+    bottom:
+        -35px;
+
+    background:
+        rgba(8,127,63,0.045);
+
+}
+
+
+.status-icon {
+
+    width:
+        46px;
+
+    height:
+        46px;
+
+    border-radius:
+        13px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    font-size:
+        20px;
+
+    flex-shrink:
+        0;
+
+}
+
+
+.active-icon {
+
+    background:
+        #e5f7ec;
+
+}
+
+
+.trial-icon {
+
+    background:
+        #fff4d6;
+
+}
+
+
+.expired-icon {
+
+    background:
+        #ffe9e7;
+
+}
+
+
+.status-title {
+
+    color:
+        #68756e;
+
+    font-size:
+        12px;
+
+    font-weight:
+        750;
+
+}
+
+
+.status-value {
+
+    font-size:
+        25px;
+
+    font-weight:
+        900;
+
+    margin-top:
+        2px;
+
+}
+
+
+/* =========================================================
+   BUSINESS PANEL
+========================================================= */
+
+.panel {
+
+    background:
+        white;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        18px;
+
+    overflow:
+        hidden;
+
+    box-shadow:
+        var(--shadow);
+
+}
+
+
+.panel-header {
+
+    padding:
+        19px 21px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    border-bottom:
+        1px solid
+        #edf1ef;
+
+}
+
+
+.panel-title h3 {
+
+    font-size:
+        18px;
+
+    font-weight:
+        850;
+
+}
+
+
+.panel-title p {
+
+    color:
+        #7a867f;
+
+    font-size:
+        12px;
+
+    margin-top:
+        3px;
+
+}
+
+
+.business-count {
+
+    padding:
+        7px 11px;
+
+    border-radius:
+        20px;
+
+    background:
+        #e8f7ee;
+
+    color:
+        var(--green);
+
+    font-size:
+        11px;
+
+    font-weight:
+        850;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-area {
+
+    padding:
+        13px 21px;
+
+    background:
+        #fafcfb;
+
+    border-bottom:
+        1px solid
+        #edf1ef;
+
+}
+
+
+.search-box {
+
+    width:
+        100%;
+
+    max-width:
+        440px;
+
+    padding:
+        11px 13px;
+
+    border:
+        1px solid
+        #dce5e0;
+
+    border-radius:
+        10px;
+
+    background:
+        white;
+
+    outline:
+        none;
+
+    font-size:
+        13px;
+
+}
+
+
+.search-box:focus {
+
+    border-color:
+        #0fa35b;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(15,163,91,0.09);
+
+}
+
+
+/* =========================================================
+   BUSINESS TABLE
+========================================================= */
+
+.business-table-scroll {
+
+    overflow-x:
+        auto;
+
+}
+
+
+.business-list {
+
+    min-width:
+        900px;
+
+}
+
+
+.business-row {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1.7fr
+        1.2fr
+        0.65fr
+        0.75fr
+        0.65fr
+        0.75fr
+        0.9fr;
+
+    gap:
+        14px;
+
+    align-items:
+        center;
+
+    padding:
+        15px 21px;
+
+    border-bottom:
+        1px solid
+        #edf1ef;
+
+    transition:
+        background 0.15s ease;
+
+}
+
+
+.business-row:hover {
+
+    background:
+        #fbfdfc;
+
+}
+
+
+.business-row:last-child {
+
+    border-bottom:
+        none;
+
+}
+
+
+.business-header {
+
+    background:
+        #f5f9f7;
+
+    color:
+        #6d7972;
+
+    font-size:
+        10px;
+
+    font-weight:
+        850;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        0.45px;
+
+}
+
+
+.business-header:hover {
+
+    background:
+        #f5f9f7;
+
+}
+
+
+.business-name {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    min-width:
+        0;
+
+}
+
+
+.business-avatar {
+
+    width:
+        37px;
+
+    height:
+        37px;
+
+    border-radius:
+        11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #087f3f,
+            #20b86e
+        );
+
+    color:
+        white;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    font-size:
+        13px;
+
+    font-weight:
+        900;
+
+    flex-shrink:
+        0;
+
+}
+
+
+.business-name-text {
+
+    min-width:
+        0;
+
+}
+
+
+.business-name-text strong {
+
+    display:
+        block;
+
+    font-size:
+        13px;
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+}
+
+
+.business-name-text span {
+
+    display:
+        block;
+
+    color:
+        #8a9690;
+
+    font-size:
+        10px;
+
+    margin-top:
+        2px;
+
+}
+
+
+.owner {
+
+    font-size:
+        12px;
+
+    font-weight:
+        650;
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+}
+
+
+.metric {
+
+    font-size:
+        13px;
+
+    font-weight:
+        800;
+
+    color:
+        #39463f;
+
+}
+
+
+.badge {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    width:
+        fit-content;
+
+    padding:
+        6px 9px;
+
+    border-radius:
+        20px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        850;
+
+}
+
+
+.badge-active {
+
+    background:
+        #e6f7ed;
+
+    color:
+        #087f45;
+
+}
+
+
+.badge-trial {
+
+    background:
+        #fff3d2;
+
+    color:
+        #996500;
+
+}
+
+
+.badge-expired {
+
+    background:
+        #ffe8e6;
+
+    color:
+        #bd3029;
+
+}
+
+
+.badge-none {
+
+    background:
+        #edf0ee;
+
+    color:
+        #68736d;
+
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading {
+
+    padding:
+        48px 20px;
+
+    text-align:
+        center;
+
+    color:
+        #718078;
+
+}
+
+
+.spinner {
+
+    width:
+        31px;
+
+    height:
+        31px;
+
+    border:
+        3px solid
+        #dcebe2;
+
+    border-top-color:
+        #0fa35b;
+
+    border-radius:
+        50%;
+
+    animation:
+        spin 0.8s linear infinite;
+
+    margin:
+        0 auto 12px;
+
+}
+
+
+@keyframes spin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.empty {
+
+    padding:
+        45px 20px;
+
+    text-align:
+        center;
+
+    color:
+        #7b8780;
+
+}
+
+
+.empty-icon {
+
+    font-size:
+        35px;
+
+    margin-bottom:
+        8px;
+
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.error {
+
+    margin:
+        20px;
+
+    padding:
+        15px 16px;
+
+    border-radius:
+        11px;
+
+    background:
+        #fff0f0;
+
+    color:
+        #b72e2e;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.5;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+
+    text-align:
+        center;
+
+    color:
+        #8a9690;
+
+    font-size:
+        10px;
+
+    margin-top:
+        28px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .stats-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+@media (max-width: 750px) {
+
+    .topbar {
+
+        padding:
+            13px 15px;
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .top-actions {
+
+        justify-content:
+            flex-end;
+
+    }
+
+
+    .top-btn {
+
+        font-size:
+            11px;
+
+        padding:
+            8px 10px;
+
+    }
+
+
+    .brand p {
+
+        display:
+            none;
+
+    }
+
+
+    .container {
+
+        width:
+            calc(100% - 20px);
+
+        margin-top:
+            18px;
+
+    }
+
+
+    .welcome {
+
+        padding:
+            19px;
+
+    }
+
+
+    .welcome h2 {
+
+        font-size:
+            23px;
+
+    }
+
+
+    .stats-grid {
+
+        gap:
+            10px;
+
+    }
+
+
+    .stat-card {
+
+        min-height:
+            125px;
+
+        padding:
+            14px;
+
+        border-radius:
+            14px;
+
+    }
+
+
+    .stat-icon {
+
+        width:
+            36px;
+
+        height:
+            36px;
+
+        font-size:
+            17px;
+
+        border-radius:
+            10px;
+
+    }
+
+
+    .stat-value {
+
+        font-size:
+            23px;
+
+        margin-top:
+            10px;
+
+    }
+
+
+    .stat-label {
+
+        font-size:
+            9px;
+
+    }
+
+
+    .stat-sub {
+
+        font-size:
+            10px;
+
+    }
+
+
+    .status-grid {
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            10px;
+
+    }
+
+
+    .panel {
+
+        border-radius:
+            14px;
+
+    }
+
+
+    .panel-header {
+
+        padding:
+            16px 15px;
+
+    }
+
+
+    .search-area {
+
+        padding:
+            11px 15px;
+
+    }
+
+
+    .business-row {
+
+        padding:
+            13px 15px;
+
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .topbar {
+
+        flex-direction:
+            column;
+
+        gap:
+            11px;
+
+    }
+
+
+    .top-actions {
+
+        width:
+            100%;
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+    }
+
+
+    .top-btn {
+
+        width:
+            100%;
+
+    }
+
+
+    .stats-grid {
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+
+    .stat-card {
+
+        min-height:
+            118px;
+
+    }
+
+
+    .business-count {
+
+        font-size:
+            10px;
+
+        padding:
+            6px 8px;
+
+    }
+
+}
+
+
+@media (max-width: 350px) {
+
+    .stats-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            📊
+        </div>
+
+        <div>
+
+            <h1>
+                DukaFlow
+            </h1>
+
+            <p>
+                Platform Owner Dashboard
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <a
+            href="index.html?owner_view=1"
+            class="top-btn business-btn"
+        >
+            🏪 My Business
+        </a>
+
+
+        <button
+            class="top-btn refresh-btn"
+            onclick="loadPlatformOverview()"
+        >
+            ↻ Refresh
+        </button>
+
+
+        <button
+            class="top-btn logout-btn"
+            onclick="logoutOwner()"
+        >
+            Logout
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="container">
+
+
+    <!-- =====================================================
+         WELCOME
+    ====================================================== -->
+
+    <section class="welcome">
+
+        <div class="platform-label">
+            🛠️ DukaFlow Platform
+        </div>
+
+        <h2>
+            Platform Overview
+        </h2>
+
+        <p>
+            Monitor businesses, users, activity,
+            payments and subscriptions from one place.
+        </p>
+
+    </section>
+
+
+    <!-- =====================================================
+         PLATFORM STATISTICS
+    ====================================================== -->
+
+    <section class="stats-grid">
+
+
+        <div class="stat-card businesses-card">
+
+            <div class="stat-content">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Businesses
+                    </div>
+
+                    <div class="stat-icon">
+                        🏪
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalBusinesses"
+                >
+                    —
+                </div>
+
+                <div class="stat-sub">
+                    Registered DukaFlow businesses
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card users-card">
+
+            <div class="stat-content">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Users
+                    </div>
+
+                    <div class="stat-icon">
+                        👥
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalUsers"
+                >
+                    —
+                </div>
+
+                <div class="stat-sub">
+                    Registered user accounts
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card products-card">
+
+            <div class="stat-content">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Products
+                    </div>
+
+                    <div class="stat-icon">
+                        📦
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalProducts"
+                >
+                    —
+                </div>
+
+                <div class="stat-sub">
+                    Products across businesses
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card sales-card">
+
+            <div class="stat-content">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Sales
+                    </div>
+
+                    <div class="stat-icon">
+                        🛒
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalSales"
+                >
+                    —
+                </div>
+
+                <div class="stat-sub">
+                    Recorded sales transactions
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card expenses-card">
+
+            <div class="stat-content">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Expenses
+                    </div>
+
+                    <div class="stat-icon">
+                        💸
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalExpenses"
+                >
+                    —
+                </div>
+
+                <div class="stat-sub">
+                    Recorded business expenses
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card payments-card">
+
+            <div class="stat-content">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Payments
+                    </div>
+
+                    <div class="stat-icon">
+                        💳
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalPayments"
+                >
+                    —
+                </div>
+
+                <div class="stat-sub">
+                    Platform payment records
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =====================================================
+         SUBSCRIPTION STATUS
+    ====================================================== -->
+
+    <section class="status-grid">
+
+
+        <div class="status-card">
+
+            <div class="status-icon active-icon">
+                ✅
+            </div>
+
+            <div>
+
+                <div class="status-title">
+                    Active subscriptions
+                </div>
+
+                <div
+                    class="status-value"
+                    id="activeSubscriptions"
+                >
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="status-card">
+
+            <div class="status-icon trial-icon">
+                🕐
+            </div>
+
+            <div>
+
+                <div class="status-title">
+                    Businesses on trial
+                </div>
+
+                <div
+                    class="status-value"
+                    id="trialBusinesses"
+                >
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="status-card">
+
+            <div class="status-icon expired-icon">
+                ⚠️
+            </div>
+
+            <div>
+
+                <div class="status-title">
+                    Expired subscriptions
+                </div>
+
+                <div
+                    class="status-value"
+                    id="expiredSubscriptions"
+                >
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =====================================================
+         BUSINESSES
+    ====================================================== -->
+
+    <section class="panel">
+
+
+        <div class="panel-header">
+
+            <div class="panel-title">
+
+                <h3>
+                    🏪 DukaFlow Businesses
+                </h3>
+
+                <p>
+                    Read-only overview of every registered business
+                </p>
+
+            </div>
+
+
+            <div
+                class="business-count"
+                id="businessCount"
+            >
+                0 businesses
+            </div>
+
+        </div>
+
+
+        <div class="search-area">
+
+            <input
+                type="search"
+                id="businessSearch"
+                class="search-box"
+                placeholder="Search businesses, owners or status..."
+                oninput="filterBusinesses()"
+            >
+
+        </div>
+
+
+        <div
+            id="businessContent"
+            class="business-table-scroll"
+        >
+
+            <div class="loading">
+
+                <div class="spinner"></div>
+
+                Loading platform data...
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <footer>
+
+        Built & developed by Brian Mogorie © 2026 DukaFlow
+
+    </footer>
+
+
+</main>
+
+
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+    "https://uwfghbctckinymatcbro.supabase.co";
+
+
+const SUPABASE_KEY =
+    "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+let platformBusinesses = [];
+
+
+/* =========================================================
+   FORMAT NUMBERS
+========================================================= */
+
+function formatNumber(value) {
+
+    return Number(
+        value || 0
+    ).toLocaleString();
+
+}
+
+
+/* =========================================================
+   GET INITIALS
+========================================================= */
+
+function getInitials(name) {
+
+    if (!name) {
+        return "?";
+    }
+
+
+    const words =
+        String(name)
+            .trim()
+            .split(/\s+/);
+
+
+    if (words.length === 1) {
+
+        return words[0]
+            .substring(0, 2)
+            .toUpperCase();
+
+    }
+
+
+    return (
+        words[0][0] +
+        words[words.length - 1][0]
+    ).toUpperCase();
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   FORMAT DATE
+========================================================= */
+
+function formatDate(value) {
+
+    if (!value) {
+        return "—";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "—";
+
+    }
+
+
+    return date.toLocaleDateString(
+        "en-KE",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GET CURRENT USER
+========================================================= */
+
+async function getCurrentUser() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (
+        error ||
+        !data ||
+        !data.user
+    ) {
+
+        return null;
+
+    }
+
+
+    return data.user;
+
+}
+
+
+/* =========================================================
+   CHECK PLATFORM OWNER
+========================================================= */
+
+async function checkPlatformOwner() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        window.location.replace(
+            "login.html"
+        );
+
+        return false;
+
+    }
+
+
+    const {
+        data: profile,
+        error
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select(
+            "is_platform_owner"
+        )
+        .eq(
+            "user_id",
+            user.id
+        )
+        .single();
+
+
+    if (
+        error ||
+        !profile
+    ) {
+
+        console.error(
+            "Platform owner profile error:",
+            error
+        );
+
+        showAccessError();
+
+        return false;
+
+    }
+
+
+    if (
+        profile.is_platform_owner !== true
+    ) {
+
+        showAccessError();
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   ACCESS DENIED
+========================================================= */
+
+function showAccessError() {
+
+    document.body.innerHTML = `
+
+        <div style="
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            background:#f3f7f5;
+            font-family:Arial,sans-serif;
+        ">
+
+            <div style="
+                width:100%;
+                max-width:420px;
+                background:white;
+                padding:35px 25px;
+                border-radius:18px;
+                text-align:center;
+                box-shadow:0 15px 40px rgba(0,0,0,.10);
+                border:1px solid #e1e9e4;
+            ">
+
+                <div style="
+                    font-size:45px;
+                    margin-bottom:15px;
+                ">
+                    🔒
+                </div>
+
+                <h2 style="
+                    margin-bottom:10px;
+                    color:#1f2937;
+                ">
+                    Access Restricted
+                </h2>
+
+                <p style="
+                    color:#6b7280;
+                    line-height:1.6;
+                    font-size:14px;
+                    margin-bottom:22px;
+                ">
+                    This area is restricted to
+                    authorized DukaFlow platform owners.
+                </p>
+
+                <button
+                    onclick="window.location.replace('index.html')"
+                    style="
+                        width:100%;
+                        border:none;
+                        background:#087f3f;
+                        color:white;
+                        padding:13px;
+                        border-radius:9px;
+                        font-weight:700;
+                        cursor:pointer;
+                    "
+                >
+                    Return to Dashboard
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   LOAD PLATFORM OVERVIEW
+========================================================= */
+
+async function loadPlatformOverview() {
+
+    const allowed =
+        await checkPlatformOwner();
+
+
+    if (!allowed) {
+        return;
+    }
+
+
+    const content =
+        document.getElementById(
+            "businessContent"
+        );
+
+
+    content.innerHTML = `
+
+        <div class="loading">
+
+            <div class="spinner"></div>
+
+            Loading platform data...
+
+        </div>
+
+    `;
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .rpc(
+            "get_platform_owner_overview"
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Platform overview error:",
+            error
+        );
+
+
+        content.innerHTML = `
+
+            <div class="error">
+
+                <strong>
+                    Could not load platform data.
+                </strong>
+
+                <br>
+
+                ${escapeHTML(
+                    error.message
+                )}
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    if (!data) {
+
+        content.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    📊
+                </div>
+
+                No platform data available.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    updateStatistics(
+        data
+    );
+
+
+    platformBusinesses =
+        Array.isArray(
+            data.businesses
+        )
+            ? data.businesses
+            : [];
+
+
+    renderBusinesses(
+        platformBusinesses
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE STATISTICS
+========================================================= */
+
+function updateStatistics(data) {
+
+    document.getElementById(
+        "totalBusinesses"
+    ).textContent =
+        formatNumber(
+            data.total_businesses
+        );
+
+
+    document.getElementById(
+        "totalUsers"
+    ).textContent =
+        formatNumber(
+            data.total_users
+        );
+
+
+    document.getElementById(
+        "totalProducts"
+    ).textContent =
+        formatNumber(
+            data.total_products
+        );
+
+
+    document.getElementById(
+        "totalSales"
+    ).textContent =
+        formatNumber(
+            data.total_sales
+        );
+
+
+    document.getElementById(
+        "totalExpenses"
+    ).textContent =
+        formatNumber(
+            data.total_expenses
+        );
+
+
+    document.getElementById(
+        "totalPayments"
+    ).textContent =
+        formatNumber(
+            data.total_payments
+        );
+
+
+    document.getElementById(
+        "activeSubscriptions"
+    ).textContent =
+        formatNumber(
+            data.active_subscriptions
+        );
+
+
+    document.getElementById(
+        "trialBusinesses"
+    ).textContent =
+        formatNumber(
+            data.trial_businesses
+        );
+
+
+    document.getElementById(
+        "expiredSubscriptions"
+    ).textContent =
+        formatNumber(
+            data.expired_subscriptions
+        );
+
+
+    document.getElementById(
+        "businessCount"
+    ).textContent =
+        `${formatNumber(
+            data.total_businesses
+        )} ${
+            Number(
+                data.total_businesses
+            ) === 1
+                ? "business"
+                : "businesses"
+        }`;
+
+}
+
+
+/* =========================================================
+   RENDER BUSINESSES
+========================================================= */
+
+function renderBusinesses(
+    businesses
+) {
+
+    const content =
+        document.getElementById(
+            "businessContent"
+        );
+
+
+    if (
+        !businesses ||
+        businesses.length === 0
+    ) {
+
+        content.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🏪
+                </div>
+
+                <strong>
+                    No businesses yet
+                </strong>
+
+                <p style="
+                    margin-top:5px;
+                    font-size:12px;
+                ">
+                    Registered businesses will appear here.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let html = `
+
+        <div class="business-row business-header">
+
+            <div>
+                Business
+            </div>
+
+            <div>
+                Owner
+            </div>
+
+            <div>
+                Users
+            </div>
+
+            <div>
+                Products
+            </div>
+
+            <div>
+                Sales
+            </div>
+
+            <div>
+                Expenses
+            </div>
+
+            <div>
+                Subscription
+            </div>
+
+        </div>
+
+    `;
+
+
+    businesses.forEach(
+        business => {
+
+            const subscription =
+                business.subscription || {};
+
+
+            const status =
+                subscription.status ||
+                "none";
+
+
+            let badgeClass =
+                "badge-none";
+
+
+            if (
+                status === "active"
+            ) {
+
+                badgeClass =
+                    "badge-active";
+
+            }
+
+            else if (
+                status === "trialing"
+            ) {
+
+                badgeClass =
+                    "badge-trial";
+
+            }
+
+            else if (
+                status === "expired"
+            ) {
+
+                badgeClass =
+                    "badge-expired";
+
+            }
+
+
+            const displayStatus =
+                status === "trialing"
+                    ? "Trial"
+                    : status === "none"
+                        ? "No Plan"
+                        : status;
+
+
+            html += `
+
+                <div class="business-row">
+
+                    <div class="business-name">
+
+                        <div class="business-avatar">
+
+                            ${escapeHTML(
+                                getInitials(
+                                    business.name
+                                )
+                            )}
+
+                        </div>
+
+                        <div class="business-name-text">
+
+                            <strong>
+                                ${escapeHTML(
+                                    business.name ||
+                                    "Unnamed Business"
+                                )}
+                            </strong>
+
+                            <span>
+                                Created
+                                ${escapeHTML(
+                                    formatDate(
+                                        business.created_at
+                                    )
+                                )}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="owner"
+                        title="${escapeHTML(
+                            business.owner ||
+                            "Unknown"
+                        )}"
+                    >
+
+                        ${escapeHTML(
+                            business.owner ||
+                            "Unknown"
+                        )}
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        ${formatNumber(
+                            business.users
+                        )}
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        ${formatNumber(
+                            business.products
+                        )}
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        ${formatNumber(
+                            business.sales
+                        )}
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        ${formatNumber(
+                            business.expenses
+                        )}
+
+                    </div>
+
+
+                    <div>
+
+                        <span
+                            class="badge ${badgeClass}"
+                        >
+
+                            ${escapeHTML(
+                                displayStatus
+                            )}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    content.innerHTML =
+        `<div class="business-list">${html}</div>`;
+
+}
+
+
+/* =========================================================
+   FILTER BUSINESSES
+========================================================= */
+
+function filterBusinesses() {
+
+    const input =
+        document.getElementById(
+            "businessSearch"
+        );
+
+
+    const search =
+        input.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!search) {
+
+        renderBusinesses(
+            platformBusinesses
+        );
+
+        return;
+
+    }
+
+
+    const filtered =
+        platformBusinesses.filter(
+            business => {
+
+                const name =
+                    String(
+                        business.name || ""
+                    ).toLowerCase();
+
+
+                const owner =
+                    String(
+                        business.owner || ""
+                    ).toLowerCase();
+
+
+                const status =
+                    String(
+                        business
+                            .subscription
+                            ?.status || ""
+                    ).toLowerCase();
+
+
+                return (
+                    name.includes(search) ||
+                    owner.includes(search) ||
+                    status.includes(search)
+                );
+
+            }
+        );
+
+
+    renderBusinesses(
+        filtered
+    );
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logoutOwner() {
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+
+    localStorage.removeItem(
+        "currentRole"
+    );
+
+
+    localStorage.removeItem(
+        "currentUserName"
+    );
+
+
+    localStorage.removeItem(
+        "businessId"
+    );
+
+
+    localStorage.removeItem(
+        "loggedIn"
+    );
+
+
+    localStorage.removeItem(
+        "currentUser"
+    );
+
+
+    localStorage.removeItem(
+        "userId"
+    );
+
+
+    window.location.replace(
+        "login.html"
+    );
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadPlatformOverview();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

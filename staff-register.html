@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>DukaFlow - Staff Account</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<style>
+
+.register-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 25px;
+}
+
+.register-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.register-card h1 {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.register-card > p {
+    text-align: center;
+}
+
+.register-card label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.register-card input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.password-box {
+    position: relative;
+    width: 100%;
+}
+
+.password-box input {
+    padding-right: 45px;
+}
+
+.show-password {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px !important;
+    margin: 0 !important;
+    padding: 7px !important;
+    background: transparent !important;
+    color: #555 !important;
+    border: none;
+    cursor: pointer;
+}
+
+.create-button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: green;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.create-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#message {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.info-box {
+    margin-top: 15px;
+    padding: 13px;
+    background: #f1f8f1;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.error-box {
+    background: #fff0f0;
+    color: #a00000;
+}
+
+.creator-credit {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+}
+
+.creator-credit strong {
+    color: #008000;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="register-container">
+
+<div class="register-card">
+
+
+<h1>DukaFlow</h1>
+
+<p>Staff Account Setup</p>
+
+
+<!-- =========================================
+     INVITATION STATUS
+========================================= -->
+
+<div
+    class="info-box"
+    id="infoBox"
+>
+    🔄 Verifying your invitation...
+</div>
+
+
+<!-- =========================================
+     STAFF FORM
+========================================= -->
+
+<form
+    id="staffForm"
+    style="display:none;"
+>
+
+
+<label>
+Full Name
+</label>
+
+<input
+    type="text"
+    id="fullName"
+    placeholder="Enter your full name"
+    autocomplete="name"
+    required
+>
+
+
+<label>
+Username
+</label>
+
+<input
+    type="text"
+    id="username"
+    placeholder="Choose a username"
+    autocomplete="username"
+    required
+>
+
+
+<label>
+Password
+</label>
+
+<div class="password-box">
+
+<input
+    type="password"
+    id="password"
+    placeholder="Create your password"
+    minlength="6"
+    autocomplete="new-password"
+    required
+>
+
+<button
+    type="button"
+    class="show-password"
+    id="showPassword"
+>
+👁️
+</button>
+
+</div>
+
+
+<label>
+Confirm Password
+</label>
+
+<div class="password-box">
+
+<input
+    type="password"
+    id="confirmPassword"
+    placeholder="Confirm your password"
+    minlength="6"
+    autocomplete="new-password"
+    required
+>
+
+<button
+    type="button"
+    class="show-password"
+    id="showConfirmPassword"
+>
+👁️
+</button>
+
+</div>
+
+
+<button
+    type="submit"
+    class="create-button"
+    id="createButton"
+>
+ACTIVATE STAFF ACCOUNT
+</button>
+
+
+</form>
+
+
+<div id="message"></div>
+
+
+<div class="creator-credit">
+
+Built & developed by
+<strong>Brian Mogorie</strong>
+
+<br>
+
+© 2026 DukaFlow
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<script type="module">
+
+import {
+    createClient
+}
+from
+"https://esm.sh/@supabase/supabase-js@2";
+
+
+// =========================================
+// SUPABASE
+// =========================================
+
+const SUPABASE_URL =
+    "https://uwfghbctckinymatcbro.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+const supabase =
+    createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+// =========================================
+// ELEMENTS
+// =========================================
+
+const form =
+    document.getElementById(
+        "staffForm"
+    );
+
+const fullNameInput =
+    document.getElementById(
+        "fullName"
+    );
+
+const usernameInput =
+    document.getElementById(
+        "username"
+    );
+
+const passwordInput =
+    document.getElementById(
+        "password"
+    );
+
+const confirmPasswordInput =
+    document.getElementById(
+        "confirmPassword"
+    );
+
+const button =
+    document.getElementById(
+        "createButton"
+    );
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+const infoBox =
+    document.getElementById(
+        "infoBox"
+    );
+
+
+// =========================================
+// PASSWORD VISIBILITY
+// =========================================
+
+document
+.getElementById("showPassword")
+.addEventListener(
+    "click",
+    function() {
+
+        if (
+            passwordInput.type ===
+            "password"
+        ) {
+
+            passwordInput.type =
+                "text";
+
+            this.innerHTML =
+                "🙈";
+
+        } else {
+
+            passwordInput.type =
+                "password";
+
+            this.innerHTML =
+                "👁️";
+
+        }
+
+    }
+);
+
+
+document
+.getElementById("showConfirmPassword")
+.addEventListener(
+    "click",
+    function() {
+
+        if (
+            confirmPasswordInput.type ===
+            "password"
+        ) {
+
+            confirmPasswordInput.type =
+                "text";
+
+            this.innerHTML =
+                "🙈";
+
+        } else {
+
+            confirmPasswordInput.type =
+                "password";
+
+            this.innerHTML =
+                "👁️";
+
+        }
+
+    }
+);
+
+
+// =========================================
+// PROCESS AUTH INVITATION
+// =========================================
+
+async function processInvitation() {
+
+    try {
+
+        const url =
+            new URL(
+                window.location.href
+            );
+
+        const code =
+            url.searchParams.get(
+                "code"
+            );
+
+        const tokenHash =
+            url.searchParams.get(
+                "token_hash"
+            );
+
+        const type =
+            url.searchParams.get(
+                "type"
+            );
+
+
+        // =================================
+        // PKCE INVITATION
+        // =================================
+
+        if (code) {
+
+            infoBox.innerHTML =
+                "🔄 Activating your invitation...";
+
+
+            const {
+                error
+            } =
+                await supabase.auth
+                .exchangeCodeForSession(
+                    code
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "Code exchange error:",
+                    error
+                );
+
+                throw new Error(
+                    "This invitation link is invalid or has expired."
+                );
+
+            }
+
+        }
+
+
+        // =================================
+        // TOKEN HASH INVITATION
+        // =================================
+
+        else if (
+            tokenHash &&
+            type === "invite"
+        ) {
+
+            infoBox.innerHTML =
+                "🔄 Verifying your invitation...";
+
+
+            const {
+                error
+            } =
+                await supabase.auth
+                .verifyOtp({
+
+                    token_hash:
+                        tokenHash,
+
+                    type:
+                        "invite"
+
+                });
+
+
+            if (error) {
+
+                console.error(
+                    "OTP verification error:",
+                    error
+                );
+
+                throw new Error(
+                    "This invitation link is invalid or has expired."
+                );
+
+            }
+
+        }
+
+
+        // =================================
+        // GET SESSION
+        // =================================
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } =
+            await supabase.auth
+            .getSession();
+
+
+        if (
+            sessionError ||
+            !sessionData.session
+        ) {
+
+            throw new Error(
+                "No valid invitation session was found. Please open the invitation directly from the email."
+            );
+
+        }
+
+
+        const user =
+            sessionData.session.user;
+
+
+        if (!user) {
+
+            throw new Error(
+                "Unable to identify the invited user."
+            );
+
+        }
+
+
+        // =================================
+        // CHECK INVITED EMAIL
+        // =================================
+
+        const email =
+            user.email || "";
+
+
+        infoBox.innerHTML =
+
+            "✅ Invitation verified." +
+
+            "<br><br>" +
+
+            "<strong>Invited email:</strong> " +
+
+            escapeHtml(
+                email
+            ) +
+
+            "<br><br>" +
+
+            "Create your username and password below.";
+
+
+        // =================================
+        // SHOW FORM
+        // =================================
+
+        form.style.display =
+            "block";
+
+
+        // =================================
+        // REMOVE AUTH PARAMETERS
+        // =================================
+
+        window.history.replaceState(
+            {},
+            document.title,
+            "staff-register.html"
+        );
+
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Invitation processing error:",
+            error
+        );
+
+
+        infoBox.classList.add(
+            "error-box"
+        );
+
+
+        infoBox.innerHTML =
+            "❌ " +
+            (
+                error.message ||
+                "Unable to verify this invitation."
+            );
+
+
+        message.innerHTML =
+            "Please ask your administrator to send you a new invitation.";
+
+    }
+
+}
+
+
+// =========================================
+// ACTIVATE STAFF ACCOUNT
+// =========================================
+
+form.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const fullName =
+            fullNameInput.value
+            .trim();
+
+
+        const username =
+            usernameInput.value
+            .trim()
+            .toLowerCase();
+
+
+        const password =
+            passwordInput.value;
+
+
+        const confirmPassword =
+            confirmPasswordInput.value;
+
+
+        // =================================
+        // VALIDATION
+        // =================================
+
+        if (!fullName) {
+
+            message.innerHTML =
+                "❌ Enter your full name.";
+
+            return;
+
+        }
+
+
+        if (!username) {
+
+            message.innerHTML =
+                "❌ Choose a username.";
+
+            return;
+
+        }
+
+
+        if (
+            password.length < 6
+        ) {
+
+            message.innerHTML =
+                "❌ Password must be at least 6 characters.";
+
+            return;
+
+        }
+
+
+        if (
+            password !==
+            confirmPassword
+        ) {
+
+            message.innerHTML =
+                "❌ Passwords do not match.";
+
+            return;
+
+        }
+
+
+        button.disabled =
+            true;
+
+        button.innerHTML =
+            "ACTIVATING...";
+
+        message.innerHTML =
+            "🔄 Activating your staff account...";
+
+
+        try {
+
+            // =================================
+            // GET CURRENT SESSION
+            // =================================
+
+            const {
+                data: sessionData,
+                error: sessionError
+            } =
+                await supabase.auth
+                .getSession();
+
+
+            if (
+                sessionError ||
+                !sessionData.session
+            ) {
+
+                throw new Error(
+                    "Your invitation session has expired. Please request a new invitation."
+                );
+
+            }
+
+
+            const currentUser =
+                sessionData.session.user;
+
+
+            // =================================
+            // UPDATE AUTH USER
+            // =================================
+
+            const {
+                data: updateData,
+                error: updateError
+            } =
+                await supabase.auth
+                .updateUser({
+
+                    password:
+                        password,
+
+                    data: {
+
+                        full_name:
+                            fullName,
+
+                        username:
+                            username
+
+                    }
+
+                });
+
+
+            if (updateError) {
+
+                console.error(
+                    "Auth update error:",
+                    updateError
+                );
+
+                throw updateError;
+
+            }
+
+
+            const updatedUser =
+                updateData.user ||
+                currentUser;
+
+
+            // =================================
+            // ACCEPT INVITATION
+            // =================================
+
+            const {
+                data: accepted,
+                error: acceptError
+            } =
+                await supabase.rpc(
+                    "accept_duka_invitation"
+                );
+
+
+            if (acceptError) {
+
+                console.error(
+                    "Invitation acceptance error:",
+                    acceptError
+                );
+
+                throw new Error(
+                    acceptError.message ||
+                    "The invitation could not be accepted."
+                );
+
+            }
+
+
+            console.log(
+                "Invitation accepted:",
+                accepted
+            );
+
+
+            // =================================
+            // LOAD PROFILE
+            // =================================
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await supabase
+                .from("profiles")
+                .select(
+                    "user_id, full_name, role, business_id"
+                )
+                .eq(
+                    "user_id",
+                    updatedUser.id
+                )
+                .single();
+
+
+            if (profileError) {
+
+                console.error(
+                    "Profile error:",
+                    profileError
+                );
+
+                throw new Error(
+                    "Your staff profile could not be loaded."
+                );
+
+            }
+
+
+            // =================================
+            // VERIFY ROLE
+            // =================================
+
+            if (
+                profile.role !==
+                "staff"
+            ) {
+
+                console.error(
+                    "Unexpected profile role:",
+                    profile.role
+                );
+
+                throw new Error(
+                    "Your account was not assigned the staff role correctly."
+                );
+
+            }
+
+
+            if (
+                !profile.business_id
+            ) {
+
+                throw new Error(
+                    "Your business assignment is missing."
+                );
+
+            }
+
+
+            // =================================
+            // SAVE SESSION INFO
+            // =================================
+
+            localStorage.setItem(
+                "loggedIn",
+                "true"
+            );
+
+            localStorage.setItem(
+                "currentUser",
+                updatedUser.email || ""
+            );
+
+            localStorage.setItem(
+                "userId",
+                updatedUser.id
+            );
+
+            localStorage.setItem(
+                "userRole",
+                profile.role
+            );
+
+            localStorage.setItem(
+                "businessId",
+                profile.business_id
+            );
+
+
+            // =================================
+            // SUCCESS
+            // =================================
+
+            message.innerHTML =
+                "✅ Staff account activated successfully!";
+
+
+            button.innerHTML =
+                "ACCOUNT ACTIVATED";
+
+
+            setTimeout(
+                function() {
+
+                    window.location.href =
+                        "index.html";
+
+                },
+                1200
+            );
+
+        }
+
+        catch(error) {
+
+            console.error(
+                "Staff registration error:",
+                error
+            );
+
+
+            message.innerHTML =
+                "❌ " +
+                (
+                    error.message ||
+                    "Something went wrong while activating your account."
+                );
+
+
+            button.disabled =
+                false;
+
+            button.innerHTML =
+                "ACTIVATE STAFF ACCOUNT";
+
+        }
+
+    }
+);
+
+
+// =========================================
+// ESCAPE HTML
+// =========================================
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// =========================================
+// START
+// =========================================
+
+processInvitation();
+
+</script>
+
+</body>
+
+</html>

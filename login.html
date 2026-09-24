@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>DukaFlow - Login</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<script src="notifications.js"></script>
+
+<link
+    rel="manifest"
+    href="manifest.json"
+>
+
+<meta
+    name="theme-color"
+    content="#008000"
+>
+
+<link
+    rel="apple-touch-icon"
+    href="icon-192-1.png"
+>
+
+
+<style>
+
+.login-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 25px;
+}
+
+.login-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.login-card h1 {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.login-card p {
+    text-align: center;
+}
+
+.login-card label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.login-card input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.password-box {
+    position: relative;
+    width: 100%;
+}
+
+.password-box input {
+    padding-right: 45px;
+}
+
+.show-password {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px !important;
+    margin: 0 !important;
+    padding: 7px !important;
+    background: transparent !important;
+    color: #555 !important;
+    border: none;
+    cursor: pointer;
+}
+
+.login-button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: green;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.login-button:disabled {
+    opacity: 0.6;
+}
+
+#loginMessage {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.register-link {
+    margin-top: 20px;
+}
+
+.creator-credit {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+}
+
+.creator-credit strong {
+    color: #008000;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-container">
+
+<div class="login-card">
+
+
+<h1>DukaFlow</h1>
+
+<p>Business Management System</p>
+
+
+<form id="loginForm">
+
+
+<label>Email</label>
+
+<input
+    type="email"
+    id="email"
+    placeholder="Enter your email"
+    autocomplete="email"
+    required
+>
+
+
+<label>Password</label>
+
+<div class="password-box">
+
+<input
+    type="password"
+    id="password"
+    placeholder="Enter password"
+    autocomplete="current-password"
+    required
+>
+
+<button
+    type="button"
+    class="show-password"
+    id="showPassword"
+>
+    👁️
+</button>
+
+</div>
+
+
+<button
+    type="submit"
+    class="login-button"
+    id="loginButton"
+>
+    LOGIN
+</button>
+
+
+</form>
+
+
+<p id="loginMessage"></p>
+
+
+<p class="register-link">
+
+Don't have an account?
+
+<a href="register.html">
+    Create Account
+</a>
+
+</p>
+
+
+<div class="creator-credit">
+
+Built & developed by
+<strong>Brian Mogorie</strong>
+
+<br>
+
+© 2026 DukaFlow
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<script type="module">
+
+import {
+    createClient
+} from "https://esm.sh/@supabase/supabase-js@2";
+
+
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+    "https://uwfghbctckinymatcbro.supabase.co";
+
+
+const SUPABASE_KEY =
+    "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+
+const supabase =
+    createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const form =
+    document.getElementById(
+        "loginForm"
+    );
+
+const emailInput =
+    document.getElementById(
+        "email"
+    );
+
+const passwordInput =
+    document.getElementById(
+        "password"
+    );
+
+const message =
+    document.getElementById(
+        "loginMessage"
+    );
+
+const button =
+    document.getElementById(
+        "loginButton"
+    );
+
+const showPassword =
+    document.getElementById(
+        "showPassword"
+    );
+
+
+/* =========================================
+   SHOW / HIDE PASSWORD
+========================================= */
+
+showPassword.addEventListener(
+    "click",
+    function() {
+
+        if (
+            passwordInput.type ===
+            "password"
+        ) {
+
+            passwordInput.type =
+                "text";
+
+            showPassword.innerHTML =
+                "🙈";
+
+        } else {
+
+            passwordInput.type =
+                "password";
+
+            showPassword.innerHTML =
+                "👁️";
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+form.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const email =
+            emailInput.value
+                .trim()
+                .toLowerCase();
+
+
+        const password =
+            passwordInput.value;
+
+
+        button.disabled =
+            true;
+
+        button.innerHTML =
+            "LOGGING IN...";
+
+        message.innerHTML =
+            "🔄 Checking your account...";
+
+
+        try {
+
+
+            /* =================================
+               SIGN IN
+            ================================= */
+
+            const {
+                data,
+                error
+            } =
+                await supabase.auth
+                    .signInWithPassword({
+
+                        email:
+                            email,
+
+                        password:
+                            password
+
+                    });
+
+
+            if (error) {
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
+                message.innerHTML =
+                    "❌ " +
+                    error.message;
+
+                button.disabled =
+                    false;
+
+                button.innerHTML =
+                    "LOGIN";
+
+                return;
+
+            }
+
+
+            const user =
+                data.user;
+
+
+            if (!user) {
+
+                throw new Error(
+                    "Login failed. User account was not returned."
+                );
+
+            }
+
+
+            /* =================================
+               ACCEPT STAFF INVITATION
+            ================================= */
+
+            const {
+                data: invitationData,
+                error: invitationError
+            } =
+                await supabase.rpc(
+                    "accept_duka_invitation"
+                );
+
+
+            if (invitationError) {
+
+                /*
+                 This is not automatically a
+                 login failure.
+
+                 A normal business owner will
+                 simply have no invitation.
+                */
+
+                console.log(
+                    "Invitation check:",
+                    invitationError.message
+                );
+
+            } else {
+
+                console.log(
+                    "Invitation result:",
+                    invitationData
+                );
+
+            }
+
+
+            /* =================================
+               GET PROFILE
+            ================================= */
+
+            let profile = null;
+
+
+            for (
+                let attempt = 1;
+                attempt <= 5;
+                attempt++
+            ) {
+
+                const {
+                    data: profileData,
+                    error: profileError
+                } =
+                    await supabase
+                        .from("profiles")
+                        .select(
+                            "user_id, full_name, role, business_id, is_platform_owner"
+                        )
+                        .eq(
+                            "user_id",
+                            user.id
+                        )
+                        .maybeSingle();
+
+
+                if (
+                    !profileError &&
+                    profileData
+                ) {
+
+                    profile =
+                        profileData;
+
+                    break;
+
+                }
+
+
+                /*
+                 Give the database trigger/RPC
+                 a moment if the profile is being
+                 created immediately after signup.
+                */
+
+                await new Promise(
+                    function(resolve) {
+
+                        setTimeout(
+                            resolve,
+                            400
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /* =================================
+               PROFILE NOT FOUND
+            ================================= */
+
+            if (!profile) {
+
+                console.error(
+                    "No DukaFlow profile found."
+                );
+
+
+                await supabase.auth.signOut();
+
+
+                message.innerHTML =
+                    "❌ Your DukaFlow profile could not be found. Please contact support.";
+
+
+                button.disabled =
+                    false;
+
+                button.innerHTML =
+                    "LOGIN";
+
+                return;
+
+            }
+
+
+            /* =================================
+               SAVE SESSION INFORMATION
+            ================================= */
+
+            localStorage.setItem(
+                "loggedIn",
+                "true"
+            );
+
+            localStorage.setItem(
+                "currentUser",
+                user.email || email
+            );
+
+            localStorage.setItem(
+                "userId",
+                user.id
+            );
+
+            localStorage.setItem(
+                "userRole",
+                profile.role
+            );
+
+
+            if (
+                profile.business_id
+            ) {
+
+                localStorage.setItem(
+                    "businessId",
+                    profile.business_id
+                );
+
+            }
+
+
+            /* =================================
+               SUCCESS MESSAGE
+            ================================= */
+
+            message.innerHTML =
+                "✅ Login successful!";
+
+
+            /* =================================
+               DASHBOARD ROUTING
+            ================================= */
+
+            setTimeout(
+                function() {
+
+                    if (
+                        profile.is_platform_owner === true
+                    ) {
+
+                        window.location.replace(
+                            "platform-owner.html"
+                        );
+
+                        return;
+
+                    }
+
+
+                    /* ==========================
+                       NORMAL DUKAFLOW USERS
+                    ========================== */
+
+                    if (
+                        !profile.business_id
+                    ) {
+
+                        supabase.auth.signOut();
+
+                        message.innerHTML =
+                            "❌ Your account is not linked to a DukaFlow business.";
+
+                        button.disabled =
+                            false;
+
+                        button.innerHTML =
+                            "LOGIN";
+
+                        return;
+
+                    }
+
+
+                    window.location.replace(
+                        "index.html"
+                    );
+
+                },
+                500
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Login exception:",
+                error
+            );
+
+
+            message.innerHTML =
+                "❌ " +
+                (
+                    error.message ||
+                    "Something went wrong while logging in."
+                );
+
+
+            button.disabled =
+                false;
+
+            button.innerHTML =
+                "LOGIN";
+
+        }
+
+    }
+);
+
+</script>
+
+
+<script>
+
+/* =========================================
+   SERVICE WORKER
+========================================= */
+
+if (
+    "serviceWorker" in
+    navigator
+) {
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            navigator.serviceWorker
+                .register(
+                    "service-worker.js"
+                )
+                .then(
+                    function(registration) {
+
+                        console.log(
+                            "DukaFlow service worker registered:",
+                            registration.scope
+                        );
+
+                    }
+                )
+                .catch(
+                    function(error) {
+
+                        console.error(
+                            "Service worker registration failed:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

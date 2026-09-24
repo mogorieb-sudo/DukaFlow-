@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>DukaFlow - Expenses</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="notifications.js"></script>
+
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#008000">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+
+
+<style>
+
+/* ==========================================
+   EXPENSE PAGE
+========================================== */
+
+.expense-summary-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin-top: 15px;
+
+}
+
+
+.expense-summary-card {
+
+    background: white;
+
+    padding: 16px 18px;
+
+    border-radius: 14px;
+
+    border: 1px solid #e5e5e5;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.07);
+
+    min-height: 90px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.expense-summary-card:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 7px 18px rgba(0,0,0,0.10);
+
+}
+
+
+.expense-summary-card h3 {
+
+    margin: 0 0 7px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #666;
+
+}
+
+
+.expense-summary-card p {
+
+    margin: 0;
+
+    font-size: 21px;
+
+    font-weight: 800;
+
+    color: #0b7a3b;
+
+}
+
+
+/* ==========================================
+   FILTER CARD
+========================================== */
+
+.expense-filter-card {
+
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.06);
+
+    margin-bottom: 18px;
+
+}
+
+
+/* ==========================================
+   FILTERED TOTAL
+========================================== */
+
+.filtered-total-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #0b7a3b,
+            #159957
+        );
+
+    color: white;
+
+    padding: 20px;
+
+    border-radius: 14px;
+
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 6px 18px rgba(0,0,0,0.12);
+
+}
+
+
+.filtered-total-card h3 {
+
+    margin: 0 0 8px;
+
+    font-size: 15px;
+
+}
+
+
+.filtered-total-card p {
+
+    margin: 0;
+
+    font-size: 25px;
+
+    font-weight: bold;
+
+}
+
+
+/* ==========================================
+   TABLE ACTIONS
+========================================== */
+
+.expense-actions {
+
+    display: flex;
+
+    gap: 6px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.expense-action-button {
+
+    padding: 7px 10px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    font-size: 13px;
+
+}
+
+
+.expense-edit-button {
+
+    background: #0d6efd;
+
+    color: white;
+
+}
+
+
+.expense-delete-button {
+
+    background: #dc3545;
+
+    color: white;
+
+}
+
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.expense-empty {
+
+    text-align: center;
+
+    padding: 25px !important;
+
+    color: #777;
+
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 500px) {
+
+    .expense-summary-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+
+    }
+
+
+    .expense-summary-card {
+
+        padding: 14px;
+
+        min-height: 82px;
+
+    }
+
+
+    .expense-summary-card h3 {
+
+        font-size: 13px;
+
+    }
+
+
+    .expense-summary-card p {
+
+        font-size: 18px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+   NAVIGATION
+========================================== -->
+
+<nav class="main-nav">
+
+<a href="index.html">
+🏠 Dashboard
+</a>
+
+<a href="products.html">
+📦 Products
+</a>
+
+<a href="sales.html">
+💰 Sales
+</a>
+
+<a href="expenses.html">
+💸 Expenses
+</a>
+
+<a href="reports.html">
+📊 Reports
+</a>
+
+</nav>
+
+
+<div class="page-container">
+
+
+<h1>
+EXPENSES
+</h1>
+
+<p>
+Record and manage your business expenses
+</p>
+
+
+<!-- ==========================================
+   ADD / EDIT EXPENSE
+========================================== -->
+
+<h2 id="formTitle">
+ADD EXPENSE
+</h2>
+
+
+<div class="form-card">
+
+<form id="expenseForm">
+
+
+<label>
+Expense name
+</label>
+
+<input
+    type="text"
+    id="expenseName"
+    placeholder="e.g. Transport"
+    required
+>
+
+
+<label>
+Amount
+</label>
+
+<input
+    type="number"
+    id="expenseAmount"
+    placeholder="Enter amount"
+    min="0.01"
+    step="0.01"
+    required
+>
+
+
+<label>
+Date
+</label>
+
+<input
+    type="date"
+    id="expenseDate"
+    required
+>
+
+
+<button
+    type="submit"
+    id="expenseButton"
+>
+
+ADD EXPENSE
+
+</button>
+
+
+</form>
+
+</div>
+
+
+<!-- ==========================================
+   SUMMARY
+========================================== -->
+
+<h2>
+EXPENSE SUMMARY
+</h2>
+
+
+<div class="expense-summary-grid">
+
+
+<div class="expense-summary-card">
+
+<h3>
+Today's Expenses
+</h3>
+
+<p id="todayExpenses">
+KSh 0
+</p>
+
+</div>
+
+
+<div class="expense-summary-card">
+
+<h3>
+Today's Transactions
+</h3>
+
+<p id="todayTransactions">
+0
+</p>
+
+</div>
+
+
+<div class="expense-summary-card">
+
+<h3>
+Total Expenses
+</h3>
+
+<p id="totalExpenses">
+KSh 0
+</p>
+
+</div>
+
+
+</div>
+
+
+<!-- ==========================================
+   EXPENSE HISTORY
+========================================== -->
+
+<h2>
+EXPENSE HISTORY
+</h2>
+
+
+<div class="expense-filter-card">
+
+
+<label>
+Search expenses
+</label>
+
+<input
+    type="text"
+    id="expenseSearch"
+    placeholder="🔍 Search by expense name..."
+>
+
+
+<label>
+Filter by date
+</label>
+
+<input
+    type="date"
+    id="expenseDateFilter"
+>
+
+
+<button
+    type="button"
+    id="clearFilter"
+>
+
+CLEAR FILTER
+
+</button>
+
+
+</div>
+
+
+<!-- ==========================================
+   FILTERED TOTAL
+========================================== -->
+
+<div class="filtered-total-card">
+
+<h3>
+FILTERED EXPENSES
+</h3>
+
+<p id="filteredExpensesTotal">
+KSh 0
+</p>
+
+</div>
+
+
+<!-- ==========================================
+   EXPENSE TABLE
+========================================== -->
+
+<div class="table-container">
+
+<table id="expensesTable">
+
+<tr>
+
+<th>
+Expense
+</th>
+
+<th>
+Amount
+</th>
+
+<th>
+Date
+</th>
+
+<th>
+Action
+</th>
+
+</tr>
+
+</table>
+
+</div>
+
+
+</div>
+
+
+<!-- ==========================================
+   SUPABASE
+========================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- ==========================================
+   AUTH
+========================================== -->
+
+<script src="auth-guard.js"></script>
+
+
+<script>
+
+
+// ==========================================
+// VARIABLES
+// ==========================================
+
+let expenses = [];
+
+let editingId = null;
+
+let searchText = "";
+
+let selectedDate = "";
+
+
+// ==========================================
+// NOTIFICATION HELPERS
+// ==========================================
+
+function notifySuccess(message) {
+
+    if (
+        typeof window.showDukaToast ===
+        "function"
+    ) {
+
+        window.showDukaToast(
+            message,
+            "success"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof window.showToast ===
+        "function"
+    ) {
+
+        window.showToast(
+            message,
+            "success"
+        );
+
+        return;
+
+    }
+
+
+    console.log(message);
+
+}
+
+
+// ==========================================
+
+function notifyError(message) {
+
+    if (
+        typeof window.showDukaToast ===
+        "function"
+    ) {
+
+        window.showDukaToast(
+            message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof window.showToast ===
+        "function"
+    ) {
+
+        window.showToast(
+            message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    console.error(message);
+
+}
+
+
+// ==========================================
+// CONFIRMATION
+// ==========================================
+
+function askConfirmation(
+    title,
+    message,
+    confirmText = "Confirm",
+    type = "delete"
+) {
+
+    return new Promise(
+        function(resolve) {
+
+
+            if (
+                typeof window.showDukaConfirm ===
+                "function"
+            ) {
+
+                window.showDukaConfirm(
+                    title,
+                    message,
+                    confirmText,
+                    type,
+                    function(result) {
+
+                        resolve(result);
+
+                    }
+                );
+
+                return;
+
+            }
+
+
+            if (
+                typeof window.dukaConfirm ===
+                "function"
+            ) {
+
+                window.dukaConfirm(
+                    title,
+                    message,
+                    confirmText,
+                    type
+                )
+                .then(
+                    function(result) {
+
+                        resolve(result);
+
+                    }
+                );
+
+                return;
+
+            }
+
+
+            resolve(
+                window.confirm(
+                    title +
+                    "\n\n" +
+                    message
+                )
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// CURRENT USER
+// ==========================================
+
+async function getCurrentUser() {
+
+    const {
+        data,
+        error
+    } =
+    await window.supabaseClient
+        .auth
+        .getUser();
+
+
+    if (
+        error ||
+        !data ||
+        !data.user
+    ) {
+
+        console.error(
+            "User error:",
+            error
+        );
+
+        window.location.replace(
+            "login.html"
+        );
+
+        return null;
+
+    }
+
+
+    return data.user;
+
+}
+
+
+// ==========================================
+// LOAD EXPENSES
+// ==========================================
+
+async function loadExpenses() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        return;
+
+    }
+
+
+    // ==================================
+    // LOAD CURRENT USER'S EXPENSES
+    // RLS ALREADY FILTERS BY BUSINESS
+    // ==================================
+
+    const {
+        data,
+        error
+    } =
+    await window.supabaseClient
+        .from("expenses")
+        .select("*")
+        .order(
+            "expense_date",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Load error:",
+            error
+        );
+
+        notifyError(
+            "Could not load expenses: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    expenses =
+        data || [];
+
+
+    console.log(
+        "Expenses loaded:",
+        expenses.length
+    );
+
+
+    displayExpenses();
+
+    updateSummary();
+
+}
+
+
+// ==========================================
+// DISPLAY EXPENSES
+// ==========================================
+
+function displayExpenses() {
+
+    const table =
+        document.getElementById(
+            "expensesTable"
+        );
+
+
+    while (
+        table.rows.length > 1
+    ) {
+
+        table.deleteRow(1);
+
+    }
+
+
+    const filteredExpenses =
+        expenses.filter(
+            function(expense) {
+
+
+                const name =
+                    String(
+                        expense.description ||
+                        ""
+                    );
+
+
+                const date =
+                    expense.expense_date ||
+                    "";
+
+
+                const matchesName =
+                    name
+                        .toLowerCase()
+                        .includes(
+                            searchText
+                                .toLowerCase()
+                        );
+
+
+                const matchesDate =
+                    selectedDate === "" ||
+                    date === selectedDate;
+
+
+                return (
+                    matchesName &&
+                    matchesDate
+                );
+
+            }
+        );
+
+
+    // ======================================
+    // FILTERED TOTAL
+    // ======================================
+
+    let filteredTotal = 0;
+
+
+    filteredExpenses.forEach(
+        function(expense) {
+
+            filteredTotal +=
+                Number(
+                    expense.amount
+                ) || 0;
+
+        }
+    );
+
+
+    document.getElementById(
+        "filteredExpensesTotal"
+    ).textContent =
+
+        "KSh " +
+        filteredTotal.toLocaleString();
+
+
+    // ======================================
+    // DISPLAY ROWS
+    // ======================================
+
+    filteredExpenses.forEach(
+        function(expense) {
+
+
+            const row =
+                table.insertRow();
+
+
+            row.insertCell(0)
+                .textContent =
+                expense.description;
+
+
+            row.insertCell(1)
+                .textContent =
+                "KSh " +
+                Number(
+                    expense.amount
+                )
+                .toLocaleString();
+
+
+            row.insertCell(2)
+                .textContent =
+                expense.expense_date ||
+                "—";
+
+
+            const actionCell =
+                row.insertCell(3);
+
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+
+            actions.className =
+                "expense-actions";
+
+
+            // EDIT
+
+            const editButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            editButton.type =
+                "button";
+
+
+            editButton.className =
+                "expense-action-button " +
+                "expense-edit-button";
+
+
+            editButton.textContent =
+                "✏️ Edit";
+
+
+            editButton.onclick =
+                function() {
+
+                    editExpense(
+                        expense.id
+                    );
+
+                };
+
+
+            // DELETE
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.type =
+                "button";
+
+
+            deleteButton.className =
+                "expense-action-button " +
+                "expense-delete-button";
+
+
+            deleteButton.textContent =
+                "🗑️ Delete";
+
+
+            deleteButton.onclick =
+                function() {
+
+                    deleteExpense(
+                        expense.id
+                    );
+
+                };
+
+
+            actions.appendChild(
+                editButton
+            );
+
+
+            actions.appendChild(
+                deleteButton
+            );
+
+
+            actionCell.appendChild(
+                actions
+            );
+
+        }
+    );
+
+
+    // ======================================
+    // EMPTY
+    // ======================================
+
+    if (
+        filteredExpenses.length === 0
+    ) {
+
+        const row =
+            table.insertRow();
+
+
+        const cell =
+            row.insertCell(0);
+
+
+        cell.colSpan = 4;
+
+
+        cell.className =
+            "expense-empty";
+
+
+        cell.textContent =
+            searchText ||
+            selectedDate
+            ? "🔍 No matching expenses found."
+            : "💸 No expenses recorded yet.";
+
+    }
+
+}
+
+
+// ==========================================
+// ADD / UPDATE EXPENSE
+// ==========================================
+
+document
+    .getElementById(
+        "expenseForm"
+    )
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+
+            event.preventDefault();
+
+
+            const button =
+                document.getElementById(
+                    "expenseButton"
+                );
+
+
+            button.disabled = true;
+
+
+            const wasEditing =
+                editingId !== null;
+
+
+            button.textContent =
+                wasEditing
+                ? "UPDATING..."
+                : "ADDING...";
+
+
+            try {
+
+
+                const user =
+                    await getCurrentUser();
+
+
+                if (!user) {
+
+                    return;
+
+                }
+
+
+                // ==================================
+                // GET BUSINESS ID
+                // ==================================
+
+                const {
+                    data: profile,
+                    error: profileError
+                } =
+                await window.supabaseClient
+                    .from("profiles")
+                    .select("business_id")
+                    .eq(
+                        "user_id",
+                        user.id
+                    )
+                    .single();
+
+
+                if (profileError) {
+
+                    throw new Error(
+                        "Could not determine your business: " +
+                        profileError.message
+                    );
+
+                }
+
+
+                if (
+                    !profile ||
+                    !profile.business_id
+                ) {
+
+                    throw new Error(
+                        "Your account is not linked to a business."
+                    );
+
+                }
+
+
+                const businessId =
+                    profile.business_id;
+
+
+                const name =
+                    document
+                        .getElementById(
+                            "expenseName"
+                        )
+                        .value
+                        .trim();
+
+
+                const amount =
+                    Number(
+                        document
+                            .getElementById(
+                                "expenseAmount"
+                            )
+                            .value
+                    );
+
+
+                const date =
+                    document
+                        .getElementById(
+                            "expenseDate"
+                        )
+                        .value;
+
+
+                if (!name) {
+
+                    throw new Error(
+                        "Please enter an expense name."
+                    );
+
+                }
+
+
+                if (
+                    !amount ||
+                    amount <= 0
+                ) {
+
+                    throw new Error(
+                        "Please enter a valid amount."
+                    );
+
+                }
+
+
+                if (!date) {
+
+                    throw new Error(
+                        "Please select an expense date."
+                    );
+
+                }
+
+
+                // ==================================
+                // UPDATE
+                // ==================================
+
+                if (wasEditing) {
+
+
+                    const {
+                        error
+                    } =
+                    await window.supabaseClient
+                        .from("expenses")
+                        .update({
+
+                            description:
+                                name,
+
+                            amount:
+                                amount,
+
+                            expense_date:
+                                date
+
+                        })
+                        .eq(
+                            "id",
+                            editingId
+                        );
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    notifySuccess(
+                        "Expense updated successfully."
+                    );
+
+                }
+
+
+                // ==================================
+                // ADD
+                // ==================================
+
+                else {
+
+
+                    const {
+                        error
+                    } =
+                    await window.supabaseClient
+                        .from("expenses")
+                        .insert({
+
+                            user_id:
+                                user.id,
+
+                            business_id:
+                                businessId,
+
+                            description:
+                                name,
+
+                            category:
+                                "Other",
+
+                            amount:
+                                amount,
+
+                            expense_date:
+                                date
+
+                        });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    notifySuccess(
+                        "Expense added successfully."
+                    );
+
+                }
+
+
+                editingId = null;
+
+
+                document
+                    .getElementById(
+                        "formTitle"
+                    )
+                    .textContent =
+                    "ADD EXPENSE";
+
+
+                document
+                    .getElementById(
+                        "expenseForm"
+                    )
+                    .reset();
+
+
+                document
+                    .getElementById(
+                        "expenseButton"
+                    )
+                    .textContent =
+                    "ADD EXPENSE";
+
+
+                await loadExpenses();
+
+            }
+
+
+            catch(error) {
+
+                console.error(
+                    "Expense error:",
+                    error
+                );
+
+
+                notifyError(
+                    error.message
+                );
+
+            }
+
+
+            button.disabled = false;
+
+
+            button.textContent =
+                editingId !== null
+                ? "UPDATE EXPENSE"
+                : "ADD EXPENSE";
+
+        }
+    );
+
+
+// ==========================================
+// EDIT EXPENSE
+// ==========================================
+
+function editExpense(id) {
+
+    const expense =
+        expenses.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if (!expense) {
+
+        notifyError(
+            "Expense could not be found."
+        );
+
+        return;
+
+    }
+
+
+    editingId =
+        id;
+
+
+    document
+        .getElementById(
+            "expenseName"
+        )
+        .value =
+        expense.description;
+
+
+    document
+        .getElementById(
+            "expenseAmount"
+        )
+        .value =
+        expense.amount;
+
+
+    document
+        .getElementById(
+            "expenseDate"
+        )
+        .value =
+        expense.expense_date;
+
+
+    document
+        .getElementById(
+            "formTitle"
+        )
+        .textContent =
+        "EDIT EXPENSE";
+
+
+    document
+        .getElementById(
+            "expenseButton"
+        )
+        .textContent =
+        "UPDATE EXPENSE";
+
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
+
+    });
+
+}
+
+
+// ==========================================
+// DELETE EXPENSE
+// ==========================================
+
+async function deleteExpense(id) {
+
+    const expense =
+        expenses.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if (!expense) {
+
+        return;
+
+    }
+
+
+    const confirmed =
+        await askConfirmation(
+
+            "Delete expense?",
+
+            "Are you sure you want to delete \"" +
+            expense.description +
+            "\"? This action cannot be undone.",
+
+            "Delete",
+
+            "delete"
+
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const {
+            error
+        } =
+        await window.supabaseClient
+            .from("expenses")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        notifySuccess(
+            "Expense deleted successfully."
+        );
+
+
+        await loadExpenses();
+
+    }
+
+
+    catch(error) {
+
+        console.error(
+            "Delete error:",
+            error
+        );
+
+
+        notifyError(
+            "Delete failed: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// SEARCH
+// ==========================================
+
+document
+    .getElementById(
+        "expenseSearch"
+    )
+    .addEventListener(
+        "input",
+        function() {
+
+            searchText =
+                this.value.trim();
+
+            displayExpenses();
+
+        }
+    );
+
+
+// ==========================================
+// DATE FILTER
+// ==========================================
+
+document
+    .getElementById(
+        "expenseDateFilter"
+    )
+    .addEventListener(
+        "change",
+        function() {
+
+            selectedDate =
+                this.value;
+
+            displayExpenses();
+
+        }
+    );
+
+
+// ==========================================
+// CLEAR FILTER
+// ==========================================
+
+document
+    .getElementById(
+        "clearFilter"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            searchText = "";
+
+            selectedDate = "";
+
+
+            document
+                .getElementById(
+                    "expenseSearch"
+                )
+                .value = "";
+
+
+            document
+                .getElementById(
+                    "expenseDateFilter"
+                )
+                .value = "";
+
+
+            displayExpenses();
+
+        }
+    );
+
+
+// ==========================================
+// SUMMARY
+// ==========================================
+
+function updateSummary() {
+
+    const today =
+        new Date()
+            .toLocaleDateString(
+                "en-CA",
+                {
+                    timeZone:
+                        "Africa/Nairobi"
+                }
+            );
+
+
+    let todayTotal = 0;
+
+    let todayCount = 0;
+
+    let total = 0;
+
+
+    expenses.forEach(
+        function(expense) {
+
+
+            const amount =
+                Number(
+                    expense.amount
+                ) || 0;
+
+
+            total += amount;
+
+
+            if (
+                expense.expense_date ===
+                today
+            ) {
+
+                todayTotal +=
+                    amount;
+
+                todayCount++;
+
+            }
+
+        }
+    );
+
+
+    document
+        .getElementById(
+            "todayExpenses"
+        )
+        .textContent =
+        "KSh " +
+        todayTotal.toLocaleString();
+
+
+    document
+        .getElementById(
+            "todayTransactions"
+        )
+        .textContent =
+        todayCount.toLocaleString();
+
+
+    document
+        .getElementById(
+            "totalExpenses"
+        )
+        .textContent =
+        "KSh " +
+        total.toLocaleString();
+
+}
+
+
+// ==========================================
+// ACTIVE NAVIGATION
+// ==========================================
+
+const currentPage =
+    window.location.pathname
+        .split("/")
+        .pop();
+
+
+document
+    .querySelectorAll(
+        ".main-nav a"
+    )
+    .forEach(
+        function(link) {
+
+            if (
+                link.getAttribute(
+                    "href"
+                ) === currentPage
+            ) {
+
+                link.classList.add(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+
+// ==========================================
+// INITIAL LOAD
+// ==========================================
+
+window.authReady.then(
+    function(isAuthenticated) {
+
+        if (
+            isAuthenticated
+        ) {
+
+            loadExpenses();
+
+        }
+
+    }
+);
+
+</script>
+
+
+<!-- ==========================================
+   SERVICE WORKER
+========================================== -->
+
+<script>
+
+if (
+    "serviceWorker" in navigator
+) {
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            navigator.serviceWorker
+                .register(
+                    "service-worker.js"
+                )
+                .then(
+                    function() {
+
+                        console.log(
+                            "DukaFlow service worker registered."
+                        );
+
+                    }
+                )
+                .catch(
+                    function(error) {
+
+                        console.error(
+                            "Service worker registration failed:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

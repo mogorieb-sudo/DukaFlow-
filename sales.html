@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DukaFlow - Sales</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="notifications.js"></script>
+
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#008000">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+
+/* =========================================================
+   SALES PAGE
+========================================================= */
+
+.sale-summary {
+
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    margin-top: 20px;
+
+    border: 1px solid #ddd;
+
+}
+
+.sale-summary p {
+
+    margin: 8px 0;
+
+    font-weight: bold;
+
+}
+
+#productInfo {
+
+    margin-top: 10px;
+
+    font-weight: bold;
+
+}
+
+.success-message {
+
+    margin-top: 15px;
+
+    font-weight: bold;
+
+}
+
+.table-container {
+
+    overflow-x: auto;
+
+}
+
+.action-button {
+
+    padding: 7px 10px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+}
+
+.delete-sale-button {
+
+    background: #dc3545;
+
+    color: white;
+
+    padding: 7px 10px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+}
+
+.delete-sale-button:hover {
+
+    opacity: 0.9;
+
+}
+
+.damage-box {
+
+    margin-top: 15px;
+
+    padding: 12px;
+
+    background: #fff8e1;
+
+    border-radius: 8px;
+
+    border: 1px solid #ffe082;
+
+}
+
+
+/* =========================================================
+   SINGLE SEARCHABLE PRODUCT DROPDOWN
+========================================================= */
+
+.product-selector {
+
+    position: relative;
+
+    width: 100%;
+
+}
+
+.product-combobox {
+
+    position: relative;
+
+    width: 100%;
+
+}
+
+.product-search-box {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 13px 42px 13px 13px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    background: white;
+
+    cursor: text;
+
+}
+
+.product-search-box:focus {
+
+    outline: none;
+
+    border-color: #008000;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0,128,0,0.08);
+
+}
+
+.product-dropdown {
+
+    display: none;
+
+    position: absolute;
+
+    top: calc(100% + 5px);
+
+    left: 0;
+
+    right: 0;
+
+    max-height: 250px;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border: 1px solid #ddd;
+
+    border-radius: 9px;
+
+    box-shadow:
+        0 10px 25px
+        rgba(0,0,0,0.12);
+
+    z-index: 1000;
+
+}
+
+.product-dropdown.open {
+
+    display: block;
+
+}
+
+.product-option {
+
+    padding: 12px 14px;
+
+    cursor: pointer;
+
+    border-bottom: 1px solid #f0f0f0;
+
+    font-size: 14px;
+
+}
+
+.product-option:last-child {
+
+    border-bottom: none;
+
+}
+
+.product-option:hover {
+
+    background: #eaf8f0;
+
+}
+
+.product-option-name {
+
+    font-weight: 700;
+
+    color: #17211b;
+
+}
+
+.product-option-stock {
+
+    margin-top: 3px;
+
+    font-size: 12px;
+
+    color: #6b756f;
+
+}
+
+.product-no-results {
+
+    padding: 14px;
+
+    text-align: center;
+
+    color: #6b756f;
+
+    font-size: 14px;
+
+}
+
+.product-arrow {
+
+    position: absolute;
+
+    right: 14px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    pointer-events: none;
+
+    color: #087f3f;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+}
+
+
+/* =========================================================
+   SALES SUMMARY
+   2 x 2 COMPACT CARDS
+========================================================= */
+
+.sales-summary-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 15px;
+
+    max-width: 850px;
+
+}
+
+.sales-summary-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    min-height: 125px;
+
+    padding: 19px;
+
+    border-radius: 15px;
+
+    color: white;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 8px 24px
+        rgba(0,0,0,0.07);
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+
+}
+
+.sales-summary-card::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 90px;
+
+    height: 90px;
+
+    border-radius: 50%;
+
+    right: -25px;
+
+    bottom: -35px;
+
+    background:
+        rgba(255,255,255,0.13);
+
+}
+
+.sales-summary-card:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 12px 30px
+        rgba(0,0,0,0.11);
+
+}
+
+.sales-summary-card h3 {
+
+    position: relative;
+
+    z-index: 1;
+
+    margin: 0;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    opacity: 0.90;
+
+}
+
+.sales-summary-card p {
+
+    position: relative;
+
+    z-index: 1;
+
+    margin: 8px 0 0;
+
+    font-size: 24px;
+
+    font-weight: 800;
+
+    letter-spacing: -0.4px;
+
+}
+
+
+/* Today's Sales */
+
+.sales-summary-card.sales {
+
+    background:
+        linear-gradient(
+            135deg,
+            #087f3f,
+            #11a861
+        );
+
+}
+
+
+/* Today's Profit */
+
+.sales-summary-card.profit {
+
+    background:
+        linear-gradient(
+            135deg,
+            #1769aa,
+            #2f8edb
+        );
+
+}
+
+
+/* Today's Transactions */
+
+.sales-summary-card.transactions {
+
+    background:
+        linear-gradient(
+            135deg,
+            #6a4bc4,
+            #8b68e8
+        );
+
+}
+
+
+/* Total Sales */
+
+.sales-summary-card.total {
+
+    background:
+        linear-gradient(
+            135deg,
+            #00897b,
+            #20b2a3
+        );
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .sales-summary-grid {
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 10px;
+
+    }
+
+    .sales-summary-card {
+
+        min-height: 110px;
+
+        padding: 15px;
+
+        border-radius: 12px;
+
+    }
+
+    .sales-summary-card h3 {
+
+        font-size: 12px;
+
+    }
+
+    .sales-summary-card p {
+
+        font-size: 18px;
+
+        word-break: break-word;
+
+    }
+
+}
+
+@media (max-width: 380px) {
+
+    .sales-summary-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="auth-guard.js"></script>
+
+
+<nav class="main-nav">
+
+<a href="index.html">
+🏠 Dashboard
+</a>
+
+<a href="products.html">
+📦 Products
+</a>
+
+<a href="sales.html">
+💰 Sales
+</a>
+
+<a href="expenses.html">
+💸 Expenses
+</a>
+
+<a href="reports.html">
+📊 Reports
+</a>
+
+</nav>
+
+
+<div class="page-container">
+
+
+<h1>SALES</h1>
+
+<p>
+Record and manage business sales
+</p>
+
+
+<h2>
+RECORD SALE
+</h2>
+
+
+<div class="form-card">
+
+<form id="saleForm">
+
+
+<label>
+Product
+</label>
+
+
+<!-- =====================================================
+     SINGLE SEARCHABLE PRODUCT SELECTOR
+===================================================== -->
+
+<div class="product-selector">
+
+<div class="product-combobox">
+
+<input
+type="text"
+id="productSearch"
+class="product-search-box"
+placeholder="🔍 Search or select product..."
+autocomplete="off"
+>
+
+<span class="product-arrow">
+▼
+</span>
+
+
+<div
+id="productDropdown"
+class="product-dropdown"
+>
+</div>
+
+
+<input
+type="hidden"
+id="productSelect"
+required
+>
+
+</div>
+
+</div>
+
+
+<div id="productInfo">
+Select a product to view stock.
+</div>
+
+
+<label>
+Unit
+</label>
+
+<select
+id="saleUnit"
+required
+>
+
+<option value="Piece">
+Piece
+</option>
+
+<option value="Metre">
+Metre
+</option>
+
+</select>
+
+
+<label>
+Quantity
+</label>
+
+<input
+type="number"
+id="saleQuantity"
+min="0.01"
+step="0.01"
+placeholder="Enter quantity"
+required
+>
+
+
+<div class="damage-box">
+
+<label>
+Damage Quantity
+</label>
+
+<input
+type="number"
+id="damageQuantity"
+min="0"
+step="0.01"
+value="0"
+placeholder="Enter damaged quantity"
+>
+
+<small>
+Enter 0 if there are no damages.
+</small>
+
+</div>
+
+
+<label>
+Selling Price
+</label>
+
+<input
+type="number"
+id="saleSellingPrice"
+min="0"
+step="0.01"
+placeholder="Enter selling price"
+required
+>
+
+
+<label>
+Payment Method
+</label>
+
+<select
+id="paymentMethod"
+required
+>
+
+<option value="Cash">
+Cash
+</option>
+
+<option value="M-Pesa">
+M-Pesa
+</option>
+
+</select>
+
+
+<div class="sale-summary">
+
+<p>
+Buying Price:
+<span id="buyingPrice">
+KSh 0
+</span>
+</p>
+
+<p>
+Selling Price:
+<span id="sellingPrice">
+KSh 0
+</span>
+</p>
+
+<p>
+Total Sale:
+<span id="saleTotal">
+KSh 0
+</span>
+</p>
+
+<p>
+Profit:
+<span id="saleProfit">
+KSh 0
+</span>
+</p>
+
+</div>
+
+
+<button
+type="submit"
+id="saleButton"
+>
+
+RECORD SALE
+
+</button>
+
+
+<p
+id="saleMessage"
+class="success-message">
+</p>
+
+
+</form>
+
+</div>
+
+
+<h2>
+SALES SUMMARY
+</h2>
+
+
+<div class="sales-summary-grid">
+
+
+<div class="sales-summary-card sales">
+
+<h3>
+Today's Sales
+</h3>
+
+<p id="todaySales">
+KSh 0
+</p>
+
+</div>
+
+
+<div class="sales-summary-card profit">
+
+<h3>
+Today's Profit
+</h3>
+
+<p id="todayProfit">
+KSh 0
+</p>
+
+</div>
+
+
+<div class="sales-summary-card transactions">
+
+<h3>
+Today's Transactions
+</h3>
+
+<p id="todayTransactions">
+0
+</p>
+
+</div>
+
+
+<div class="sales-summary-card total">
+
+<h3>
+Total Sales
+</h3>
+
+<p id="totalSales">
+KSh 0
+</p>
+
+</div>
+
+
+</div>
+
+
+<h2>
+SALES HISTORY
+</h2>
+
+
+<div class="form-card">
+
+<label>
+Search sales
+</label>
+
+<input
+type="text"
+id="salesSearch"
+placeholder="🔍 Search by product name..."
+>
+
+</div>
+
+
+<div class="table-container">
+
+<table id="salesTable">
+
+<tr>
+
+<th>Date</th>
+
+<th>Product</th>
+
+<th>Unit</th>
+
+<th>Quantity</th>
+
+<th>Damage</th>
+
+<th>Selling Price</th>
+
+<th>Payment</th>
+
+<th>Total</th>
+
+<th>Profit</th>
+
+<th>Action</th>
+
+</tr>
+
+</table>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+let products = [];
+
+let sales = [];
+
+let searchText = "";
+
+
+/* =========================================================
+   CURRENT USER
+========================================================= */
+
+async function getCurrentUser() {
+
+    const {
+        data,
+        error
+    } =
+    await window.supabaseClient
+        .auth
+        .getUser();
+
+    if (error) {
+
+        console.error(
+            "User error:",
+            error
+        );
+
+        return null;
+
+    }
+
+    return data.user;
+
+}
+
+
+/* =========================================================
+   LOAD PRODUCTS
+========================================================= */
+
+async function loadProducts() {
+
+    const user =
+        await getCurrentUser();
+
+    if (!user) {
+
+        window.location.replace(
+            "login.html"
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await window.supabaseClient
+
+        .from("products")
+
+        .select("*")
+
+        .order(
+            "name",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Product loading error:",
+            error
+        );
+
+        if (
+            window.DukaNotify &&
+            DukaNotify.error
+        ) {
+
+            DukaNotify.error(
+                "Could not load products: " +
+                error.message
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    const allProducts =
+        data || [];
+
+
+    products =
+        allProducts.filter(
+            function(product) {
+
+                return product.archived !== true;
+
+            }
+        );
+
+
+    populateProductSelect();
+
+}
+
+
+/* =========================================================
+   PRODUCT DROPDOWN
+========================================================= */
+
+function populateProductSelect() {
+
+    renderProductDropdown("");
+
+}
+
+
+/* =========================================================
+   RENDER SEARCHABLE DROPDOWN
+========================================================= */
+
+function renderProductDropdown(search) {
+
+    const dropdown =
+        document.getElementById(
+            "productDropdown"
+        );
+
+
+    if (!dropdown) {
+
+        return;
+
+    }
+
+
+    dropdown.innerHTML = "";
+
+
+    const filteredProducts =
+        products.filter(
+            function(product) {
+
+                return String(
+                    product.name
+                )
+                .toLowerCase()
+                .includes(
+                    String(search)
+                    .trim()
+                    .toLowerCase()
+                );
+
+            }
+        );
+
+
+    if (
+        filteredProducts.length === 0
+    ) {
+
+        const noResults =
+            document.createElement(
+                "div"
+            );
+
+        noResults.className =
+            "product-no-results";
+
+        noResults.textContent =
+            "No matching product found";
+
+        dropdown.appendChild(
+            noResults
+        );
+
+        return;
+
+    }
+
+
+    filteredProducts.forEach(
+        function(product) {
+
+            const option =
+                document.createElement(
+                    "div"
+                );
+
+
+            option.className =
+                "product-option";
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "product-option-name";
+
+
+            name.textContent =
+                product.name;
+
+
+            const stock =
+                document.createElement(
+                    "div"
+                );
+
+
+            stock.className =
+                "product-option-stock";
+
+
+            stock.textContent =
+                "Stock: " +
+                Number(
+                    product.quantity
+                ) +
+                " " +
+                (
+                    product.unit === "Metre"
+                    ? "Metre"
+                    : "Piece"
+                );
+
+
+            option.appendChild(
+                name
+            );
+
+            option.appendChild(
+                stock
+            );
+
+
+            option.addEventListener(
+                "mousedown",
+                function(event) {
+
+                    event.preventDefault();
+
+                }
+            );
+
+
+            option.addEventListener(
+                "click",
+                function() {
+
+                    selectProduct(
+                        product
+                    );
+
+                }
+            );
+
+
+            dropdown.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SELECT PRODUCT
+========================================================= */
+
+function selectProduct(product) {
+
+    const searchBox =
+        document.getElementById(
+            "productSearch"
+        );
+
+
+    const productSelect =
+        document.getElementById(
+            "productSelect"
+        );
+
+
+    searchBox.value =
+        product.name;
+
+
+    productSelect.value =
+        product.id;
+
+
+    document
+        .getElementById(
+            "productDropdown"
+        )
+        .classList
+        .remove(
+            "open"
+        );
+
+
+    updateSaleCalculation();
+
+}
+
+
+/* =========================================================
+   PRODUCT SEARCH EVENTS
+========================================================= */
+
+const productSearch =
+    document.getElementById(
+        "productSearch"
+    );
+
+
+const productDropdown =
+    document.getElementById(
+        "productDropdown"
+    );
+
+
+productSearch.addEventListener(
+    "focus",
+    function() {
+
+        renderProductDropdown(
+            this.value
+        );
+
+        productDropdown.classList.add(
+            "open"
+        );
+
+    }
+);
+
+
+productSearch.addEventListener(
+    "input",
+    function() {
+
+        document.getElementById(
+            "productSelect"
+        ).value = "";
+
+
+        document.getElementById(
+            "productInfo"
+        ).textContent =
+            "Select a product to view stock.";
+
+
+        renderProductDropdown(
+            this.value
+        );
+
+
+        productDropdown.classList.add(
+            "open"
+        );
+
+
+        updateSaleCalculation();
+
+    }
+);
+
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const selector =
+            document.querySelector(
+                ".product-selector"
+            );
+
+
+        if (
+            selector &&
+            !selector.contains(
+                event.target
+            )
+        ) {
+
+            productDropdown.classList.remove(
+                "open"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CALCULATIONS
+========================================================= */
+
+document
+.getElementById(
+    "saleQuantity"
+)
+.addEventListener(
+    "input",
+    updateSaleCalculation
+);
+
+
+document
+.getElementById(
+    "saleSellingPrice"
+)
+.addEventListener(
+    "input",
+    updateSaleCalculation
+);
+
+
+function updateSaleCalculation() {
+
+    const productId =
+        document.getElementById(
+            "productSelect"
+        ).value;
+
+
+    const quantity =
+        Number(
+            document.getElementById(
+                "saleQuantity"
+            ).value
+        ) || 0;
+
+
+    const sellingPrice =
+        Number(
+            document.getElementById(
+                "saleSellingPrice"
+            ).value
+        ) || 0;
+
+
+    const product =
+        products.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) === String(
+                    productId
+                );
+
+            }
+        );
+
+
+    const info =
+        document.getElementById(
+            "productInfo"
+        );
+
+
+    if (!product) {
+
+        info.textContent =
+            "Select a product to view stock.";
+
+        document.getElementById(
+            "buyingPrice"
+        ).textContent =
+            "KSh 0";
+
+        document.getElementById(
+            "sellingPrice"
+        ).textContent =
+            "KSh 0";
+
+        document.getElementById(
+            "saleTotal"
+        ).textContent =
+            "KSh 0";
+
+        document.getElementById(
+            "saleProfit"
+        ).textContent =
+            "KSh 0";
+
+        return;
+
+    }
+
+
+    const stock =
+        Number(
+            product.quantity
+        ) || 0;
+
+
+    const buyingPrice =
+        Number(
+            product.buying_price
+        ) || 0;
+
+
+    info.textContent =
+        "Available stock: " +
+        stock;
+
+
+    const total =
+        sellingPrice *
+        quantity;
+
+
+    const profit =
+        (
+            sellingPrice -
+            buyingPrice
+        ) *
+        quantity;
+
+
+    document.getElementById(
+        "buyingPrice"
+    ).textContent =
+        "KSh " +
+        buyingPrice.toLocaleString();
+
+
+    document.getElementById(
+        "sellingPrice"
+    ).textContent =
+        "KSh " +
+        sellingPrice.toLocaleString();
+
+
+    document.getElementById(
+        "saleTotal"
+    ).textContent =
+        "KSh " +
+        total.toLocaleString();
+
+
+    document.getElementById(
+        "saleProfit"
+    ).textContent =
+        "KSh " +
+        profit.toLocaleString();
+
+}
+
+
+/* =========================================================
+   RECORD SALE
+========================================================= */
+
+document
+.getElementById(
+    "saleForm"
+)
+.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const button =
+            document.getElementById(
+                "saleButton"
+            );
+
+
+        const message =
+            document.getElementById(
+                "saleMessage"
+            );
+
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "RECORDING...";
+
+        message.textContent =
+            "";
+
+
+        try {
+
+            const user =
+                await getCurrentUser();
+
+
+            if (!user) {
+
+                throw new Error(
+                    "Your session has expired. Please login again."
+                );
+
+            }
+
+
+            /* ==================================
+               GET USER BUSINESS
+            ================================== */
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+            await window.supabaseClient
+
+                .from("profiles")
+
+                .select("business_id")
+
+                .eq(
+                    "user_id",
+                    user.id
+                )
+
+                .single();
+
+
+            if (profileError) {
+
+                throw new Error(
+                    "Could not determine your business: " +
+                    profileError.message
+                );
+
+            }
+
+
+            if (!profile || !profile.business_id) {
+
+                throw new Error(
+                    "Your account is not linked to a business."
+                );
+
+            }
+
+
+            const businessId =
+                profile.business_id;
+
+
+            const productId =
+                document.getElementById(
+                    "productSelect"
+                ).value;
+
+
+            const unit =
+                document.getElementById(
+                    "saleUnit"
+                ).value;
+
+
+            const quantity =
+                Number(
+                    document.getElementById(
+                        "saleQuantity"
+                    ).value
+                );
+
+
+            const damageQuantity =
+                Number(
+                    document.getElementById(
+                        "damageQuantity"
+                    ).value
+                ) || 0;
+
+
+            const sellingPrice =
+                Number(
+                    document.getElementById(
+                        "saleSellingPrice"
+                    ).value
+                );
+
+
+            const paymentMethod =
+                document.getElementById(
+                    "paymentMethod"
+                ).value;
+
+
+            if (!productId) {
+
+                throw new Error(
+                    "Please select a product."
+                );
+
+            }
+
+
+            if (
+                !quantity ||
+                quantity <= 0
+            ) {
+
+                throw new Error(
+                    "Please enter a valid quantity."
+                );
+
+            }
+
+
+            if (
+                damageQuantity < 0
+            ) {
+
+                throw new Error(
+                    "Damage quantity cannot be negative."
+                );
+
+            }
+
+
+            if (
+                sellingPrice < 0 ||
+                Number.isNaN(sellingPrice)
+            ) {
+
+                throw new Error(
+                    "Please enter a valid selling price."
+                );
+
+            }
+
+
+            const product =
+                products.find(
+                    function(item) {
+
+                        return String(
+                            item.id
+                        ) === String(
+                            productId
+                        );
+
+                    }
+                );
+
+
+            if (!product) {
+
+                throw new Error(
+                    "Product could not be found."
+                );
+
+            }
+
+
+            const currentStock =
+                Number(
+                    product.quantity
+                ) || 0;
+
+
+            const totalStockUsed =
+                quantity +
+                damageQuantity;
+
+
+            if (
+                totalStockUsed >
+                currentStock
+            ) {
+
+                throw new Error(
+                    "Not enough stock. Available: " +
+                    currentStock
+                );
+
+            }
+
+
+            const buyingPrice =
+                Number(
+                    product.buying_price
+                ) || 0;
+
+
+            const total =
+                sellingPrice *
+                quantity;
+
+
+            const profit =
+                (
+                    sellingPrice -
+                    buyingPrice
+                ) *
+                quantity;
+
+
+            /* ==================================
+               SAVE SALE
+            ================================== */
+
+            const {
+                error: saleError
+            } =
+            await window.supabaseClient
+
+                .from("sales")
+
+                .insert({
+
+                    user_id:
+                        user.id,
+
+                    business_id:
+                        businessId,
+
+                    product_id:
+                        product.id,
+
+                    product_name:
+                        product.name,
+
+                    quantity:
+                        quantity,
+
+                    unit:
+                        unit,
+
+                    damage_quantity:
+                        damageQuantity,
+
+                    buying_price:
+                        buyingPrice,
+
+                    selling_price:
+                        sellingPrice,
+
+                    total:
+                        total,
+
+                    profit:
+                        profit,
+
+                    payment_method:
+                        paymentMethod
+
+                });
+
+
+            if (saleError) {
+
+                throw saleError;
+
+            }
+
+
+            /* ==================================
+               REDUCE STOCK
+            ================================== */
+
+            const newQuantity =
+                currentStock -
+                totalStockUsed;
+
+
+            const {
+                error: stockError
+            } =
+            await window.supabaseClient
+
+                .from("products")
+
+                .update({
+
+                    quantity:
+                        newQuantity
+
+                })
+
+                .eq(
+                    "id",
+                    product.id
+                );
+
+
+            if (stockError) {
+
+                throw new Error(
+                    "Sale was recorded, but stock could not be updated: " +
+                    stockError.message
+                );
+
+            }
+
+
+            /* ==================================
+               SUCCESS
+            ================================== */
+
+            message.textContent =
+                "✅ Sale recorded successfully!";
+
+
+            document
+            .getElementById(
+                "saleForm"
+            )
+            .reset();
+
+
+            document.getElementById(
+                "productSearch"
+            ).value = "";
+
+
+            document.getElementById(
+                "productSelect"
+            ).value = "";
+
+
+            document.getElementById(
+                "productDropdown"
+            ).classList.remove(
+                "open"
+            );
+
+
+            document.getElementById(
+                "damageQuantity"
+            ).value = 0;
+
+
+            document.getElementById(
+                "productInfo"
+            ).textContent =
+                "Select a product to view stock.";
+
+
+            document.getElementById(
+                "buyingPrice"
+            ).textContent =
+                "KSh 0";
+
+
+            document.getElementById(
+                "sellingPrice"
+            ).textContent =
+                "KSh 0";
+
+
+            document.getElementById(
+                "saleTotal"
+            ).textContent =
+                "KSh 0";
+
+
+            document.getElementById(
+                "saleProfit"
+            ).textContent =
+                "KSh 0";
+
+
+            await loadProducts();
+
+            await loadSales();
+
+        }
+
+
+        catch(error) {
+
+            console.error(
+                "Sale error:",
+                error
+            );
+
+
+            message.textContent =
+                "❌ " +
+                error.message;
+
+        }
+
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "RECORD SALE";
+
+    }
+);
+
+
+/* =========================================================
+   LOAD SALES
+========================================================= */
+
+async function loadSales() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await window.supabaseClient
+
+        .from("sales")
+
+        .select("*")
+
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Sales loading error:",
+            error
+        );
+
+
+        if (
+            window.DukaNotify &&
+            DukaNotify.error
+        ) {
+
+            DukaNotify.error(
+                "Could not load sales: " +
+                error.message
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    sales =
+        data || [];
+
+
+    displaySales();
+
+    updateSalesSummary();
+
+}
+
+
+/* =========================================================
+   DISPLAY SALES
+========================================================= */
+
+function displaySales() {
+
+    const table =
+        document.getElementById(
+            "salesTable"
+        );
+
+
+    while (
+        table.rows.length > 1
+    ) {
+
+        table.deleteRow(1);
+
+    }
+
+
+    const filtered =
+        sales.filter(
+            function(sale) {
+
+                return String(
+                    sale.product_name
+                )
+                .toLowerCase()
+                .includes(
+                    searchText
+                    .toLowerCase()
+                );
+
+            }
+        );
+
+
+    filtered.forEach(
+        function(sale) {
+
+            const row =
+                table.insertRow();
+
+
+            const date =
+                new Date(
+                    sale.created_at
+                );
+
+
+            row.insertCell(0)
+                .textContent =
+                date.toLocaleString();
+
+
+            row.insertCell(1)
+                .textContent =
+                sale.product_name;
+
+
+            row.insertCell(2)
+                .textContent =
+                sale.unit === "Metre"
+                ? "Metre"
+                : "Piece";
+
+
+            row.insertCell(3)
+                .textContent =
+                Number(
+                    sale.quantity
+                );
+
+
+            row.insertCell(4)
+                .textContent =
+                Number(
+                    sale.damage_quantity
+                ) || 0;
+
+
+            row.insertCell(5)
+                .textContent =
+                "KSh " +
+                Number(
+                    sale.selling_price
+                )
+                .toLocaleString();
+
+
+            row.insertCell(6)
+                .textContent =
+                sale.payment_method === "M-Pesa"
+                ? "M-Pesa"
+                : "Cash";
+
+
+            row.insertCell(7)
+                .textContent =
+                "KSh " +
+                Number(
+                    sale.total
+                )
+                .toLocaleString();
+
+
+            row.insertCell(8)
+                .textContent =
+                "KSh " +
+                Number(
+                    sale.profit
+                )
+                .toLocaleString();
+
+
+            const actionCell =
+                row.insertCell(9);
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.textContent =
+                "🗑️ Delete";
+
+
+            deleteButton.className =
+                "delete-sale-button";
+
+
+            deleteButton.onclick =
+                function() {
+
+                    deleteSale(
+                        sale.id
+                    );
+
+                };
+
+
+            actionCell.appendChild(
+                deleteButton
+            );
+
+        }
+    );
+
+
+    if (
+        filtered.length === 0
+    ) {
+
+        const row =
+            table.insertRow();
+
+
+        const cell =
+            row.insertCell(0);
+
+
+        cell.colSpan =
+            10;
+
+
+        cell.textContent =
+            "No sales found.";
+
+    }
+
+}
+
+
+/* =========================================================
+   DELETE SALE
+========================================================= */
+
+async function deleteSale(id) {
+
+    const sale =
+        sales.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if (!sale) {
+
+        DukaNotify.error(
+            "Sale not found."
+        );
+
+        return;
+
+    }
+
+
+    const confirmed =
+        await DukaNotify.confirm({
+
+            title:
+                "Delete Sale?",
+
+            message:
+                "Delete the sale of " +
+                sale.product_name +
+                "? The sale record will be permanently removed.",
+
+            icon:
+                "🗑️",
+
+            confirmText:
+                "Delete",
+
+            cancelText:
+                "Cancel",
+
+            type:
+                "delete"
+
+        });
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        DukaNotify.error(
+            "Please login again."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await window.supabaseClient
+
+        .from("sales")
+
+        .delete()
+
+        .eq(
+            "id",
+            id
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Delete sale error:",
+            error
+        );
+
+
+        DukaNotify.error(
+            "Sale could not be deleted: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    DukaNotify.success(
+        "Sale permanently deleted."
+    );
+
+
+    await loadSales();
+
+}
+
+
+/* =========================================================
+   SALES SUMMARY
+========================================================= */
+
+function updateSalesSummary() {
+
+    const today =
+        new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+    let todaySales = 0;
+
+    let todayProfit = 0;
+
+    let todayTransactions = 0;
+
+    let totalSales = 0;
+
+
+    sales.forEach(
+        function(sale) {
+
+            const amount =
+                Number(
+                    sale.total
+                ) || 0;
+
+
+            const profit =
+                Number(
+                    sale.profit
+                ) || 0;
+
+
+            totalSales +=
+                amount;
+
+
+            const saleDate =
+                new Date(
+                    sale.created_at
+                )
+                .toISOString()
+                .split("T")[0];
+
+
+            if (
+                saleDate ===
+                today
+            ) {
+
+                todaySales +=
+                    amount;
+
+                todayProfit +=
+                    profit;
+
+                todayTransactions++;
+
+            }
+
+        }
+    );
+
+
+    document.getElementById(
+        "todaySales"
+    ).textContent =
+        "KSh " +
+        todaySales.toLocaleString();
+
+
+    document.getElementById(
+        "todayProfit"
+    ).textContent =
+        "KSh " +
+        todayProfit.toLocaleString();
+
+
+    document.getElementById(
+        "todayTransactions"
+    ).textContent =
+        todayTransactions.toLocaleString();
+
+
+    document.getElementById(
+        "totalSales"
+    ).textContent =
+        "KSh " +
+        totalSales.toLocaleString();
+
+}
+
+
+/* =========================================================
+   SALES SEARCH
+========================================================= */
+
+document
+.getElementById(
+    "salesSearch"
+)
+.addEventListener(
+    "input",
+    function() {
+
+        searchText =
+            this.value.trim();
+
+        displaySales();
+
+    }
+);
+
+
+/* =========================================================
+   START PAGE
+========================================================= */
+
+window.authReady.then(
+    async function(isAuthenticated) {
+
+        if (!isAuthenticated) {
+
+            return;
+
+        }
+
+
+        await loadProducts();
+
+        await loadSales();
+
+    }
+);
+
+
+/* =========================================================
+   SERVICE WORKER
+========================================================= */
+
+if (
+    "serviceWorker" in navigator
+) {
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            navigator.serviceWorker.register(
+                "service-worker.js"
+            )
+            .then(
+                function() {
+
+                    console.log(
+                        "DukaFlow service worker registered."
+                    );
+
+                }
+            )
+            .catch(
+                function(error) {
+
+                    console.error(
+                        "Service worker registration failed:",
+                        error
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

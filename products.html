@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DukaFlow - Products</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#008000">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<script src="notifications.js"></script>
+
+
+<style>
+
+/* =========================================================
+   PRODUCT PAGE
+========================================================= */
+
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.action-buttons button {
+    padding: 7px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.archive-button {
+    background: #f0ad4e;
+    color: white;
+}
+
+.restore-button {
+    background: #198754;
+    color: white;
+}
+
+.edit-button {
+    background: #0d6efd;
+    color: white;
+}
+
+.archived-section {
+    margin-top: 35px;
+}
+
+.archived-section h2 {
+    margin-bottom: 15px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+
+/* =========================================================
+   STOCK STATUS
+========================================================= */
+
+.stock-in {
+    color: #198754;
+    font-weight: bold;
+}
+
+.stock-low {
+    color: #f0ad4e;
+    font-weight: bold;
+}
+
+.stock-out {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   ADD PRODUCT BUTTON
+========================================================= */
+
+#productButton {
+    display: block !important;
+
+    width: 100% !important;
+
+    min-height: 50px !important;
+
+    margin-top: 20px !important;
+
+    padding: 13px 20px !important;
+
+    background-color: #0b7a3b !important;
+
+    color: #ffffff !important;
+
+    border: none !important;
+
+    border-radius: 8px !important;
+
+    font-family: Arial, sans-serif !important;
+
+    font-size: 16px !important;
+
+    font-weight: bold !important;
+
+    line-height: 1.2 !important;
+
+    text-align: center !important;
+
+    visibility: visible !important;
+
+    opacity: 1 !important;
+
+    cursor: pointer !important;
+}
+
+#productButton:hover {
+    background-color: #096b34 !important;
+}
+
+#productButton:disabled {
+    opacity: 0.65 !important;
+    cursor: not-allowed !important;
+}
+
+
+/* =========================================================
+   UNIT SELECT
+========================================================= */
+
+#unit {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 5px;
+
+    font-size: 15px;
+
+    background: white;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons button {
+        width: 100%;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- =========================================================
+     AUTHENTICATION
+========================================================= -->
+
+<script src="auth-guard.js"></script>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================= -->
+
+<nav class="main-nav">
+
+<a href="index.html">
+🏠 Dashboard
+</a>
+
+<a href="products.html">
+📦 Products
+</a>
+
+<a href="sales.html">
+💰 Sales
+</a>
+
+<a href="expenses.html">
+💸 Expenses
+</a>
+
+<a href="reports.html">
+📊 Reports
+</a>
+
+</nav>
+
+
+<div class="page-container">
+
+
+<h1>PRODUCTS</h1>
+
+<p>
+Manage your business products
+</p>
+
+
+<!-- =========================================================
+     ADD / EDIT PRODUCT
+========================================================= -->
+
+<h2 id="formTitle">
+ADD PRODUCT
+</h2>
+
+
+<div class="form-card">
+
+<form id="productForm">
+
+
+<!-- PRODUCT NAME -->
+
+<label>
+Product Name
+</label>
+
+<input
+    type="text"
+    id="productName"
+    placeholder="Enter product name"
+    required
+>
+
+
+<!-- BUYING PRICE -->
+
+<label>
+Buying Price
+</label>
+
+<input
+    type="number"
+    id="buyingPrice"
+    placeholder="Enter buying price"
+    min="0"
+    step="0.01"
+    required
+>
+
+
+<!-- UNIT -->
+
+<label>
+Unit
+</label>
+
+<select
+    id="unit"
+    required
+>
+
+<option value="">
+Select unit
+</option>
+
+<option value="piece">
+Piece
+</option>
+
+<option value="metre">
+Metre
+</option>
+
+</select>
+
+
+<!-- QUANTITY -->
+
+<label>
+Quantity
+</label>
+
+<input
+    type="number"
+    id="quantity"
+    placeholder="Enter quantity"
+    min="0"
+    step="0.01"
+    required
+>
+
+
+<!-- LOW STOCK -->
+
+<label>
+Low Stock Level
+</label>
+
+<input
+    type="number"
+    id="lowStock"
+    value="5"
+    min="0"
+    step="0.01"
+    required
+>
+
+
+<!-- ADD PRODUCT -->
+
+<button
+    type="submit"
+    id="productButton"
+>
+    ADD PRODUCT
+</button>
+
+
+</form>
+
+</div>
+
+
+<!-- =========================================================
+     ACTIVE PRODUCTS
+========================================================= -->
+
+<h2>
+MY PRODUCTS
+</h2>
+
+
+<div class="form-card">
+
+<label>
+Search products
+</label>
+
+<input
+    type="text"
+    id="productSearch"
+    placeholder="🔍 Search by product name..."
+>
+
+</div>
+
+
+<div class="table-container">
+
+<table id="productsTable">
+
+<tr>
+
+<th>
+Product
+</th>
+
+<th>
+Buying Price
+</th>
+
+<th>
+Unit
+</th>
+
+<th>
+Quantity
+</th>
+
+<th>
+Stock Status
+</th>
+
+<th>
+Action
+</th>
+
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- =========================================================
+     ARCHIVED PRODUCTS
+========================================================= -->
+
+<div class="archived-section">
+
+<h2>
+🗄️ ARCHIVED PRODUCTS
+</h2>
+
+
+<div class="table-container">
+
+<table id="archivedTable">
+
+<tr>
+
+<th>
+Product
+</th>
+
+<th>
+Buying Price
+</th>
+
+<th>
+Unit
+</th>
+
+<th>
+Quantity
+</th>
+
+<th>
+Action
+</th>
+
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+// =========================================================
+// VARIABLES
+// =========================================================
+
+let products = [];
+
+let archivedProducts = [];
+
+let editingId = null;
+
+let searchText = "";
+
+
+// =========================================================
+// GET CURRENT USER
+// =========================================================
+
+async function getCurrentUser() {
+
+    const {
+        data,
+        error
+    } =
+    await window.supabaseClient
+        .auth
+        .getUser();
+
+
+    if (error) {
+
+        console.error(
+            "User error:",
+            error
+        );
+
+        return null;
+
+    }
+
+
+    return data.user;
+
+}
+
+
+// =========================================================
+// LOAD PRODUCTS
+// =========================================================
+
+async function loadProducts() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        window.location.replace(
+            "login.html"
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await window.supabaseClient
+
+        .from("products")
+
+        .select("*")
+
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Load products error:",
+            error
+        );
+
+
+        DukaNotify.error(
+            "Could not load products: " +
+            error.message
+        );
+
+
+        return;
+
+    }
+
+
+    const allProducts =
+        data || [];
+
+
+    /*
+       ACTIVE PRODUCTS
+
+       NULL archived values are treated
+       as active.
+
+       Only archived === true is hidden.
+    */
+
+    products =
+        allProducts.filter(
+            function(product) {
+
+                return product.archived !== true;
+
+            }
+        );
+
+
+    /*
+       ARCHIVED PRODUCTS
+    */
+
+    archivedProducts =
+        allProducts.filter(
+            function(product) {
+
+                return product.archived === true;
+
+            }
+        );
+
+
+    displayProducts();
+
+    displayArchivedProducts();
+
+}
+
+
+// =========================================================
+// DISPLAY ACTIVE PRODUCTS
+// =========================================================
+
+function displayProducts() {
+
+    const table =
+        document.getElementById(
+            "productsTable"
+        );
+
+
+    /*
+       Remove old rows but keep header.
+    */
+
+    while (
+        table.rows.length > 1
+    ) {
+
+        table.deleteRow(1);
+
+    }
+
+
+    /*
+       SEARCH
+    */
+
+    const filtered =
+        products.filter(
+            function(product) {
+
+                return String(
+                    product.name
+                )
+                .toLowerCase()
+                .includes(
+                    searchText.toLowerCase()
+                );
+
+            }
+        );
+
+
+    /*
+       DISPLAY PRODUCTS
+    */
+
+    filtered.forEach(
+        function(product) {
+
+
+            const row =
+                table.insertRow();
+
+
+            // PRODUCT NAME
+
+            row.insertCell(0)
+                .textContent =
+                product.name;
+
+
+            // BUYING PRICE
+
+            row.insertCell(1)
+                .textContent =
+                "KSh " +
+                Number(
+                    product.buying_price
+                )
+                .toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    }
+                );
+
+
+            // UNIT
+
+            const unitCell =
+                row.insertCell(2);
+
+
+            const unit =
+                String(
+                    product.unit || "piece"
+                )
+                .toLowerCase();
+
+
+            if (
+                unit === "metre"
+            ) {
+
+                unitCell.textContent =
+                    "Metre";
+
+            }
+
+            else {
+
+                unitCell.textContent =
+                    "Piece";
+
+            }
+
+
+            // QUANTITY
+
+            const quantity =
+                Number(
+                    product.quantity
+                ) || 0;
+
+
+            const quantityCell =
+                row.insertCell(3);
+
+
+            quantityCell.textContent =
+                quantity.toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    }
+                );
+
+
+            // STOCK STATUS
+
+            const lowStock =
+                Number(
+                    product.low_stock
+                ) || 5;
+
+
+            const statusCell =
+                row.insertCell(4);
+
+
+            if (
+                quantity <= 0
+            ) {
+
+                statusCell.textContent =
+                    "❌ OUT OF STOCK";
+
+                statusCell.className =
+                    "stock-out";
+
+            }
+
+            else if (
+                quantity <= lowStock
+            ) {
+
+                statusCell.textContent =
+                    "⚠️ LOW STOCK";
+
+                statusCell.className =
+                    "stock-low";
+
+            }
+
+            else {
+
+                statusCell.textContent =
+                    "✓ IN STOCK";
+
+                statusCell.className =
+                    "stock-in";
+
+            }
+
+
+            // ACTIONS
+
+            const actionCell =
+                row.insertCell(5);
+
+
+            const buttons =
+                document.createElement(
+                    "div"
+                );
+
+
+            buttons.className =
+                "action-buttons";
+
+
+            // EDIT BUTTON
+
+            const editButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            editButton.textContent =
+                "✏️ Edit";
+
+
+            editButton.className =
+                "edit-button";
+
+
+            editButton.onclick =
+                function() {
+
+                    editProduct(
+                        product.id
+                    );
+
+                };
+
+
+            // REMOVE BUTTON
+
+            const removeButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            removeButton.textContent =
+                "📦 Remove";
+
+
+            removeButton.className =
+                "archive-button";
+
+
+            removeButton.onclick =
+                function() {
+
+                    removeProduct(
+                        product.id
+                    );
+
+                };
+
+
+            buttons.appendChild(
+                editButton
+            );
+
+
+            buttons.appendChild(
+                removeButton
+            );
+
+
+            actionCell.appendChild(
+                buttons
+            );
+
+        }
+    );
+
+
+    /*
+       NO PRODUCTS
+    */
+
+    if (
+        filtered.length === 0
+    ) {
+
+        const row =
+            table.insertRow();
+
+
+        const cell =
+            row.insertCell(0);
+
+
+        cell.colSpan =
+            6;
+
+
+        cell.textContent =
+            "No products found.";
+
+    }
+
+}
+
+
+// =========================================================
+// DISPLAY ARCHIVED PRODUCTS
+// =========================================================
+
+function displayArchivedProducts() {
+
+    const table =
+        document.getElementById(
+            "archivedTable"
+        );
+
+
+    /*
+       Remove old rows but keep header.
+    */
+
+    while (
+        table.rows.length > 1
+    ) {
+
+        table.deleteRow(1);
+
+    }
+
+
+    archivedProducts.forEach(
+        function(product) {
+
+
+            const row =
+                table.insertRow();
+
+
+            // NAME
+
+            row.insertCell(0)
+                .textContent =
+                product.name;
+
+
+            // BUYING PRICE
+
+            row.insertCell(1)
+                .textContent =
+                "KSh " +
+                Number(
+                    product.buying_price
+                )
+                .toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    }
+                );
+
+
+            // UNIT
+
+            const unit =
+                String(
+                    product.unit || "piece"
+                )
+                .toLowerCase();
+
+
+            row.insertCell(2)
+                .textContent =
+                unit === "metre"
+                ? "Metre"
+                : "Piece";
+
+
+            // QUANTITY
+
+            row.insertCell(3)
+                .textContent =
+                Number(
+                    product.quantity
+                )
+                .toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    }
+                );
+
+
+            // ACTION
+
+            const actionCell =
+                row.insertCell(4);
+
+
+            const restoreButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            restoreButton.textContent =
+                "♻️ Restore";
+
+
+            restoreButton.className =
+                "restore-button";
+
+
+            restoreButton.onclick =
+                function() {
+
+                    restoreProduct(
+                        product.id
+                    );
+
+                };
+
+
+            actionCell.appendChild(
+                restoreButton
+            );
+
+        }
+    );
+
+
+    /*
+       NO ARCHIVED PRODUCTS
+    */
+
+    if (
+        archivedProducts.length === 0
+    ) {
+
+        const row =
+            table.insertRow();
+
+
+        const cell =
+            row.insertCell(0);
+
+
+        cell.colSpan =
+            5;
+
+
+        cell.textContent =
+            "No archived products.";
+
+    }
+
+}
+
+
+// =========================================================
+// ADD / UPDATE PRODUCT
+// =========================================================
+
+document
+.getElementById(
+    "productForm"
+)
+.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const button =
+            document.getElementById(
+                "productButton"
+            );
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            editingId
+            ? "UPDATING..."
+            : "ADDING...";
+
+
+        try {
+
+
+            // =========================================
+            // GET FORM VALUES
+            // =========================================
+
+            const name =
+                document
+                .getElementById(
+                    "productName"
+                )
+                .value
+                .trim();
+
+
+            const buyingPrice =
+                Number(
+                    document
+                    .getElementById(
+                        "buyingPrice"
+                    )
+                    .value
+                );
+
+
+            const unit =
+                document
+                .getElementById(
+                    "unit"
+                )
+                .value;
+
+
+            const quantity =
+                Number(
+                    document
+                    .getElementById(
+                        "quantity"
+                    )
+                    .value
+                );
+
+
+            const lowStock =
+                Number(
+                    document
+                    .getElementById(
+                        "lowStock"
+                    )
+                    .value
+                );
+
+
+            // =========================================
+            // VALIDATION
+            // =========================================
+
+            if (!name) {
+
+                throw new Error(
+                    "Please enter a product name."
+                );
+
+            }
+
+
+            if (
+                !Number.isFinite(
+                    buyingPrice
+                ) ||
+                buyingPrice < 0
+            ) {
+
+                throw new Error(
+                    "Please enter a valid buying price."
+                );
+
+            }
+
+
+            if (
+                unit !== "piece" &&
+                unit !== "metre"
+            ) {
+
+                throw new Error(
+                    "Please select Piece or Metre."
+                );
+
+            }
+
+
+            if (
+                !Number.isFinite(
+                    quantity
+                ) ||
+                quantity < 0
+            ) {
+
+                throw new Error(
+                    "Please enter a valid quantity."
+                );
+
+            }
+
+
+            if (
+                !Number.isFinite(
+                    lowStock
+                ) ||
+                lowStock < 0
+            ) {
+
+                throw new Error(
+                    "Please enter a valid low stock level."
+                );
+
+            }
+
+
+            // =========================================
+            // CURRENT USER
+            // =========================================
+
+            const user =
+                await getCurrentUser();
+
+
+            if (!user) {
+
+                throw new Error(
+                    "Your session has expired. Please login again."
+                );
+
+            }
+
+
+            // =========================================
+            // UPDATE EXISTING PRODUCT
+            // =========================================
+
+            if (editingId) {
+
+                const {
+                    error
+                } =
+                await window.supabaseClient
+
+                    .from("products")
+
+                    .update({
+
+                        name:
+                            name,
+
+                        buying_price:
+                            buyingPrice,
+
+                        unit:
+                            unit,
+
+                        quantity:
+                            quantity,
+
+                        low_stock:
+                            lowStock
+
+                    })
+
+                    .eq(
+                        "id",
+                        editingId
+                    );
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                DukaNotify.success(
+                    "Product updated successfully."
+                );
+
+            }
+
+
+            // =========================================
+            // ADD NEW PRODUCT
+            // =========================================
+
+            else {
+
+                const {
+                    data: profile,
+                    error: profileError
+                } =
+                await window.supabaseClient
+
+                    .from("profiles")
+
+                    .select(
+                        "business_id"
+                    )
+
+                    .eq(
+                        "user_id",
+                        user.id
+                    )
+
+                    .single();
+
+
+                if (profileError) {
+
+                    throw new Error(
+                        "Could not determine your business: " +
+                        profileError.message
+                    );
+
+                }
+
+
+                if (
+                    !profile ||
+                    !profile.business_id
+                ) {
+
+                    throw new Error(
+                        "Your account is not linked to a business."
+                    );
+
+                }
+
+
+                const businessId =
+                    profile.business_id;
+
+
+                const {
+                    error
+                } =
+                await window.supabaseClient
+
+                    .from("products")
+
+                    .insert({
+
+                        name:
+                            name,
+
+                        buying_price:
+                            buyingPrice,
+
+                        unit:
+                            unit,
+
+                        quantity:
+                            quantity,
+
+                        low_stock:
+                            lowStock,
+
+                        user_id:
+                            user.id,
+
+                        business_id:
+                            businessId,
+
+                        archived:
+                            false
+
+                    });
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+            }
+
+
+            // =========================================
+            // RESET FORM
+            // =========================================
+
+            editingId =
+                null;
+
+
+            document
+            .getElementById(
+                "productForm"
+            )
+            .reset();
+
+
+            document
+            .getElementById(
+                "lowStock"
+            )
+            .value =
+            5;
+
+
+            document
+            .getElementById(
+                "formTitle"
+            )
+            .textContent =
+            "ADD PRODUCT";
+
+
+            button.textContent =
+            "ADD PRODUCT";
+
+
+            await loadProducts();
+
+        }
+
+
+        catch(error) {
+
+
+            console.error(
+                "Product save error:",
+                error
+            );
+
+
+            DukaNotify.error(
+                "Product could not be saved: " +
+                error.message
+            );
+
+        }
+
+
+        finally {
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                editingId
+                ? "UPDATE PRODUCT"
+                : "ADD PRODUCT";
+
+        }
+
+    }
+);
+
+
+// =========================================================
+// EDIT PRODUCT
+// =========================================================
+
+function editProduct(id) {
+
+    const product =
+        products.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if (!product) {
+
+        DukaNotify.error(
+            "Product not found."
+        );
+
+        return;
+
+    }
+
+
+    editingId =
+        id;
+
+
+    // PRODUCT NAME
+
+    document
+    .getElementById(
+        "productName"
+    )
+    .value =
+    product.name;
+
+
+    // BUYING PRICE
+
+    document
+    .getElementById(
+        "buyingPrice"
+    )
+    .value =
+    product.buying_price;
+
+
+    // UNIT
+
+    document
+    .getElementById(
+        "unit"
+    )
+    .value =
+    String(
+        product.unit || "piece"
+    )
+    .toLowerCase();
+
+
+    // QUANTITY
+
+    document
+    .getElementById(
+        "quantity"
+    )
+    .value =
+    product.quantity;
+
+
+    // LOW STOCK
+
+    document
+    .getElementById(
+        "lowStock"
+    )
+    .value =
+    product.low_stock || 5;
+
+
+    // CHANGE TITLE
+
+    document
+    .getElementById(
+        "formTitle"
+    )
+    .textContent =
+    "EDIT PRODUCT";
+
+
+    // CHANGE BUTTON
+
+    document
+    .getElementById(
+        "productButton"
+    )
+    .textContent =
+    "UPDATE PRODUCT";
+
+
+    // SCROLL TO FORM
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
+
+    });
+
+}
+
+
+// =========================================================
+// REMOVE PRODUCT
+// =========================================================
+
+async function removeProduct(id) {
+
+    const product =
+        products.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if (!product) {
+
+        DukaNotify.error(
+            "Product not found."
+        );
+
+        return;
+
+    }
+
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        DukaNotify.error(
+            "Please login again."
+        );
+
+        return;
+
+    }
+
+
+    // =========================================
+    // CHECK SALES HISTORY
+    // =========================================
+
+    const {
+        data: sales,
+        error: salesError
+    } =
+    await window.supabaseClient
+
+        .from("sales")
+
+        .select("id")
+
+        .eq(
+            "product_id",
+            id
+        )
+
+        .limit(1);
+
+
+    if (salesError) {
+
+        DukaNotify.error(
+            "Could not check sales history: " +
+            salesError.message
+        );
+
+        return;
+
+    }
+
+
+    // =========================================
+    // HAS SALES HISTORY
+    // =========================================
+
+    if (
+        sales &&
+        sales.length > 0
+    ) {
+
+
+        const confirmed =
+            await DukaNotify.confirm({
+
+                title:
+                    "Archive Product?",
+
+                message:
+                    product.name +
+                    " has sales history. It cannot be permanently deleted because sales records depend on it.",
+
+                icon:
+                    "📦",
+
+                confirmText:
+                    "Archive",
+
+                cancelText:
+                    "Cancel",
+
+                type:
+                    "archive"
+
+            });
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        const {
+            error
+        } =
+        await window.supabaseClient
+
+            .from("products")
+
+            .update({
+
+                archived:
+                    true
+
+            })
+
+            .eq(
+                "id",
+                id
+            );
+
+
+        if (error) {
+
+            DukaNotify.error(
+                "Archive failed: " +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        DukaNotify.success(
+            product.name +
+            " has been archived successfully."
+        );
+
+
+        await loadProducts();
+
+
+        return;
+
+    }
+
+
+    // =========================================
+    // NO SALES HISTORY
+    // =========================================
+
+    const confirmed =
+        await DukaNotify.confirm({
+
+            title:
+                "Delete Product?",
+
+            message:
+                product.name +
+                " has no sales history and can be permanently deleted. This action cannot be undone.",
+
+            icon:
+                "🗑️",
+
+            confirmText:
+                "Delete",
+
+            cancelText:
+                "Cancel",
+
+            type:
+                "delete"
+
+        });
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await window.supabaseClient
+
+        .from("products")
+
+        .delete()
+
+        .eq(
+            "id",
+            id
+        );
+
+
+    if (error) {
+
+        DukaNotify.error(
+            "Delete failed: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    DukaNotify.success(
+        product.name +
+        " was permanently deleted."
+    );
+
+
+    await loadProducts();
+
+}
+
+
+// =========================================================
+// RESTORE PRODUCT
+// =========================================================
+
+async function restoreProduct(id) {
+
+    const product =
+        archivedProducts.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if (!product) {
+
+        DukaNotify.error(
+            "Archived product not found."
+        );
+
+        return;
+
+    }
+
+
+    const confirmed =
+        await DukaNotify.confirm({
+
+            title:
+                "Restore Product?",
+
+            message:
+                "Restore " +
+                product.name +
+                " and return it to your active products?",
+
+            icon:
+                "♻️",
+
+            confirmText:
+                "Restore",
+
+            cancelText:
+                "Cancel",
+
+            type:
+                "restore"
+
+        });
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        DukaNotify.error(
+            "Please login again."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await window.supabaseClient
+
+        .from("products")
+
+        .update({
+
+            archived:
+                false
+
+        })
+
+        .eq(
+            "id",
+            id
+        );
+
+
+    if (error) {
+
+        DukaNotify.error(
+            "Restore failed: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    DukaNotify.success(
+        product.name +
+        " restored successfully."
+    );
+
+
+    await loadProducts();
+
+}
+
+
+// =========================================================
+// SEARCH
+// =========================================================
+
+document
+.getElementById(
+    "productSearch"
+)
+.addEventListener(
+    "input",
+    function() {
+
+        searchText =
+            this.value.trim();
+
+        displayProducts();
+
+    }
+);
+
+
+// =========================================================
+// START PAGE
+// =========================================================
+
+window.authReady.then(
+    function(isAuthenticated) {
+
+        if (
+            isAuthenticated
+        ) {
+
+            loadProducts();
+
+        }
+
+    }
+);
+
+
+// =========================================================
+// SERVICE WORKER
+// =========================================================
+
+if (
+    "serviceWorker" in navigator
+) {
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            navigator.serviceWorker
+
+                .register(
+                    "service-worker.js"
+                )
+
+                .then(
+                    function() {
+
+                        console.log(
+                            "DukaFlow service worker registered."
+                        );
+
+                    }
+                )
+
+                .catch(
+                    function(error) {
+
+                        console.error(
+                            "Service worker registration failed:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>
