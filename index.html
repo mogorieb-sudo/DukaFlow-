@@ -1830,6 +1830,11 @@ Pay KSh 300
      TODAY'S BUSINESS
 ========================================================= -->
 
+<div
+    id="todaysBusinessSection"
+    class="dashboard-role-admin"
+>
+
 <div class="section-heading">
 
 <h2>
@@ -1966,10 +1971,17 @@ Pay KSh 300
 
 </div>
 
+</div>
+
 
 <!-- =========================================================
      BUSINESS OVERVIEW
 ========================================================= -->
+
+<div
+    id="businessOverviewSection"
+    class="dashboard-role-admin"
+>
 
 <div class="section-heading">
 
@@ -2085,6 +2097,8 @@ Pay KSh 300
 <p id="totalProducts">
     0
 </p>
+
+</div>
 
 </div>
 
@@ -2294,6 +2308,8 @@ let sales = [];
 let expenses = [];
 
 let products = [];
+
+let currentDukaFlowRole = null;
 
 
 // =========================================================
@@ -2655,6 +2671,10 @@ async function loadSubscription() {
 
         currentBusinessId =
             profile.business_id;
+
+
+        currentDukaFlowRole =
+            profile.role;
 
 
         const {
@@ -3223,6 +3243,10 @@ async function setupManageUsersButton() {
         }
 
 
+        currentDukaFlowRole =
+            profile.role;
+
+
         /*
          * DukaFlow has only two application roles:
          *
@@ -3358,6 +3382,48 @@ async function setupPlatformOwnerButton() {
             "Platform owner button error:",
             error
         );
+
+    }
+
+}
+
+
+// =========================================================
+// ROLE VISIBILITY
+// STAFF = HIDE TODAY'S BUSINESS + BUSINESS OVERVIEW
+// ADMIN = SHOW EVERYTHING
+// =========================================================
+
+function applyDashboardRoleVisibility() {
+
+    const todaysBusiness =
+        document.getElementById(
+            "todaysBusinessSection"
+        );
+
+
+    const businessOverview =
+        document.getElementById(
+            "businessOverviewSection"
+        );
+
+
+    const isAdmin =
+        currentDukaFlowRole === "admin";
+
+
+    if (todaysBusiness) {
+
+        todaysBusiness.style.display =
+            isAdmin ? "" : "none";
+
+    }
+
+
+    if (businessOverview) {
+
+        businessOverview.style.display =
+            isAdmin ? "" : "none";
 
     }
 
@@ -4212,15 +4278,43 @@ async function loadDashboard() {
         }
 
 
-        await Promise.all([
+        /*
+         * Admins can see the full dashboard,
+         * including sales and expense summaries.
+         *
+         * Staff only need operational dashboard
+         * information, so sales and expenses are
+         * not loaded for them.
+         */
 
-            loadSales(user),
+        if (
+            currentDukaFlowRole === "admin"
+        ) {
 
-            loadExpenses(user),
+            await Promise.all([
 
-            loadProducts(user)
+                loadSales(user),
 
-        ]);
+                loadExpenses(user),
+
+                loadProducts(user)
+
+            ]);
+
+        }
+
+        else {
+
+            sales = [];
+
+            expenses = [];
+
+            await loadProducts(user);
+
+        }
+
+
+        applyDashboardRoleVisibility();
 
 
         buildDashboard();
@@ -4404,4 +4498,4 @@ if (
 
 </body>
 
-</html>
+    </html>
