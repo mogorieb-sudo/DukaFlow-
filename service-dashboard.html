@@ -83,6 +83,7 @@
 
         body {
             min-height: 100vh;
+
             background:
                 radial-gradient(
                     circle at top right,
@@ -331,7 +332,7 @@
 
 
         /* =========================================================
-           DUKAFLOW GLOBAL MENU
+           DUKAFLOW WORKSPACE MENU
         ========================================================== */
 
         .dukaflow-menu-wrapper {
@@ -341,6 +342,8 @@
             margin: 0 auto 18px;
 
             position: relative;
+
+            z-index: 150;
         }
 
 
@@ -403,9 +406,13 @@
         .dukaflow-menu-panel {
             display: none;
 
-            width: 100%;
+            position: absolute;
 
-            margin-top: 8px;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+
+            width: 100%;
 
             background: #ffffff;
 
@@ -418,7 +425,7 @@
 
             overflow: hidden;
 
-            z-index: 100;
+            z-index: 200;
         }
 
 
@@ -2521,12 +2528,10 @@
             .quick-actions {
                 grid-template-columns: 1fr;
             }
-
         }
 
     </style>
 </head>
-
 
 <body>
 
@@ -2658,7 +2663,7 @@
 
 
             <!-- =================================================
-                 DUKAFLOW GLOBAL MENU
+                 DUKAFLOW SERVICE MENU
             ================================================== -->
 
             <div class="dukaflow-menu-wrapper">
@@ -2671,8 +2676,8 @@
                     aria-controls="dukaflowMenuPanel"
                 >
 
-                    <span>
-                        ☰ DukaFlow Menu
+                    <span id="dukaflowMenuLabel">
+                        ☰ Service Menu
                     </span>
 
                     <span class="dukaflow-menu-arrow">
@@ -2685,40 +2690,7 @@
                 <div
                     class="dukaflow-menu-panel"
                     id="dukaflowMenuPanel"
-                >
-
-                    <a href="index.html">
-                        🏠 Dashboard
-                    </a>
-
-                    <a href="products.html">
-                        📦 Products & Stock
-                    </a>
-
-                    <a href="sales.html">
-                        💰 Sales
-                    </a>
-
-                    <a href="expenses.html">
-                        💸 Expenses
-                    </a>
-
-                    <a href="reports.html">
-                        📊 Reports
-                    </a>
-
-                    <a href="users.html">
-                        👥 Manage Users
-                    </a>
-
-                    <a
-                        href="service-dashboard.html"
-                        class="active"
-                    >
-                        🧩 Service Business
-                    </a>
-
-                </div>
+                ></div>
 
             </div>
 
@@ -2782,6 +2754,7 @@
                     <button
                         class="retry-button"
                         id="retryButton"
+                        type="button"
                     >
                         Try again
                     </button>
@@ -2854,9 +2827,6 @@
 
                     <div class="workflow-steps">
 
-
-                        <!-- STEP 1 -->
-
                         <a
                             href="service-clients.html"
                             class="workflow-step"
@@ -2888,8 +2858,6 @@
 
                         </a>
 
-
-                        <!-- STEP 2 -->
 
                         <a
                             href="service-services.html"
@@ -2923,8 +2891,6 @@
                         </a>
 
 
-                        <!-- STEP 3 -->
-
                         <a
                             href="service-assignments.html"
                             class="workflow-step"
@@ -2956,8 +2922,6 @@
 
                         </a>
 
-
-                        <!-- STEP 4 -->
 
                         <a
                             href="service-attendance.html"
@@ -2991,8 +2955,6 @@
                         </a>
 
 
-                        <!-- STEP 5 -->
-
                         <a
                             href="service-invoices.html"
                             class="workflow-step"
@@ -3025,8 +2987,6 @@
                         </a>
 
 
-                        <!-- STEP 6 -->
-
                         <a
                             href="service-payments.html"
                             class="workflow-step"
@@ -3057,7 +3017,6 @@
                             </div>
 
                         </a>
-
 
                     </div>
 
@@ -3092,9 +3051,6 @@
 
                 <section class="metric-grid">
 
-
-                    <!-- ACTIVE CLIENTS -->
-
                     <article class="metric-card blue">
 
                         <div class="metric-top">
@@ -3122,8 +3078,6 @@
 
                     </article>
 
-
-                    <!-- ACTIVE SERVICES -->
 
                     <article class="metric-card purple">
 
@@ -3153,8 +3107,6 @@
                     </article>
 
 
-                    <!-- ASSIGNMENTS -->
-
                     <article class="metric-card cyan">
 
                         <div class="metric-top">
@@ -3182,8 +3134,6 @@
 
                     </article>
 
-
-                    <!-- STAFF -->
 
                     <article class="metric-card green">
 
@@ -3234,9 +3184,6 @@
 
                 <section class="metric-grid">
 
-
-                    <!-- PRESENT -->
-
                     <article class="metric-card green">
 
                         <div class="metric-top">
@@ -3264,8 +3211,6 @@
 
                     </article>
 
-
-                    <!-- LATE -->
 
                     <article class="metric-card orange">
 
@@ -3295,8 +3240,6 @@
                     </article>
 
 
-                    <!-- ABSENT -->
-
                     <article class="metric-card red">
 
                         <div class="metric-top">
@@ -3324,8 +3267,6 @@
 
                     </article>
 
-
-                    <!-- INVOICES -->
 
                     <article class="metric-card blue">
 
@@ -3376,9 +3317,6 @@
 
                 <section class="finance-grid">
 
-
-                    <!-- INVOICED -->
-
                     <article class="finance-card invoiced">
 
                         <div class="finance-label">
@@ -3399,8 +3337,6 @@
                     </article>
 
 
-                    <!-- RECEIVED -->
-
                     <article class="finance-card received">
 
                         <div class="finance-label">
@@ -3420,8 +3356,6 @@
 
                     </article>
 
-
-                    <!-- OUTSTANDING -->
 
                     <article class="finance-card outstanding">
 
@@ -3464,9 +3398,6 @@
 
                 <section class="overview-grid">
 
-
-                    <!-- ATTENDANCE OVERVIEW -->
-
                     <article class="overview-card">
 
                         <div class="overview-header">
@@ -3491,7 +3422,6 @@
 
 
                         <div class="attendance-bars">
-
 
                             <div class="attendance-row">
 
@@ -3567,13 +3497,10 @@
 
                             </div>
 
-
                         </div>
 
                     </article>
 
-
-                    <!-- QUICK ACTIONS -->
 
                     <article class="overview-card">
 
@@ -3600,9 +3527,6 @@
 
                         <div class="quick-actions">
 
-
-                            <!-- ADD CLIENT -->
-
                             <button
                                 type="button"
                                 class="quick-action"
@@ -3627,8 +3551,6 @@
 
                             </button>
 
-
-                            <!-- ADD SERVICE -->
 
                             <button
                                 type="button"
@@ -3655,8 +3577,6 @@
                             </button>
 
 
-                            <!-- NEW ASSIGNMENT -->
-
                             <button
                                 type="button"
                                 class="quick-action"
@@ -3681,8 +3601,6 @@
 
                             </button>
 
-
-                            <!-- ATTENDANCE -->
 
                             <button
                                 type="button"
@@ -3709,8 +3627,6 @@
                             </button>
 
 
-                            <!-- CREATE INVOICE -->
-
                             <button
                                 type="button"
                                 class="quick-action"
@@ -3736,8 +3652,6 @@
                             </button>
 
 
-                            <!-- RECORD PAYMENT -->
-
                             <button
                                 type="button"
                                 class="quick-action"
@@ -3761,7 +3675,6 @@
                                 </div>
 
                             </button>
-
 
                         </div>
 
@@ -3792,7 +3705,6 @@
         ====================================================== -->
 
         <nav class="mobile-nav">
-
 
             <a
                 href="service-dashboard.html"
@@ -3872,7 +3784,6 @@
                 </span>
 
             </a>
-
 
         </nav>
 
@@ -3957,21 +3868,171 @@
             );
 
 
+    
+/* =========================================================
+   DUKAFLOW SERVICE WORKSPACE MENU
+========================================================= */
+
+/*
+ * THIS PAGE IS THE SERVICE DASHBOARD.
+ *
+ * The Service Dashboard is a standalone workspace.
+ *
+ * It must NOT:
+ * - inspect user_metadata.business_type
+ * - determine Product vs Service
+ * - depend on the Product Dashboard
+ * - require a Product workspace to exist
+ *
+ * The authenticated user reaches this page through
+ * the Service Dashboard access flow, while the
+ * database RPC remains responsible for service-data
+ * authorization and filtering.
+ *
+ * PLATFORM OWNER NAVIGATION:
+ * The Platform Owner button below provides a clear
+ * way back to the Platform Owner workspace.
+ */
+
+const SERVICE_MENU_ITEMS = [
+
+    {
+        label: "⬅️ Platform Owner",
+        href: "platform-owner.html"
+    },
+
+    {
+        label: "🏠 Dashboard",
+        href: "service-dashboard.html"
+    },
+
+    {
+        label: "👥 Clients",
+        href: "service-clients.html"
+    },
+
+    {
+        label: "🛠 Services",
+        href: "service-services.html"
+    },
+
+    {
+        label: "📋 Assignments",
+        href: "service-assignments.html"
+    },
+
+    {
+        label: "🕒 Attendance",
+        href: "service-attendance.html"
+    },
+
+    {
+        label: "🧾 Invoices",
+        href: "service-invoices.html"
+    },
+
+    {
+        label: "💳 Payments",
+        href: "service-payments.html"
+    },
+
+    {
+        label: "📊 Reports",
+        href: "service-reports.html"
+    }
+
+];
+
+
+const dukaflowMenuButton =
+    document.getElementById(
+        "dukaflowMenuButton"
+    );
+
+
+const dukaflowMenuPanel =
+    document.getElementById(
+        "dukaflowMenuPanel"
+    );
+
+
+const dukaflowMenuLabel =
+    document.getElementById(
+        "dukaflowMenuLabel"
+    );
+
+
+/*
+ * Build the Service Dashboard menu directly.
+ *
+ * There is intentionally no Product/Service
+ * workspace detection here because this page
+ * IS the Service workspace.
+ *
+ * The Platform Owner item is a navigation
+ * path back to the higher-level Platform Owner
+ * workspace.
+ */
+
+function buildServiceWorkspaceMenu() {
+
+    if (!dukaflowMenuPanel) {
+        return;
+    }
+
+
+    dukaflowMenuPanel.innerHTML = "";
+
+
+    SERVICE_MENU_ITEMS.forEach(
+        item => {
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+
+            link.href =
+                item.href;
+
+
+            link.textContent =
+                item.label;
+
+
+            if (
+                item.href ===
+                "service-dashboard.html"
+            ) {
+
+                link.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            dukaflowMenuPanel.appendChild(
+                link
+            );
+
+        }
+    );
+
+
+    if (dukaflowMenuLabel) {
+
+        dukaflowMenuLabel.textContent =
+            "☰ Service Menu";
+
+    }
+
+}
+
         /* =========================================================
-           DUKAFLOW GLOBAL MENU
+           GLOBAL MENU CONTROLS
         ========================================================== */
-
-        const dukaflowMenuButton =
-            document.getElementById(
-                "dukaflowMenuButton"
-            );
-
-
-        const dukaflowMenuPanel =
-            document.getElementById(
-                "dukaflowMenuPanel"
-            );
-
 
         dukaflowMenuButton.addEventListener(
             "click",
@@ -3979,20 +4040,26 @@
 
                 event.stopPropagation();
 
+
                 const isOpen =
                     dukaflowMenuPanel
                         .classList
                         .contains("open");
 
+
                 dukaflowMenuPanel
                     .classList
-                    .toggle("open");
+                    .toggle(
+                        "open"
+                    );
+
 
                 dukaflowMenuButton
                     .setAttribute(
                         "aria-expanded",
                         String(!isOpen)
                     );
+
             }
         );
 
@@ -4009,14 +4076,19 @@
 
                     dukaflowMenuPanel
                         .classList
-                        .remove("open");
+                        .remove(
+                            "open"
+                        );
+
 
                     dukaflowMenuButton
                         .setAttribute(
                             "aria-expanded",
                             "false"
                         );
+
                 }
+
             }
         );
 
@@ -4031,14 +4103,19 @@
 
                     dukaflowMenuPanel
                         .classList
-                        .remove("open");
+                        .remove(
+                            "open"
+                        );
+
 
                     dukaflowMenuButton
                         .setAttribute(
                             "aria-expanded",
                             "false"
                         );
+
                 }
+
             }
         );
 
@@ -4057,12 +4134,15 @@
                     elementId
                 );
 
+
             if (!element) {
                 return;
             }
 
+
             element.textContent =
                 value ?? 0;
+
         }
 
 
@@ -4071,11 +4151,17 @@
         ) {
 
             const number =
-                Number(value || 0);
+                Number(
+                    value || 0
+                );
+
 
             return new Intl.NumberFormat(
                 "en-KE"
-            ).format(number);
+            ).format(
+                number
+            );
+
         }
 
 
@@ -4084,7 +4170,10 @@
         ) {
 
             const number =
-                Number(value || 0);
+                Number(
+                    value || 0
+                );
+
 
             return (
                 "KSh " +
@@ -4094,8 +4183,11 @@
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 2
                     }
-                ).format(number)
+                ).format(
+                    number
+                )
             );
+
         }
 
 
@@ -4103,6 +4195,7 @@
 
             loadingOverlay.style.display =
                 "none";
+
         }
 
 
@@ -4110,6 +4203,7 @@
 
             loadingOverlay.style.display =
                 "flex";
+
         }
 
 
@@ -4121,8 +4215,10 @@
                 message ||
                 "Something went wrong while loading the dashboard.";
 
+
             errorBox.style.display =
                 "block";
+
         }
 
 
@@ -4130,6 +4226,7 @@
 
             errorBox.style.display =
                 "none";
+
         }
 
 
@@ -4144,13 +4241,21 @@
         ) {
 
             const presentNumber =
-                Number(present || 0);
+                Number(
+                    present || 0
+                );
+
 
             const lateNumber =
-                Number(late || 0);
+                Number(
+                    late || 0
+                );
+
 
             const absentNumber =
-                Number(absent || 0);
+                Number(
+                    absent || 0
+                );
 
 
             const total =
@@ -4167,50 +4272,93 @@
             if (total > 0) {
 
                 presentPercent =
-                    (presentNumber / total) * 100;
+                    (
+                        presentNumber /
+                        total
+                    ) * 100;
+
 
                 latePercent =
-                    (lateNumber / total) * 100;
+                    (
+                        lateNumber /
+                        total
+                    ) * 100;
+
 
                 absentPercent =
-                    (absentNumber / total) * 100;
+                    (
+                        absentNumber /
+                        total
+                    ) * 100;
+
             }
 
 
-            document.getElementById(
-                "presentBar"
-            ).style.width =
-                presentPercent + "%";
+            const presentBar =
+                document.getElementById(
+                    "presentBar"
+                );
 
 
-            document.getElementById(
-                "lateBar"
-            ).style.width =
-                latePercent + "%";
+            const lateBar =
+                document.getElementById(
+                    "lateBar"
+                );
 
 
-            document.getElementById(
-                "absentBar"
-            ).style.width =
-                absentPercent + "%";
+            const absentBar =
+                document.getElementById(
+                    "absentBar"
+                );
+
+
+            if (presentBar) {
+
+                presentBar.style.width =
+                    presentPercent + "%";
+
+            }
+
+
+            if (lateBar) {
+
+                lateBar.style.width =
+                    latePercent + "%";
+
+            }
+
+
+            if (absentBar) {
+
+                absentBar.style.width =
+                    absentPercent + "%";
+
+            }
 
 
             setText(
                 "presentBarNumber",
-                formatNumber(presentNumber)
+                formatNumber(
+                    presentNumber
+                )
             );
 
 
             setText(
                 "lateBarNumber",
-                formatNumber(lateNumber)
+                formatNumber(
+                    lateNumber
+                )
             );
 
 
             setText(
                 "absentBarNumber",
-                formatNumber(absentNumber)
+                formatNumber(
+                    absentNumber
+                )
             );
+
         }
 
 
@@ -4251,7 +4399,23 @@
                     throw new Error(
                         "Your DukaFlow session has expired. Please sign in again."
                     );
+
                 }
+
+
+                /* =============================================
+                   SERVICE WORKSPACE
+                ============================================== */
+
+                /*
+                 * This page is permanently the Service Dashboard.
+                 *
+                 * The menu is built directly and does not depend
+                 * on business_type or Product Dashboard workspace
+                 * logic.
+                 */
+
+                buildServiceWorkspaceMenu();
 
 
                 /* =============================================
@@ -4282,6 +4446,7 @@
                     throw new Error(
                         "No dashboard summary was returned."
                     );
+
                 }
 
 
@@ -4458,6 +4623,7 @@
                 hideLoading();
 
             }
+
         }
 
 

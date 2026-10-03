@@ -598,23 +598,6 @@
 }
 
 
-.dashboard-menu-label {
-
-    flex: 1;
-
-}
-
-
-.dashboard-menu-arrow {
-
-    color:
-        #9aa59f;
-
-    font-size: 12px;
-
-}
-
-
 /* =========================================================
    SPECIAL MENU ITEMS
 ========================================================= */
@@ -4009,6 +3992,7 @@ async function setupManageUsersButton() {
 
 // =========================================================
 // SERVICE BUSINESS MENU
+// PRODUCT DASHBOARD = HIDE SERVICE BUSINESS
 // =========================================================
 
 async function setupServiceBusinessButton() {
@@ -4026,94 +4010,23 @@ async function setupServiceBusinessButton() {
     }
 
 
+    /*
+     * THIS IS THE PRODUCT DASHBOARD.
+     *
+     * Service Business belongs to the
+     * separate Service Dashboard workspace.
+     *
+     * Therefore Service Business must
+     * never appear in this menu.
+     */
+
     menuButton.style.display =
         "none";
 
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-        await window.supabaseClient
-            .auth
-            .getUser();
-
-
-        if (
-            error ||
-            !data ||
-            !data.user
-        ) {
-
-            return;
-
-        }
-
-
-        const {
-            data: profile,
-            error: profileError
-        } =
-        await window.supabaseClient
-            .from("profiles")
-            .select(
-                "role"
-            )
-            .eq(
-                "user_id",
-                data.user.id
-            )
-            .single();
-
-
-        if (
-            profileError ||
-            !profile
-        ) {
-
-            console.error(
-                "Service Business menu error:",
-                profileError
-            );
-
-            return;
-
-        }
-
-
-        /*
-         * Service Business is currently available
-         * to business administrators.
-         *
-         * We are deliberately NOT using business_type
-         * yet. That architecture can be introduced
-         * later after the service workspace is polished.
-         */
-
-        if (
-            profile.role === "admin"
-        ) {
-
-            menuButton.style.display =
-                "flex";
-
-        }
-
-    }
-
-    catch(error) {
-
-        console.error(
-            "Service Business menu error:",
-            error
-        );
-
-        menuButton.style.display =
-            "none";
-
-    }
+    menuButton.setAttribute(
+        "aria-hidden",
+        "true"
+    );
 
 }
 
