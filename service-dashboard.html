@@ -1,0 +1,4544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta name="theme-color" content="#0f172a">
+
+    <title>DukaFlow | Service Dashboard</title>
+
+    <!-- =========================================================
+         SUPABASE
+    ========================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        /* =========================================================
+           DUKAFLOW SERVICE DASHBOARD
+           UI FOUNDATION
+        ========================================================== */
+
+        :root {
+            --df-primary: #2563eb;
+            --df-primary-dark: #1d4ed8;
+
+            --df-bg: #f5f7fb;
+            --df-card: #ffffff;
+
+            --df-text: #0f172a;
+            --df-muted: #64748b;
+            --df-soft: #94a3b8;
+
+            --df-border: #e2e8f0;
+
+            --df-green: #16a34a;
+            --df-green-soft: #ecfdf3;
+
+            --df-blue: #2563eb;
+            --df-blue-soft: #eff6ff;
+
+            --df-purple: #7c3aed;
+            --df-purple-soft: #f5f3ff;
+
+            --df-orange: #ea580c;
+            --df-orange-soft: #fff7ed;
+
+            --df-red: #dc2626;
+            --df-red-soft: #fef2f2;
+
+            --df-cyan: #0891b2;
+            --df-cyan-soft: #ecfeff;
+
+            --df-radius-lg: 22px;
+            --df-radius-md: 16px;
+
+            --df-shadow:
+                0 10px 30px rgba(15, 23, 42, 0.06);
+
+            --df-shadow-hover:
+                0 16px 36px rgba(15, 23, 42, 0.10);
+        }
+
+
+        /* =========================================================
+           RESET
+        ========================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(37, 99, 235, 0.07),
+                    transparent 30%
+                ),
+                var(--df-bg);
+
+            color: var(--df-text);
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+
+        /* =========================================================
+           APP SHELL
+        ========================================================== */
+
+        .service-app {
+            min-height: 100vh;
+            display: flex;
+        }
+
+
+        /* =========================================================
+           DESKTOP SIDEBAR
+        ========================================================== */
+
+        .service-sidebar {
+            width: 250px;
+            min-height: 100vh;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #0f172a 0%,
+                    #111827 55%,
+                    #172554 100%
+                );
+
+            color: white;
+
+            padding: 22px 16px;
+
+            display: flex;
+            flex-direction: column;
+
+            z-index: 100;
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 4px 8px 26px;
+        }
+
+
+        .brand-logo {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 14px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+            font-weight: 900;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #7c3aed
+                );
+
+            box-shadow:
+                0 8px 22px rgba(37, 99, 235, 0.35);
+        }
+
+
+        .brand-text strong {
+            display: block;
+            font-size: 17px;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-text span {
+            display: block;
+            margin-top: 2px;
+
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+
+        .service-label {
+            padding: 0 10px 10px;
+
+            color: #64748b;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+
+        .nav-item {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 11px 12px;
+
+            border-radius: 13px;
+
+            color: #cbd5e1;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.07);
+            color: white;
+            transform: translateX(2px);
+        }
+
+
+        .nav-item.active {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(37, 99, 235, 0.95),
+                    rgba(79, 70, 229, 0.95)
+                );
+
+            color: white;
+
+            box-shadow:
+                0 8px 20px rgba(37, 99, 235, 0.22);
+        }
+
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+
+            border-radius: 9px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 15px;
+
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+
+        .nav-item.active .nav-icon {
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+
+        .sidebar-version {
+            padding: 14px 10px 2px;
+
+            color: #64748b;
+
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           MAIN CONTENT
+        ========================================================== */
+
+        .service-main {
+            width: calc(100% - 250px);
+
+            margin-left: 250px;
+
+            min-height: 100vh;
+
+            padding: 24px;
+        }
+
+
+        /* =========================================================
+           DUKAFLOW GLOBAL MENU
+        ========================================================== */
+
+        .dukaflow-menu-wrapper {
+            width: 100%;
+            max-width: 1400px;
+
+            margin: 0 auto 18px;
+
+            position: relative;
+        }
+
+
+        .dukaflow-menu-button {
+            width: 100%;
+
+            min-height: 52px;
+
+            padding: 13px 16px;
+
+            border: none;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #087f3f,
+                    #0b7a3b
+                );
+
+            color: #fff;
+
+            font-size: 15px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            box-shadow:
+                0 8px 20px rgba(8,127,63,0.16);
+        }
+
+
+        .dukaflow-menu-button:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #076d36,
+                    #096b34
+                );
+        }
+
+
+        .dukaflow-menu-arrow {
+            transition:
+                transform 0.2s ease;
+        }
+
+
+        .dukaflow-menu-button[aria-expanded="true"]
+        .dukaflow-menu-arrow {
+            transform: rotate(180deg);
+        }
+
+
+        .dukaflow-menu-panel {
+            display: none;
+
+            width: 100%;
+
+            margin-top: 8px;
+
+            background: #ffffff;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 14px 30px rgba(15,23,42,0.12);
+
+            overflow: hidden;
+
+            z-index: 100;
+        }
+
+
+        .dukaflow-menu-panel.open {
+            display: block;
+        }
+
+
+        .dukaflow-menu-panel a {
+            display: block;
+
+            padding: 13px 16px;
+
+            color: #1f2937;
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            font-size: 14px;
+
+            border-bottom:
+                1px solid #f1f5f9;
+        }
+
+
+        .dukaflow-menu-panel a:last-child {
+            border-bottom: none;
+        }
+
+
+        .dukaflow-menu-panel a:hover {
+            background: #f0fdf4;
+            color: #087f3f;
+        }
+
+
+        .dukaflow-menu-panel a.active {
+            background: #ecfdf5;
+            color: #087f3f;
+        }
+
+
+        .topbar {
+            max-width: 1400px;
+            margin: 0 auto 22px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 16px;
+        }
+
+
+        .topbar-left h1 {
+            font-size: clamp(23px, 4vw, 31px);
+            line-height: 1.15;
+
+            letter-spacing: -0.8px;
+        }
+
+
+        .topbar-left p {
+            margin-top: 6px;
+
+            color: var(--df-muted);
+
+            font-size: 13px;
+        }
+
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 8px 12px;
+
+            border: 1px solid var(--df-border);
+            border-radius: 999px;
+
+            background: rgba(255,255,255,0.8);
+
+            color: var(--df-muted);
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--df-green);
+
+            box-shadow:
+                0 0 0 4px rgba(22, 163, 74, 0.10);
+        }
+
+
+        /* =========================================================
+           DASHBOARD CONTAINER
+        ========================================================== */
+
+        .dashboard-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+
+        /* =========================================================
+           HERO
+        ========================================================== */
+
+        .dashboard-hero {
+            position: relative;
+            overflow: hidden;
+
+            margin-bottom: 20px;
+
+            padding: 24px;
+
+            border-radius: var(--df-radius-lg);
+
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at 90% 15%,
+                    rgba(255,255,255,0.18),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 20% 120%,
+                    rgba(124,58,237,0.55),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    135deg,
+                    #1d4ed8,
+                    #4338ca 60%,
+                    #6d28d9
+                );
+
+            box-shadow:
+                0 18px 45px rgba(37, 99, 235, 0.18);
+        }
+
+
+        .dashboard-hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 170px;
+            height: 170px;
+
+            right: -55px;
+            bottom: -75px;
+
+            border-radius: 50%;
+
+            border: 30px solid rgba(255,255,255,0.07);
+        }
+
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+
+            max-width: 650px;
+        }
+
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            margin-bottom: 10px;
+
+            padding: 6px 10px;
+
+            border-radius: 999px;
+
+            background: rgba(255,255,255,0.13);
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+
+        .hero-content h2 {
+            font-size: clamp(21px, 4vw, 29px);
+            letter-spacing: -0.6px;
+        }
+
+
+        .hero-content p {
+            margin-top: 7px;
+
+            color: rgba(255,255,255,0.82);
+
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+
+        /* =========================================================
+           START HERE — WORKFLOW
+        ========================================================== */
+
+        .workflow-card {
+            position: relative;
+            overflow: hidden;
+
+            margin-bottom: 24px;
+
+            padding: 22px;
+
+            border:
+                1px solid
+                rgba(147,197,253,0.75);
+
+            border-radius: var(--df-radius-lg);
+
+            background:
+                radial-gradient(
+                    circle at 100% 0%,
+                    rgba(37,99,235,0.10),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    145deg,
+                    #ffffff,
+                    #eff6ff
+                );
+
+            box-shadow: var(--df-shadow);
+        }
+
+
+        .workflow-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 160px;
+            height: 160px;
+
+            right: -80px;
+            bottom: -90px;
+
+            border-radius: 50%;
+
+            border:
+                28px solid
+                rgba(37,99,235,0.05);
+
+            pointer-events: none;
+        }
+
+
+        .workflow-header {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 18px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .workflow-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+        .workflow-title-icon {
+            width: 45px;
+            height: 45px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #7c3aed
+                );
+
+            color: white;
+
+            font-size: 20px;
+
+            box-shadow:
+                0 8px 18px rgba(37,99,235,0.18);
+        }
+
+
+        .workflow-title h3 {
+            font-size: 18px;
+            font-weight: 900;
+
+            letter-spacing: -0.3px;
+        }
+
+
+        .workflow-title p {
+            margin-top: 4px;
+
+            color: var(--df-muted);
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+
+        .workflow-badge {
+            flex-shrink: 0;
+
+            padding: 7px 10px;
+
+            border-radius: 999px;
+
+            background: #dbeafe;
+
+            color: #1d4ed8;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+
+        .workflow-steps {
+            position: relative;
+            z-index: 2;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(6, minmax(0, 1fr));
+
+            gap: 10px;
+        }
+
+
+        .workflow-step {
+            position: relative;
+
+            min-width: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            min-height: 145px;
+
+            padding: 15px 13px;
+
+            border:
+                1px solid
+                var(--step-border);
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    var(--step-bg),
+                    rgba(255,255,255,0.94)
+                );
+
+            color: var(--df-text);
+
+            text-align: left;
+
+            box-shadow:
+                0 5px 14px rgba(15,23,42,0.04);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+
+        .workflow-step:hover {
+            transform: translateY(-3px);
+
+            border-color: var(--step-color);
+
+            box-shadow:
+                0 12px 24px rgba(15,23,42,0.09);
+        }
+
+
+        .workflow-step::after {
+            content: "→";
+
+            position: absolute;
+
+            right: -13px;
+            top: 50%;
+
+            width: 25px;
+            height: 25px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transform: translateY(-50%);
+
+            border-radius: 50%;
+
+            background: white;
+
+            color: var(--df-soft);
+
+            font-size: 13px;
+            font-weight: 900;
+
+            box-shadow:
+                0 3px 8px rgba(15,23,42,0.08);
+
+            z-index: 4;
+        }
+
+
+        .workflow-step:last-child::after {
+            display: none;
+        }
+
+
+        .workflow-step:nth-child(1) {
+            --step-color: var(--df-blue);
+            --step-bg: var(--df-blue-soft);
+            --step-border: #bfdbfe;
+        }
+
+
+        .workflow-step:nth-child(2) {
+            --step-color: var(--df-purple);
+            --step-bg: var(--df-purple-soft);
+            --step-border: #ddd6fe;
+        }
+
+
+        .workflow-step:nth-child(3) {
+            --step-color: var(--df-cyan);
+            --step-bg: var(--df-cyan-soft);
+            --step-border: #a5f3fc;
+        }
+
+
+        .workflow-step:nth-child(4) {
+            --step-color: var(--df-orange);
+            --step-bg: var(--df-orange-soft);
+            --step-border: #fed7aa;
+        }
+
+
+        .workflow-step:nth-child(5) {
+            --step-color: var(--df-green);
+            --step-bg: var(--df-green-soft);
+            --step-border: #bbf7d0;
+        }
+
+
+        .workflow-step:nth-child(6) {
+            --step-color: #059669;
+            --step-bg: #ecfdf5;
+            --step-border: #a7f3d0;
+        }
+
+
+        .workflow-step-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 8px;
+        }
+
+
+        .workflow-number {
+            width: 25px;
+            height: 25px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: var(--step-color);
+
+            color: white;
+
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+
+        .workflow-icon {
+            font-size: 21px;
+        }
+
+
+        .workflow-step strong {
+            display: block;
+
+            margin-top: 13px;
+
+            color: var(--df-text);
+
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+
+        .workflow-step span {
+            display: block;
+
+            margin-top: 5px;
+
+            color: var(--df-muted);
+
+            font-size: 10px;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+
+        .workflow-action {
+            margin-top: auto;
+
+            padding-top: 10px;
+
+            color: var(--step-color);
+
+            font-size: 10px;
+            font-weight: 850;
+        }
+
+
+        .workflow-note {
+            position: relative;
+            z-index: 2;
+
+            margin-top: 14px;
+
+            padding: 10px 12px;
+
+            border-radius: 11px;
+
+            background:
+                rgba(255,255,255,0.72);
+
+            color: var(--df-muted);
+
+            font-size: 10px;
+            font-weight: 600;
+
+            line-height: 1.45;
+        }
+
+
+        .workflow-note strong {
+            color: var(--df-text);
+        }
+
+
+        /* =========================================================
+           SECTION HEADINGS
+        ========================================================== */
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin: 25px 2px 12px;
+        }
+
+
+        .section-heading h3 {
+            font-size: 16px;
+            font-weight: 850;
+            letter-spacing: -0.2px;
+        }
+
+
+        .section-heading span {
+            color: var(--df-muted);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+
+        .metric-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 14px;
+        }
+
+
+        /* =========================================================
+           DUKAFLOW METRIC CARD
+        ========================================================== */
+
+        .metric-card {
+            position: relative;
+            overflow: hidden;
+
+            min-height: 156px;
+
+            padding: 18px;
+
+            border: 1px solid rgba(226, 232, 240, 0.9);
+
+            border-radius: var(--df-radius-lg);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    var(--card-soft),
+                    rgba(255,255,255,0.82)
+                );
+
+            box-shadow: var(--df-shadow);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--df-shadow-hover);
+        }
+
+
+        .metric-card::before {
+            content: "";
+
+            position: absolute;
+
+            width: 110px;
+            height: 110px;
+
+            right: -45px;
+            top: -45px;
+
+            border-radius: 50%;
+
+            background: var(--card-soft);
+        }
+
+
+        .metric-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 5px;
+            height: 52px;
+
+            left: 0;
+            top: 22px;
+
+            border-radius: 0 6px 6px 0;
+
+            background: var(--card-color);
+        }
+
+
+        .metric-card.blue {
+            --card-color: var(--df-blue);
+            --card-soft: var(--df-blue-soft);
+        }
+
+        .metric-card.green {
+            --card-color: var(--df-green);
+            --card-soft: var(--df-green-soft);
+        }
+
+        .metric-card.purple {
+            --card-color: var(--df-purple);
+            --card-soft: var(--df-purple-soft);
+        }
+
+        .metric-card.orange {
+            --card-color: var(--df-orange);
+            --card-soft: var(--df-orange-soft);
+        }
+
+        .metric-card.red {
+            --card-color: var(--df-red);
+            --card-soft: var(--df-red-soft);
+        }
+
+        .metric-card.cyan {
+            --card-color: var(--df-cyan);
+            --card-soft: var(--df-cyan-soft);
+        }
+
+
+        .metric-top {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+
+        .metric-icon {
+            width: 41px;
+            height: 41px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 13px;
+
+            background: var(--card-soft);
+
+            color: var(--card-color);
+
+            font-size: 19px;
+
+            box-shadow:
+                0 5px 12px rgba(15,23,42,0.05);
+        }
+
+
+        .metric-label {
+            color: var(--df-muted);
+
+            font-size: 12px;
+            font-weight: 850;
+
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+        }
+
+
+        .metric-value {
+            position: relative;
+            z-index: 2;
+
+            margin-top: 18px;
+
+            font-size: 31px;
+            line-height: 1;
+
+            font-weight: 900;
+
+            letter-spacing: -1px;
+        }
+
+
+        .metric-description {
+            position: relative;
+            z-index: 2;
+
+            margin-top: 10px;
+
+            color: var(--df-muted);
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+
+        /* =========================================================
+           FINANCIAL CARDS
+        ========================================================== */
+
+        .finance-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 14px;
+        }
+
+
+        .finance-card {
+            position: relative;
+            overflow: hidden;
+
+            padding: 20px;
+
+            border-radius: var(--df-radius-lg);
+
+            color: white;
+
+            box-shadow: var(--df-shadow);
+        }
+
+
+        .finance-card.invoiced {
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f766e,
+                    #0891b2
+                );
+        }
+
+
+        .finance-card.received {
+            background:
+                linear-gradient(
+                    135deg,
+                    #15803d,
+                    #16a34a
+                );
+        }
+
+
+        .finance-card.outstanding {
+            background:
+                linear-gradient(
+                    135deg,
+                    #c2410c,
+                    #ea580c
+                );
+        }
+
+
+        .finance-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 130px;
+            height: 130px;
+
+            right: -45px;
+            bottom: -70px;
+
+            border-radius: 50%;
+
+            border: 28px solid rgba(255,255,255,0.08);
+        }
+
+
+        .finance-label {
+            position: relative;
+            z-index: 2;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+
+            color: rgba(255,255,255,0.75);
+        }
+
+
+        .finance-value {
+            position: relative;
+            z-index: 2;
+
+            margin-top: 11px;
+
+            font-size: 27px;
+            font-weight: 850;
+
+            letter-spacing: -0.8px;
+        }
+
+
+        .finance-description {
+            position: relative;
+            z-index: 2;
+
+            margin-top: 5px;
+
+            font-size: 11px;
+
+            color: rgba(255,255,255,0.72);
+        }
+
+
+        /* =========================================================
+           OPERATION OVERVIEW
+        ========================================================== */
+
+        .overview-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 14px;
+        }
+
+
+        .overview-card {
+            position: relative;
+            overflow: hidden;
+
+            padding: 22px;
+
+            border: 1px solid #bfdbfe;
+
+            border-radius: var(--df-radius-lg);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #eff6ff,
+                    #dbeafe
+                );
+
+            box-shadow: var(--df-shadow);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .overview-card:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                var(--df-shadow-hover);
+        }
+
+
+        .overview-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 120px;
+            height: 120px;
+
+            right: -45px;
+            bottom: -60px;
+
+            border-radius: 50%;
+
+            border: 24px solid rgba(37,99,235,0.07);
+
+            pointer-events: none;
+        }
+
+
+        .overview-grid .overview-card:first-child {
+            border-color: #bbf7d0;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #ecfdf5,
+                    #d1fae5
+                );
+        }
+
+
+        .overview-grid .overview-card:first-child::after {
+            border-color:
+                rgba(22,163,74,0.08);
+        }
+
+
+        .overview-grid .overview-card:last-child {
+            border-color: #c7d2fe;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #eef2ff,
+                    #e0e7ff
+                );
+        }
+
+
+        .overview-grid .overview-card:last-child::after {
+            border-color:
+                rgba(124,58,237,0.08);
+        }
+
+
+        .overview-header {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .overview-icon {
+            width: 46px;
+            height: 46px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            border-radius: 14px;
+
+            background: var(--df-blue-soft);
+
+            color: var(--df-blue);
+
+            font-size: 20px;
+
+            box-shadow:
+                0 6px 14px rgba(37,99,235,0.10);
+        }
+
+
+        .overview-grid .overview-card:first-child
+        .overview-icon {
+            background: var(--df-green-soft);
+            color: var(--df-green);
+
+            box-shadow:
+                0 6px 14px rgba(22,163,74,0.10);
+        }
+
+
+        .overview-grid .overview-card:last-child
+        .overview-icon {
+            background: var(--df-purple-soft);
+            color: var(--df-purple);
+
+            box-shadow:
+                0 6px 14px rgba(124,58,237,0.10);
+        }
+
+
+        .overview-header h4 {
+            font-size: 17px;
+            font-weight: 850;
+        }
+
+
+        .overview-header p {
+            margin-top: 4px;
+
+            color: var(--df-muted);
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+
+        .attendance-bars {
+            position: relative;
+            z-index: 2;
+
+            display: grid;
+            gap: 14px;
+        }
+
+
+        .attendance-row {
+            display: grid;
+
+            grid-template-columns: 82px 1fr 42px;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .attendance-name {
+            font-size: 12px;
+            font-weight: 800;
+
+            color: var(--df-text);
+        }
+
+
+        .attendance-track {
+            height: 10px;
+
+            overflow: hidden;
+
+            border-radius: 999px;
+
+            background:
+                rgba(255,255,255,0.72);
+
+            box-shadow:
+                inset 0 1px 3px rgba(15,23,42,0.07);
+        }
+
+
+        .attendance-fill {
+            height: 100%;
+
+            width: 0;
+
+            border-radius: inherit;
+
+            transition: width 0.7s ease;
+        }
+
+
+        .attendance-fill.present {
+            background: var(--df-green);
+        }
+
+
+        .attendance-fill.late {
+            background: var(--df-orange);
+        }
+
+
+        .attendance-fill.absent {
+            background: var(--df-red);
+        }
+
+
+        .attendance-number {
+            text-align: right;
+
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+
+        .quick-actions {
+            position: relative;
+            z-index: 2;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 11px;
+        }
+
+
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            min-height: 70px;
+
+            padding: 13px;
+
+            border: 1px solid #bfdbfe;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,0.72),
+                    rgba(239,246,255,0.92)
+                );
+
+            color: var(--df-text);
+
+            text-align: left;
+
+            box-shadow:
+                0 5px 14px rgba(15,23,42,0.05);
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+
+        .quick-action:hover {
+            transform: translateY(-2px);
+
+            border-color: #93c5fd;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #ffffff,
+                    #dbeafe
+                );
+
+            box-shadow:
+                0 10px 22px rgba(37,99,235,0.10);
+        }
+
+
+        .quick-action:nth-child(1) {
+            border-color: #bbf7d0;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #f0fdf4,
+                    #dcfce7
+                );
+        }
+
+
+        .quick-action:nth-child(1):hover {
+            border-color: #86efac;
+        }
+
+
+        .quick-action:nth-child(2) {
+            border-color: #ddd6fe;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #faf5ff,
+                    #ede9fe
+                );
+        }
+
+
+        .quick-action:nth-child(2):hover {
+            border-color: #c4b5fd;
+        }
+
+
+        .quick-action:nth-child(3) {
+            border-color: #a5f3fc;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #ecfeff,
+                    #cffafe
+                );
+        }
+
+
+        .quick-action:nth-child(3):hover {
+            border-color: #67e8f9;
+        }
+
+
+        .quick-action:nth-child(4) {
+            border-color: #fed7aa;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #fff7ed,
+                    #ffedd5
+                );
+        }
+
+
+        .quick-action:nth-child(4):hover {
+            border-color: #fdba74;
+        }
+
+
+        .quick-action:nth-child(5) {
+            border-color: #bfdbfe;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #eff6ff,
+                    #dbeafe
+                );
+        }
+
+
+        .quick-action:nth-child(5):hover {
+            border-color: #93c5fd;
+        }
+
+
+        .quick-action:nth-child(6) {
+            border-color: #a7f3d0;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #ecfdf5,
+                    #d1fae5
+                );
+        }
+
+
+        .quick-action:nth-child(6):hover {
+            border-color: #6ee7b7;
+        }
+
+
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            border-radius: 12px;
+
+            background: var(--df-blue-soft);
+
+            color: var(--df-blue);
+
+            font-size: 18px;
+
+            box-shadow:
+                0 5px 12px rgba(15,23,42,0.06);
+        }
+
+
+        .quick-action:nth-child(1)
+        .quick-action-icon {
+            background: var(--df-green-soft);
+            color: var(--df-green);
+        }
+
+
+        .quick-action:nth-child(2)
+        .quick-action-icon {
+            background: var(--df-purple-soft);
+            color: var(--df-purple);
+        }
+
+
+        .quick-action:nth-child(3)
+        .quick-action-icon {
+            background: var(--df-cyan-soft);
+            color: var(--df-cyan);
+        }
+
+
+        .quick-action:nth-child(4)
+        .quick-action-icon {
+            background: var(--df-orange-soft);
+            color: var(--df-orange);
+        }
+
+
+        .quick-action:nth-child(5)
+        .quick-action-icon {
+            background: var(--df-blue-soft);
+            color: var(--df-blue);
+        }
+
+
+        .quick-action:nth-child(6)
+        .quick-action-icon {
+            background: var(--df-green-soft);
+            color: var(--df-green);
+        }
+
+
+        .quick-action strong {
+            display: block;
+
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+
+        .quick-action span {
+            display: block;
+
+            margin-top: 4px;
+
+            color: var(--df-muted);
+
+            font-size: 11px;
+            font-weight: 600;
+
+            line-height: 1.3;
+        }
+
+
+        /* =========================================================
+           LOADING
+        ========================================================== */
+
+        .loading-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            background:
+                rgba(15,23,42,0.45);
+
+            backdrop-filter: blur(5px);
+        }
+
+
+        .loading-box {
+            width: min(320px, 100%);
+
+            padding: 25px;
+
+            border-radius: 22px;
+
+            background: white;
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,0.18);
+
+            text-align: center;
+        }
+
+
+        .loading-spinner {
+            width: 38px;
+            height: 38px;
+
+            margin: 0 auto 13px;
+
+            border: 4px solid #dbeafe;
+
+            border-top-color: var(--df-primary);
+
+            border-radius: 50%;
+
+            animation:
+                dfSpin 0.8s linear infinite;
+        }
+
+
+        @keyframes dfSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        .loading-box strong {
+            display: block;
+
+            font-size: 14px;
+        }
+
+
+        .loading-box p {
+            margin-top: 5px;
+
+            color: var(--df-muted);
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+           ERROR MESSAGE
+        ========================================================== */
+
+        .error-box {
+            display: none;
+
+            margin-bottom: 18px;
+
+            padding: 15px 17px;
+
+            border: 1px solid #fecaca;
+
+            border-radius: 16px;
+
+            background: var(--df-red-soft);
+
+            color: #991b1b;
+        }
+
+
+        .error-box strong {
+            display: block;
+
+            font-size: 12px;
+        }
+
+
+        .error-box p {
+            margin-top: 4px;
+
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+
+        .retry-button {
+            margin-top: 9px;
+
+            padding: 7px 11px;
+
+            border-radius: 9px;
+
+            background: var(--df-red);
+
+            color: white;
+
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+
+        /* =========================================================
+           BOTTOM MOBILE NAV
+        ========================================================== */
+
+        .mobile-nav {
+            display: none;
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================== */
+
+        .service-footer {
+            padding: 28px 4px 90px;
+
+            color: var(--df-soft);
+
+            text-align: center;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE — TABLET
+        ========================================================== */
+
+        @media (max-width: 1200px) {
+
+            .workflow-steps {
+                grid-template-columns:
+                    repeat(3, minmax(0, 1fr));
+            }
+
+
+            .workflow-step::after {
+                display: none;
+            }
+
+
+            .metric-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+
+            .finance-grid {
+                grid-template-columns:
+                    repeat(3, minmax(0, 1fr));
+            }
+        }
+
+
+        /* =========================================================
+           RESPONSIVE — MOBILE
+        ========================================================== */
+
+        @media (max-width: 760px) {
+
+            body {
+                padding-bottom: 72px;
+            }
+
+
+            .service-sidebar {
+                display: none;
+            }
+
+
+            .service-main {
+                width: 100%;
+
+                margin-left: 0;
+
+                padding:
+                    15px
+                    13px
+                    30px;
+            }
+
+
+            .dukaflow-menu-wrapper {
+                margin-bottom: 14px;
+            }
+
+
+            .dukaflow-menu-button {
+                min-height: 50px;
+
+                padding: 12px 14px;
+
+                font-size: 14px;
+
+                border-radius: 13px;
+            }
+
+
+            .dukaflow-menu-panel a {
+                padding: 13px 14px;
+
+                font-size: 14px;
+            }
+
+
+            .topbar {
+                margin-bottom: 15px;
+            }
+
+
+            .topbar-left h1 {
+                font-size: 24px;
+            }
+
+
+            .topbar-left p {
+                font-size: 11px;
+            }
+
+
+            .status-pill {
+                padding: 7px 9px;
+
+                font-size: 9px;
+            }
+
+
+            .dashboard-hero {
+                padding: 20px;
+
+                border-radius: 20px;
+            }
+
+
+            .hero-content h2 {
+                font-size: 21px;
+            }
+
+
+            .hero-content p {
+                font-size: 11px;
+            }
+
+
+            /* =============================================
+               MOBILE WORKFLOW
+            ============================================== */
+
+            .workflow-card {
+                padding: 17px;
+
+                margin-bottom: 20px;
+
+                border-radius: 20px;
+            }
+
+
+            .workflow-header {
+                display: block;
+
+                margin-bottom: 15px;
+            }
+
+
+            .workflow-title-icon {
+                width: 40px;
+                height: 40px;
+
+                border-radius: 12px;
+
+                font-size: 18px;
+            }
+
+
+            .workflow-title h3 {
+                font-size: 16px;
+            }
+
+
+            .workflow-title p {
+                font-size: 10px;
+            }
+
+
+            .workflow-badge {
+                display: inline-block;
+
+                margin-top: 11px;
+            }
+
+
+            .workflow-steps {
+                display: grid;
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                gap: 9px;
+            }
+
+
+            .workflow-step {
+                min-height: 135px;
+
+                padding: 13px 11px;
+
+                border-radius: 14px;
+            }
+
+
+            .workflow-step::after {
+                display: none;
+            }
+
+
+            .workflow-icon {
+                font-size: 19px;
+            }
+
+
+            .workflow-step strong {
+                margin-top: 11px;
+
+                font-size: 12px;
+            }
+
+
+            .workflow-step span {
+                font-size: 9px;
+            }
+
+
+            .workflow-action {
+                padding-top: 8px;
+
+                font-size: 9px;
+            }
+
+
+            .workflow-note {
+                margin-top: 11px;
+
+                font-size: 9px;
+            }
+
+
+            .metric-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                gap: 10px;
+            }
+
+
+            .metric-card {
+                min-height: 145px;
+
+                padding: 15px;
+            }
+
+
+            .metric-value {
+                font-size: 27px;
+            }
+
+
+            .metric-label {
+                font-size: 10px;
+            }
+
+
+            .metric-description {
+                font-size: 10px;
+
+                line-height: 1.35;
+            }
+
+
+            .metric-icon {
+                width: 37px;
+                height: 37px;
+
+                font-size: 17px;
+            }
+
+
+            .finance-grid {
+                grid-template-columns: 1fr;
+
+                gap: 10px;
+            }
+
+
+            .finance-card {
+                padding: 18px;
+            }
+
+
+            .finance-value {
+                font-size: 25px;
+            }
+
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .overview-card {
+                padding: 18px;
+            }
+
+
+            .overview-header h4 {
+                font-size: 16px;
+            }
+
+
+            .overview-header p {
+                font-size: 11px;
+            }
+
+
+            .attendance-name {
+                font-size: 12px;
+            }
+
+
+            .attendance-number {
+                font-size: 12px;
+            }
+
+
+            .quick-actions {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                gap: 9px;
+            }
+
+
+            .quick-action {
+                min-height: 68px;
+
+                padding: 11px;
+
+                gap: 9px;
+            }
+
+
+            .quick-action-icon {
+                width: 36px;
+                height: 36px;
+
+                font-size: 16px;
+            }
+
+
+            .quick-action strong {
+                font-size: 11px;
+            }
+
+
+            .quick-action span {
+                font-size: 9px;
+            }
+
+
+            .section-heading {
+                margin-top: 22px;
+            }
+
+
+            .section-heading h3 {
+                font-size: 15px;
+            }
+
+
+            .section-heading span {
+                font-size: 11px;
+            }
+
+
+            .mobile-nav {
+                position: fixed;
+
+                display: grid;
+
+                grid-template-columns:
+                    repeat(5, 1fr);
+
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+
+                z-index: 200;
+
+                padding: 7px;
+
+                border:
+                    1px solid
+                    rgba(255,255,255,0.7);
+
+                border-radius: 19px;
+
+                background:
+                    rgba(255,255,255,0.92);
+
+                backdrop-filter: blur(18px);
+
+                box-shadow:
+                    0 12px 35px rgba(15,23,42,0.16);
+            }
+
+
+            .mobile-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+
+                gap: 3px;
+
+                min-height: 48px;
+
+                border-radius: 13px;
+
+                color: var(--df-muted);
+
+                font-size: 9px;
+                font-weight: 700;
+            }
+
+
+            .mobile-nav-item.active {
+                background: var(--df-blue-soft);
+
+                color: var(--df-blue);
+            }
+
+
+            .mobile-nav-icon {
+                font-size: 17px;
+            }
+        }
+
+
+        /* =========================================================
+           SMALL PHONES
+        ========================================================== */
+
+        @media (max-width: 380px) {
+
+            .service-main {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+
+            .metric-grid {
+                gap: 8px;
+            }
+
+
+            .metric-card {
+                padding: 13px;
+
+                min-height: 137px;
+            }
+
+
+            .metric-value {
+                font-size: 24px;
+            }
+
+
+            .workflow-card {
+                padding: 14px;
+            }
+
+
+            .workflow-steps {
+                grid-template-columns: 1fr;
+            }
+
+
+            .workflow-step {
+                min-height: auto;
+
+                display: grid;
+
+                grid-template-columns:
+                    28px 1fr auto;
+
+                align-items: center;
+
+                column-gap: 9px;
+            }
+
+
+            .workflow-step-top {
+                display: contents;
+            }
+
+
+            .workflow-number {
+                grid-column: 1;
+                grid-row: 1 / span 2;
+            }
+
+
+            .workflow-icon {
+                grid-column: 3;
+                grid-row: 1;
+            }
+
+
+            .workflow-step strong {
+                grid-column: 2;
+                grid-row: 1;
+
+                margin-top: 0;
+            }
+
+
+            .workflow-step span {
+                grid-column: 2;
+                grid-row: 2;
+
+                margin-top: 3px;
+            }
+
+
+            .workflow-action {
+                display: none;
+            }
+
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         APP
+    ========================================================== -->
+
+    <div class="service-app">
+
+
+        <!-- =====================================================
+             DESKTOP SIDEBAR
+        ====================================================== -->
+
+        <aside class="service-sidebar">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    D
+                </div>
+
+                <div class="brand-text">
+                    <strong>DukaFlow</strong>
+                    <span>Service Business</span>
+                </div>
+
+            </div>
+
+
+            <div class="service-label">
+                Workspace
+            </div>
+
+
+            <nav class="nav-list">
+
+                <a
+                    href="service-dashboard.html"
+                    class="nav-item active"
+                >
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+
+                <a
+                    href="service-clients.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">👥</span>
+                    <span>Clients</span>
+                </a>
+
+
+                <a
+                    href="service-services.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">🛠</span>
+                    <span>Services</span>
+                </a>
+
+
+                <a
+                    href="service-assignments.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">📋</span>
+                    <span>Assignments</span>
+                </a>
+
+
+                <a
+                    href="service-attendance.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">🕒</span>
+                    <span>Attendance</span>
+                </a>
+
+
+                <a
+                    href="service-invoices.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">🧾</span>
+                    <span>Invoices</span>
+                </a>
+
+
+                <a
+                    href="service-payments.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">💳</span>
+                    <span>Payments</span>
+                </a>
+
+
+                <a
+                    href="service-reports.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">📊</span>
+                    <span>Reports</span>
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <div class="sidebar-version">
+                    DukaFlow Service Business<br>
+                    Built & developed by Brian Mogorie © 2026
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN
+        ====================================================== -->
+
+        <main class="service-main">
+
+
+            <!-- =================================================
+                 DUKAFLOW GLOBAL MENU
+            ================================================== -->
+
+            <div class="dukaflow-menu-wrapper">
+
+                <button
+                    type="button"
+                    class="dukaflow-menu-button"
+                    id="dukaflowMenuButton"
+                    aria-expanded="false"
+                    aria-controls="dukaflowMenuPanel"
+                >
+
+                    <span>
+                        ☰ DukaFlow Menu
+                    </span>
+
+                    <span class="dukaflow-menu-arrow">
+                        ▼
+                    </span>
+
+                </button>
+
+
+                <div
+                    class="dukaflow-menu-panel"
+                    id="dukaflowMenuPanel"
+                >
+
+                    <a href="index.html">
+                        🏠 Dashboard
+                    </a>
+
+                    <a href="products.html">
+                        📦 Products & Stock
+                    </a>
+
+                    <a href="sales.html">
+                        💰 Sales
+                    </a>
+
+                    <a href="expenses.html">
+                        💸 Expenses
+                    </a>
+
+                    <a href="reports.html">
+                        📊 Reports
+                    </a>
+
+                    <a href="users.html">
+                        👥 Manage Users
+                    </a>
+
+                    <a
+                        href="service-dashboard.html"
+                        class="active"
+                    >
+                        🧩 Service Business
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TOP BAR
+            ================================================== -->
+
+            <header class="topbar">
+
+                <div class="topbar-left">
+
+                    <h1>
+                        Dashboard
+                    </h1>
+
+                    <p id="welcomeText">
+                        Your service business at a glance.
+                    </p>
+
+                </div>
+
+
+                <div class="topbar-right">
+
+                    <div class="status-pill">
+
+                        <span class="status-dot"></span>
+
+                        <span>
+                            System ready
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <div class="dashboard-content">
+
+
+                <!-- =============================================
+                     ERROR
+                ============================================== -->
+
+                <div
+                    class="error-box"
+                    id="errorBox"
+                >
+
+                    <strong>
+                        Dashboard couldn't load
+                    </strong>
+
+                    <p id="errorMessage">
+                        Something went wrong while loading your dashboard.
+                    </p>
+
+                    <button
+                        class="retry-button"
+                        id="retryButton"
+                    >
+                        Try again
+                    </button>
+
+                </div>
+
+
+                <!-- =============================================
+                     HERO
+                ============================================== -->
+
+                <section class="dashboard-hero">
+
+                    <div class="hero-content">
+
+                        <div class="hero-eyebrow">
+                            ✦ Service Business
+                        </div>
+
+                        <h2>
+                            Run your service business with clarity.
+                        </h2>
+
+                        <p>
+                            Manage clients, services, staff,
+                            assignments, attendance and invoices
+                            from one DukaFlow workspace.
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     START HERE — SERVICE WORKFLOW
+                ============================================== -->
+
+                <section class="workflow-card">
+
+                    <div class="workflow-header">
+
+                        <div class="workflow-title">
+
+                            <div class="workflow-title-icon">
+                                🧭
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Start Here
+                                </h3>
+
+                                <p>
+                                    Follow this simple workflow to run your service business.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="workflow-badge">
+                            Your workflow
+                        </div>
+
+                    </div>
+
+
+                    <div class="workflow-steps">
+
+
+                        <!-- STEP 1 -->
+
+                        <a
+                            href="service-clients.html"
+                            class="workflow-step"
+                        >
+
+                            <div class="workflow-step-top">
+
+                                <div class="workflow-number">
+                                    1
+                                </div>
+
+                                <div class="workflow-icon">
+                                    👥
+                                </div>
+
+                            </div>
+
+                            <strong>
+                                Clients
+                            </strong>
+
+                            <span>
+                                Add the people or businesses you serve.
+                            </span>
+
+                            <div class="workflow-action">
+                                Add clients →
+                            </div>
+
+                        </a>
+
+
+                        <!-- STEP 2 -->
+
+                        <a
+                            href="service-services.html"
+                            class="workflow-step"
+                        >
+
+                            <div class="workflow-step-top">
+
+                                <div class="workflow-number">
+                                    2
+                                </div>
+
+                                <div class="workflow-icon">
+                                    🛠
+                                </div>
+
+                            </div>
+
+                            <strong>
+                                Services
+                            </strong>
+
+                            <span>
+                                Define what you offer and its price.
+                            </span>
+
+                            <div class="workflow-action">
+                                Add services →
+                            </div>
+
+                        </a>
+
+
+                        <!-- STEP 3 -->
+
+                        <a
+                            href="service-assignments.html"
+                            class="workflow-step"
+                        >
+
+                            <div class="workflow-step-top">
+
+                                <div class="workflow-number">
+                                    3
+                                </div>
+
+                                <div class="workflow-icon">
+                                    📋
+                                </div>
+
+                            </div>
+
+                            <strong>
+                                Assignments
+                            </strong>
+
+                            <span>
+                                Assign a service, client, staff member and dates.
+                            </span>
+
+                            <div class="workflow-action">
+                                Create assignment →
+                            </div>
+
+                        </a>
+
+
+                        <!-- STEP 4 -->
+
+                        <a
+                            href="service-attendance.html"
+                            class="workflow-step"
+                        >
+
+                            <div class="workflow-step-top">
+
+                                <div class="workflow-number">
+                                    4
+                                </div>
+
+                                <div class="workflow-icon">
+                                    🕒
+                                </div>
+
+                            </div>
+
+                            <strong>
+                                Attendance
+                            </strong>
+
+                            <span>
+                                Track staff attendance when your business needs it.
+                            </span>
+
+                            <div class="workflow-action">
+                                Track attendance →
+                            </div>
+
+                        </a>
+
+
+                        <!-- STEP 5 -->
+
+                        <a
+                            href="service-invoices.html"
+                            class="workflow-step"
+                        >
+
+                            <div class="workflow-step-top">
+
+                                <div class="workflow-number">
+                                    5
+                                </div>
+
+                                <div class="workflow-icon">
+                                    🧾
+                                </div>
+
+                            </div>
+
+                            <strong>
+                                Invoices
+                            </strong>
+
+                            <span>
+                                Bill your client for the service provided.
+                            </span>
+
+                            <div class="workflow-action">
+                                Create invoice →
+                            </div>
+
+                        </a>
+
+
+                        <!-- STEP 6 -->
+
+                        <a
+                            href="service-payments.html"
+                            class="workflow-step"
+                        >
+
+                            <div class="workflow-step-top">
+
+                                <div class="workflow-number">
+                                    6
+                                </div>
+
+                                <div class="workflow-icon">
+                                    💳
+                                </div>
+
+                            </div>
+
+                            <strong>
+                                Payments
+                            </strong>
+
+                            <span>
+                                Record payments received from your clients.
+                            </span>
+
+                            <div class="workflow-action">
+                                Record payment →
+                            </div>
+
+                        </a>
+
+
+                    </div>
+
+
+                    <div class="workflow-note">
+
+                        <strong>Tip:</strong>
+                        Attendance is optional. Use it when you need to track staff time,
+                        presence or attendance records.
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     BUSINESS OVERVIEW
+                ============================================== -->
+
+                <div class="section-heading">
+
+                    <h3>
+                        Your business
+                    </h3>
+
+                    <span>
+                        Live summary
+                    </span>
+
+                </div>
+
+
+                <section class="metric-grid">
+
+
+                    <!-- ACTIVE CLIENTS -->
+
+                    <article class="metric-card blue">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                Active clients
+                            </div>
+
+                            <div class="metric-icon">
+                                👥
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="metric-value"
+                            id="activeClients"
+                        >
+                            0
+                        </div>
+
+                        <div class="metric-description">
+                            Clients currently active
+                        </div>
+
+                    </article>
+
+
+                    <!-- ACTIVE SERVICES -->
+
+                    <article class="metric-card purple">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                Services
+                            </div>
+
+                            <div class="metric-icon">
+                                🛠
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="metric-value"
+                            id="activeServices"
+                        >
+                            0
+                        </div>
+
+                        <div class="metric-description">
+                            Active services offered
+                        </div>
+
+                    </article>
+
+
+                    <!-- ASSIGNMENTS -->
+
+                    <article class="metric-card cyan">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                Assignments
+                            </div>
+
+                            <div class="metric-icon">
+                                📋
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="metric-value"
+                            id="activeAssignments"
+                        >
+                            0
+                        </div>
+
+                        <div class="metric-description">
+                            Active client assignments
+                        </div>
+
+                    </article>
+
+
+                    <!-- STAFF -->
+
+                    <article class="metric-card green">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                Staff
+                            </div>
+
+                            <div class="metric-icon">
+                                🧑‍💼
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="metric-value"
+                            id="totalStaff"
+                        >
+                            0
+                        </div>
+
+                        <div class="metric-description">
+                            Service staff members
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <!-- =============================================
+                     TODAY
+                ============================================== -->
+
+                <div class="section-heading">
+
+                    <h3>
+                        Today
+                    </h3>
+
+                    <span id="attendanceDate">
+                        Today
+                    </span>
+
+                </div>
+
+
+                <section class="metric-grid">
+
+
+                    <!-- PRESENT -->
+
+                    <article class="metric-card green">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                Present
+                            </div>
+
+                            <div class="metric-icon">
+                                ✓
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="metric-value"
+                            id="presentToday"
+                        >
+                            0
+                        </div>
+
+                        <div class="metric-description">
+                            Staff checked in
+                        </div>
+
+                    </article>
+
+
+                    <!-- LATE -->
+
+                    <article class="metric-card orange">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                Late
+                            </div>
+
+                            <div class="metric-icon">
+                                ⏱
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="metric-value"
+                            id="lateToday"
+                        >
+                            0
+                        </div>
+
+                        <div class="metric-description">
+                            Late attendance records
+                        </div>
+
+                    </article>
+
+
+                    <!-- ABSENT -->
+
+                    <article class="metric-card red">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                Absent
+                            </div>
+
+                            <div class="metric-icon">
+                                !
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="metric-value"
+                            id="absentToday"
+                        >
+                            0
+                        </div>
+
+                        <div class="metric-description">
+                            Staff marked absent
+                        </div>
+
+                    </article>
+
+
+                    <!-- INVOICES -->
+
+                    <article class="metric-card blue">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                Invoices
+                            </div>
+
+                            <div class="metric-icon">
+                                🧾
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="metric-value"
+                            id="totalInvoices"
+                        >
+                            0
+                        </div>
+
+                        <div class="metric-description">
+                            Non-cancelled invoices
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <!-- =============================================
+                     MONEY
+                ============================================== -->
+
+                <div class="section-heading">
+
+                    <h3>
+                        Money
+                    </h3>
+
+                    <span>
+                        Invoice performance
+                    </span>
+
+                </div>
+
+
+                <section class="finance-grid">
+
+
+                    <!-- INVOICED -->
+
+                    <article class="finance-card invoiced">
+
+                        <div class="finance-label">
+                            Total invoiced
+                        </div>
+
+                        <div
+                            class="finance-value"
+                            id="totalInvoiced"
+                        >
+                            KSh 0
+                        </div>
+
+                        <div class="finance-description">
+                            Value of non-cancelled invoices
+                        </div>
+
+                    </article>
+
+
+                    <!-- RECEIVED -->
+
+                    <article class="finance-card received">
+
+                        <div class="finance-label">
+                            Total received
+                        </div>
+
+                        <div
+                            class="finance-value"
+                            id="totalReceived"
+                        >
+                            KSh 0
+                        </div>
+
+                        <div class="finance-description">
+                            Payments received from clients
+                        </div>
+
+                    </article>
+
+
+                    <!-- OUTSTANDING -->
+
+                    <article class="finance-card outstanding">
+
+                        <div class="finance-label">
+                            Outstanding
+                        </div>
+
+                        <div
+                            class="finance-value"
+                            id="outstandingBalance"
+                        >
+                            KSh 0
+                        </div>
+
+                        <div class="finance-description">
+                            Amount still to be collected
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <!-- =============================================
+                     OPERATIONS DETAIL
+                ============================================== -->
+
+                <div class="section-heading">
+
+                    <h3>
+                        Operations
+                    </h3>
+
+                    <span>
+                        Daily tools
+                    </span>
+
+                </div>
+
+
+                <section class="overview-grid">
+
+
+                    <!-- ATTENDANCE OVERVIEW -->
+
+                    <article class="overview-card">
+
+                        <div class="overview-header">
+
+                            <div class="overview-icon">
+                                🕒
+                            </div>
+
+                            <div>
+
+                                <h4>
+                                    Today's attendance
+                                </h4>
+
+                                <p>
+                                    Staff attendance status
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="attendance-bars">
+
+
+                            <div class="attendance-row">
+
+                                <div class="attendance-name">
+                                    Present
+                                </div>
+
+                                <div class="attendance-track">
+
+                                    <div
+                                        class="attendance-fill present"
+                                        id="presentBar"
+                                    ></div>
+
+                                </div>
+
+                                <div
+                                    class="attendance-number"
+                                    id="presentBarNumber"
+                                >
+                                    0
+                                </div>
+
+                            </div>
+
+
+                            <div class="attendance-row">
+
+                                <div class="attendance-name">
+                                    Late
+                                </div>
+
+                                <div class="attendance-track">
+
+                                    <div
+                                        class="attendance-fill late"
+                                        id="lateBar"
+                                    ></div>
+
+                                </div>
+
+                                <div
+                                    class="attendance-number"
+                                    id="lateBarNumber"
+                                >
+                                    0
+                                </div>
+
+                            </div>
+
+
+                            <div class="attendance-row">
+
+                                <div class="attendance-name">
+                                    Absent
+                                </div>
+
+                                <div class="attendance-track">
+
+                                    <div
+                                        class="attendance-fill absent"
+                                        id="absentBar"
+                                    ></div>
+
+                                </div>
+
+                                <div
+                                    class="attendance-number"
+                                    id="absentBarNumber"
+                                >
+                                    0
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- QUICK ACTIONS -->
+
+                    <article class="overview-card">
+
+                        <div class="overview-header">
+
+                            <div class="overview-icon">
+                                ⚡
+                            </div>
+
+                            <div>
+
+                                <h4>
+                                    Quick actions
+                                </h4>
+
+                                <p>
+                                    Jump into your daily workflow
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="quick-actions">
+
+
+                            <!-- ADD CLIENT -->
+
+                            <button
+                                type="button"
+                                class="quick-action"
+                                data-page="clients"
+                            >
+
+                                <div class="quick-action-icon">
+                                    👥
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Add client
+                                    </strong>
+
+                                    <span>
+                                        Register a new client
+                                    </span>
+
+                                </div>
+
+                            </button>
+
+
+                            <!-- ADD SERVICE -->
+
+                            <button
+                                type="button"
+                                class="quick-action"
+                                data-page="services"
+                            >
+
+                                <div class="quick-action-icon">
+                                    🛠
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Add service
+                                    </strong>
+
+                                    <span>
+                                        Create a service
+                                    </span>
+
+                                </div>
+
+                            </button>
+
+
+                            <!-- NEW ASSIGNMENT -->
+
+                            <button
+                                type="button"
+                                class="quick-action"
+                                data-page="assignments"
+                            >
+
+                                <div class="quick-action-icon">
+                                    📋
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        New assignment
+                                    </strong>
+
+                                    <span>
+                                        Assign work to staff
+                                    </span>
+
+                                </div>
+
+                            </button>
+
+
+                            <!-- ATTENDANCE -->
+
+                            <button
+                                type="button"
+                                class="quick-action"
+                                data-page="attendance"
+                            >
+
+                                <div class="quick-action-icon">
+                                    🕒
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Attendance
+                                    </strong>
+
+                                    <span>
+                                        Track staff attendance
+                                    </span>
+
+                                </div>
+
+                            </button>
+
+
+                            <!-- CREATE INVOICE -->
+
+                            <button
+                                type="button"
+                                class="quick-action"
+                                data-page="invoices"
+                            >
+
+                                <div class="quick-action-icon">
+                                    🧾
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Create invoice
+                                    </strong>
+
+                                    <span>
+                                        Bill a client
+                                    </span>
+
+                                </div>
+
+                            </button>
+
+
+                            <!-- RECORD PAYMENT -->
+
+                            <button
+                                type="button"
+                                class="quick-action"
+                                data-page="payments"
+                            >
+
+                                <div class="quick-action-icon">
+                                    💳
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Record payment
+                                    </strong>
+
+                                    <span>
+                                        Record money received
+                                    </span>
+
+                                </div>
+
+                            </button>
+
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <!-- =============================================
+                     FOOTER
+                ============================================== -->
+
+                <footer class="service-footer">
+
+                    DukaFlow Service Business ·
+                    Built & developed by Brian Mogorie © 2026
+
+                </footer>
+
+
+            </div>
+
+        </main>
+
+
+        <!-- =====================================================
+             MOBILE NAV
+        ====================================================== -->
+
+        <nav class="mobile-nav">
+
+
+            <a
+                href="service-dashboard.html"
+                class="mobile-nav-item active"
+            >
+
+                <span class="mobile-nav-icon">
+                    ⌂
+                </span>
+
+                <span>
+                    Home
+                </span>
+
+            </a>
+
+
+            <a
+                href="service-clients.html"
+                class="mobile-nav-item"
+            >
+
+                <span class="mobile-nav-icon">
+                    👥
+                </span>
+
+                <span>
+                    Clients
+                </span>
+
+            </a>
+
+
+            <a
+                href="service-assignments.html"
+                class="mobile-nav-item"
+            >
+
+                <span class="mobile-nav-icon">
+                    📋
+                </span>
+
+                <span>
+                    Assignments
+                </span>
+
+            </a>
+
+
+            <a
+                href="service-invoices.html"
+                class="mobile-nav-item"
+            >
+
+                <span class="mobile-nav-icon">
+                    🧾
+                </span>
+
+                <span>
+                    Invoices
+                </span>
+
+            </a>
+
+
+            <a
+                href="service-reports.html"
+                class="mobile-nav-item"
+            >
+
+                <span class="mobile-nav-icon">
+                    📊
+                </span>
+
+                <span>
+                    Reports
+                </span>
+
+            </a>
+
+
+        </nav>
+
+    </div>
+
+
+    <!-- =========================================================
+         LOADING OVERLAY
+    ========================================================== -->
+
+    <div
+        class="loading-overlay"
+        id="loadingOverlay"
+    >
+
+        <div class="loading-box">
+
+            <div class="loading-spinner"></div>
+
+            <strong>
+                Loading DukaFlow
+            </strong>
+
+            <p>
+                Preparing your service dashboard...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script>
+
+        /* =========================================================
+           SUPABASE CONFIGURATION
+        ========================================================== */
+
+        const SUPABASE_URL =
+            "https://uwfghbctckinymatcbro.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        /* =========================================================
+           ELEMENT REFERENCES
+        ========================================================== */
+
+        const loadingOverlay =
+            document.getElementById(
+                "loadingOverlay"
+            );
+
+
+        const errorBox =
+            document.getElementById(
+                "errorBox"
+            );
+
+
+        const errorMessage =
+            document.getElementById(
+                "errorMessage"
+            );
+
+
+        const retryButton =
+            document.getElementById(
+                "retryButton"
+            );
+
+
+        /* =========================================================
+           DUKAFLOW GLOBAL MENU
+        ========================================================== */
+
+        const dukaflowMenuButton =
+            document.getElementById(
+                "dukaflowMenuButton"
+            );
+
+
+        const dukaflowMenuPanel =
+            document.getElementById(
+                "dukaflowMenuPanel"
+            );
+
+
+        dukaflowMenuButton.addEventListener(
+            "click",
+            function(event) {
+
+                event.stopPropagation();
+
+                const isOpen =
+                    dukaflowMenuPanel
+                        .classList
+                        .contains("open");
+
+                dukaflowMenuPanel
+                    .classList
+                    .toggle("open");
+
+                dukaflowMenuButton
+                    .setAttribute(
+                        "aria-expanded",
+                        String(!isOpen)
+                    );
+            }
+        );
+
+
+        document.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    !event.target.closest(
+                        ".dukaflow-menu-wrapper"
+                    )
+                ) {
+
+                    dukaflowMenuPanel
+                        .classList
+                        .remove("open");
+
+                    dukaflowMenuButton
+                        .setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+                }
+            }
+        );
+
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    dukaflowMenuPanel
+                        .classList
+                        .remove("open");
+
+                    dukaflowMenuButton
+                        .setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+                }
+            }
+        );
+
+
+        /* =========================================================
+           HELPERS
+        ========================================================== */
+
+        function setText(
+            elementId,
+            value
+        ) {
+
+            const element =
+                document.getElementById(
+                    elementId
+                );
+
+            if (!element) {
+                return;
+            }
+
+            element.textContent =
+                value ?? 0;
+        }
+
+
+        function formatNumber(
+            value
+        ) {
+
+            const number =
+                Number(value || 0);
+
+            return new Intl.NumberFormat(
+                "en-KE"
+            ).format(number);
+        }
+
+
+        function formatMoney(
+            value
+        ) {
+
+            const number =
+                Number(value || 0);
+
+            return (
+                "KSh " +
+                new Intl.NumberFormat(
+                    "en-KE",
+                    {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    }
+                ).format(number)
+            );
+        }
+
+
+        function hideLoading() {
+
+            loadingOverlay.style.display =
+                "none";
+        }
+
+
+        function showLoading() {
+
+            loadingOverlay.style.display =
+                "flex";
+        }
+
+
+        function showError(
+            message
+        ) {
+
+            errorMessage.textContent =
+                message ||
+                "Something went wrong while loading the dashboard.";
+
+            errorBox.style.display =
+                "block";
+        }
+
+
+        function hideError() {
+
+            errorBox.style.display =
+                "none";
+        }
+
+
+        /* =========================================================
+           ATTENDANCE VISUALS
+        ========================================================== */
+
+        function updateAttendanceBars(
+            present,
+            late,
+            absent
+        ) {
+
+            const presentNumber =
+                Number(present || 0);
+
+            const lateNumber =
+                Number(late || 0);
+
+            const absentNumber =
+                Number(absent || 0);
+
+
+            const total =
+                presentNumber +
+                lateNumber +
+                absentNumber;
+
+
+            let presentPercent = 0;
+            let latePercent = 0;
+            let absentPercent = 0;
+
+
+            if (total > 0) {
+
+                presentPercent =
+                    (presentNumber / total) * 100;
+
+                latePercent =
+                    (lateNumber / total) * 100;
+
+                absentPercent =
+                    (absentNumber / total) * 100;
+            }
+
+
+            document.getElementById(
+                "presentBar"
+            ).style.width =
+                presentPercent + "%";
+
+
+            document.getElementById(
+                "lateBar"
+            ).style.width =
+                latePercent + "%";
+
+
+            document.getElementById(
+                "absentBar"
+            ).style.width =
+                absentPercent + "%";
+
+
+            setText(
+                "presentBarNumber",
+                formatNumber(presentNumber)
+            );
+
+
+            setText(
+                "lateBarNumber",
+                formatNumber(lateNumber)
+            );
+
+
+            setText(
+                "absentBarNumber",
+                formatNumber(absentNumber)
+            );
+        }
+
+
+        /* =========================================================
+           LOAD SERVICE DASHBOARD
+        ========================================================== */
+
+        async function loadServiceDashboard() {
+
+            showLoading();
+            hideError();
+
+
+            try {
+
+                /* =============================================
+                   CHECK AUTHENTICATION
+                ============================================== */
+
+                const {
+                    data: {
+                        session
+                    },
+                    error: sessionError
+                } =
+                    await supabaseClient
+                        .auth
+                        .getSession();
+
+
+                if (sessionError) {
+                    throw sessionError;
+                }
+
+
+                if (!session) {
+
+                    throw new Error(
+                        "Your DukaFlow session has expired. Please sign in again."
+                    );
+                }
+
+
+                /* =============================================
+                   CALL DATABASE FUNCTION
+                ============================================== */
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .rpc(
+                            "get_service_dashboard_summary"
+                        );
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                if (
+                    !data ||
+                    !Array.isArray(data) ||
+                    data.length === 0
+                ) {
+
+                    throw new Error(
+                        "No dashboard summary was returned."
+                    );
+                }
+
+
+                const summary =
+                    data[0];
+
+
+                /* =============================================
+                   UPDATE OPERATIONS
+                ============================================== */
+
+                setText(
+                    "activeClients",
+                    formatNumber(
+                        summary.active_clients
+                    )
+                );
+
+
+                setText(
+                    "activeServices",
+                    formatNumber(
+                        summary.active_services
+                    )
+                );
+
+
+                setText(
+                    "activeAssignments",
+                    formatNumber(
+                        summary.active_assignments
+                    )
+                );
+
+
+                setText(
+                    "totalStaff",
+                    formatNumber(
+                        summary.total_staff
+                    )
+                );
+
+
+                /* =============================================
+                   ATTENDANCE
+                ============================================== */
+
+                setText(
+                    "presentToday",
+                    formatNumber(
+                        summary.present_today
+                    )
+                );
+
+
+                setText(
+                    "lateToday",
+                    formatNumber(
+                        summary.late_today
+                    )
+                );
+
+
+                setText(
+                    "absentToday",
+                    formatNumber(
+                        summary.absent_today
+                    )
+                );
+
+
+                updateAttendanceBars(
+
+                    summary.present_today,
+
+                    summary.late_today,
+
+                    summary.absent_today
+
+                );
+
+
+                /* =============================================
+                   INVOICES
+                ============================================== */
+
+                setText(
+                    "totalInvoices",
+                    formatNumber(
+                        summary.total_invoices
+                    )
+                );
+
+
+                /* =============================================
+                   FINANCES
+                ============================================== */
+
+                setText(
+                    "totalInvoiced",
+                    formatMoney(
+                        summary.total_invoiced
+                    )
+                );
+
+
+                setText(
+                    "totalReceived",
+                    formatMoney(
+                        summary.total_received
+                    )
+                );
+
+
+                setText(
+                    "outstandingBalance",
+                    formatMoney(
+                        summary.outstanding_balance
+                    )
+                );
+
+
+                /* =============================================
+                   DATE
+                ============================================== */
+
+                const today =
+                    new Intl.DateTimeFormat(
+                        "en-KE",
+                        {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric"
+                        }
+                    ).format(
+                        new Date()
+                    );
+
+
+                setText(
+                    "attendanceDate",
+                    today
+                );
+
+
+                /* =============================================
+                   SUCCESS
+                ============================================== */
+
+                console.log(
+                    "DukaFlow service dashboard loaded:",
+                    summary
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "DukaFlow service dashboard error:",
+                    error
+                );
+
+
+                showError(
+                    error.message ||
+                    "Unable to load the service dashboard."
+                );
+
+            }
+
+            finally {
+
+                hideLoading();
+
+            }
+        }
+
+
+        /* =========================================================
+           QUICK ACTION ROUTING
+        ========================================================== */
+
+        document
+            .querySelectorAll(
+                ".quick-action"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            const page =
+                                button.dataset.page;
+
+
+                            const routes = {
+
+                                clients:
+                                    "service-clients.html",
+
+                                services:
+                                    "service-services.html",
+
+                                assignments:
+                                    "service-assignments.html",
+
+                                attendance:
+                                    "service-attendance.html",
+
+                                invoices:
+                                    "service-invoices.html",
+
+                                payments:
+                                    "service-payments.html"
+
+                            };
+
+
+                            if (
+                                routes[page]
+                            ) {
+
+                                window.location.href =
+                                    routes[page];
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =========================================================
+           RETRY
+        ========================================================== */
+
+        retryButton.addEventListener(
+            "click",
+            loadServiceDashboard
+        );
+
+
+        /* =========================================================
+           START
+        ========================================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            loadServiceDashboard
+        );
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,2872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#087f3f"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <title>DukaFlow | Services</title>
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="icon-192.png"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="icon-192.png"
+    >
+
+    <link
+        rel="manifest"
+        href="manifest.json"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #087f3f;
+            --primary-dark: #066b35;
+            --primary-light: #ecfdf5;
+
+            --blue: #2563eb;
+            --blue-light: #eff6ff;
+
+            --purple: #7c3aed;
+            --purple-light: #f5f3ff;
+
+            --orange: #f97316;
+            --orange-light: #fff7ed;
+
+            --red: #dc2626;
+            --red-light: #fef2f2;
+
+            --cyan: #0891b2;
+            --cyan-light: #ecfeff;
+
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+
+            --shadow-sm:
+                0 4px 12px rgba(15, 23, 42, 0.06);
+
+            --shadow-md:
+                0 10px 25px rgba(15, 23, 42, 0.08);
+
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* ==========================================
+           DUKAFLOW MENU
+        ========================================== */
+
+        .dukaflow-menu-wrapper {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            position: relative;
+            z-index: 200;
+        }
+
+        .dukaflow-menu-button {
+            width: 100%;
+            min-height: 52px;
+            padding: 13px 16px;
+            border: none;
+            border-radius: 14px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #087f3f,
+                    #0b7a3b
+                );
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow:
+                0 8px 20px
+                rgba(8, 127, 63, 0.16);
+        }
+
+        .dukaflow-menu-button:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #076d36,
+                    #096b34
+                );
+        }
+
+        .dukaflow-menu-arrow {
+            transition: transform 0.2s ease;
+        }
+
+        .dukaflow-menu-button[aria-expanded="true"]
+        .dukaflow-menu-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dukaflow-menu-panel {
+            display: none;
+            width: 100%;
+            margin-top: 8px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow:
+                0 14px 30px
+                rgba(15, 23, 42, 0.12);
+            overflow: hidden;
+        }
+
+        .dukaflow-menu-panel.open {
+            display: block;
+        }
+
+        .dukaflow-menu-panel a {
+            display: block;
+            padding: 13px 16px;
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: 700;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .dukaflow-menu-panel a:last-child {
+            border-bottom: none;
+        }
+
+        .dukaflow-menu-panel a:hover {
+            background: #f0fdf4;
+            color: var(--primary);
+        }
+
+        .dukaflow-menu-panel a.active {
+            background: #ecfdf5;
+            color: var(--primary);
+        }
+
+        /* ==========================================
+           PAGE
+        ========================================== */
+
+        .page {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .page-title-area {
+            flex: 1;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 11px;
+            margin-bottom: 10px;
+            border-radius: 999px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 30px;
+            line-height: 1.15;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .add-service-button {
+            border: none;
+            padding: 13px 18px;
+            border-radius: 12px;
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    #0b7a3b
+                );
+            color: #ffffff;
+            font-weight: 800;
+            box-shadow:
+                0 8px 18px
+                rgba(8, 127, 63, 0.18);
+            white-space: nowrap;
+        }
+
+        .add-service-button:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary-dark),
+                    #075f30
+                );
+        }
+
+        /* ==========================================
+           SUMMARY
+        ========================================== */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid transparent;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .summary-card::after {
+            content: "";
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            right: -28px;
+            bottom: -35px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.28);
+        }
+
+        .summary-card.total {
+            background:
+                linear-gradient(
+                    145deg,
+                    #ecfdf5,
+                    #d1fae5
+                );
+            border-color: #a7f3d0;
+        }
+
+        .summary-card.active {
+            background:
+                linear-gradient(
+                    145deg,
+                    #eff6ff,
+                    #dbeafe
+                );
+            border-color: #bfdbfe;
+        }
+
+        .summary-card.inactive {
+            background:
+                linear-gradient(
+                    145deg,
+                    #f5f3ff,
+                    #ddd6fe
+                );
+            border-color: #c4b5fd;
+        }
+
+        .summary-icon {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 21px;
+            margin-bottom: 14px;
+        }
+
+        .total .summary-icon {
+            background: #bbf7d0;
+        }
+
+        .active .summary-icon {
+            background: #bfdbfe;
+        }
+
+        .inactive .summary-icon {
+            background: #ddd6fe;
+        }
+
+        .summary-label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .summary-value {
+            margin-top: 5px;
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        /* ==========================================
+           TOOLBAR
+        ========================================== */
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            background:
+                linear-gradient(
+                    145deg,
+                    #ffffff,
+                    #f8fafc
+                );
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            min-height: 46px;
+            padding:
+                11px 14px 11px 42px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            outline: none;
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow:
+                0 0 0 3px
+                rgba(8, 127, 63, 0.10);
+        }
+
+        .status-filter {
+            min-width: 150px;
+            min-height: 46px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            outline: none;
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        .status-filter:focus {
+            border-color: var(--primary);
+        }
+
+        .refresh-button {
+            min-height: 46px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 11px;
+            background: #eef2f7;
+            color: #334155;
+            font-weight: 800;
+        }
+
+        .refresh-button:hover {
+            background: #e2e8f0;
+        }
+
+        /* ==========================================
+           SERVICES CARD
+        ========================================== */
+
+        .services-card {
+            background:
+                linear-gradient(
+                    145deg,
+                    #ffffff,
+                    #f8fafc
+                );
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .services-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .services-card-title {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .services-count {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .services-list {
+            width: 100%;
+        }
+
+        .service-row {
+            display: grid;
+            grid-template-columns:
+                minmax(230px, 1.5fr)
+                minmax(150px, 0.8fr)
+                minmax(130px, 0.7fr)
+                minmax(120px, 0.7fr)
+                auto;
+            gap: 16px;
+            align-items: center;
+            padding: 18px 20px;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .service-row:last-child {
+            border-bottom: none;
+        }
+
+        .service-row:hover {
+            background: #f8fafc;
+        }
+
+        .service-main {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .service-icon {
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                linear-gradient(
+                    135deg,
+                    #dbeafe,
+                    #bfdbfe
+                );
+            color: var(--blue);
+            font-size: 20px;
+        }
+
+        .service-name-block {
+            min-width: 0;
+        }
+
+        .service-name {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .service-description {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .detail-label {
+            margin-bottom: 4px;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            color: #334155;
+            font-size: 13px;
+            word-break: break-word;
+        }
+
+        .price-value {
+            color: #0f766e;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .service-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 7px;
+        }
+
+        .action-button {
+            min-width: 38px;
+            min-height: 38px;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: #ffffff;
+            font-size: 16px;
+        }
+
+        .action-button:hover {
+            background: #f8fafc;
+        }
+
+        .edit-button:hover {
+            border-color: #bfdbfe;
+            background: var(--blue-light);
+        }
+
+        .delete-button:hover {
+            border-color: #fecaca;
+            background: var(--red-light);
+        }
+
+        /* ==========================================
+           STATES
+        ========================================== */
+
+        .state-box {
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .state-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 14px;
+            border-radius: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .loading-icon {
+            background: var(--primary-light);
+        }
+
+        .empty-icon {
+            background: var(--blue-light);
+        }
+
+        .error-icon {
+            background: var(--red-light);
+        }
+
+        .state-title {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .state-text {
+            max-width: 500px;
+            margin: 7px auto 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .retry-button {
+            margin-top: 15px;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        /* ==========================================
+           MODAL
+        ========================================== */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background:
+                rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 620px;
+            max-height: 92vh;
+            overflow-y: auto;
+            border-radius: 22px;
+            background: #ffffff;
+            box-shadow:
+                0 25px 60px
+                rgba(15, 23, 42, 0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        .modal-close {
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 20px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 12px;
+            color: #334155;
+            font-weight: 900;
+        }
+
+        .required {
+            color: var(--red);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        .form-input,
+        .form-select {
+            min-height: 45px;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow:
+                0 0 0 3px
+                rgba(8, 127, 63, 0.09);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 16px 20px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .cancel-button {
+            padding: 11px 17px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #ffffff;
+            color: #475569;
+            font-weight: 800;
+        }
+
+        .save-button {
+            min-width: 125px;
+            padding: 11px 17px;
+            border: none;
+            border-radius: 10px;
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    #0b7a3b
+                );
+            color: #ffffff;
+            font-weight: 900;
+        }
+
+        .save-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ==========================================
+           DELETE MODAL
+        ========================================== */
+
+        .confirm-modal {
+            max-width: 440px;
+        }
+
+        .confirm-body {
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .confirm-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 15px;
+            border-radius: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--red-light);
+            font-size: 25px;
+        }
+
+        .confirm-title {
+            margin: 0;
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        .confirm-text {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .confirm-footer {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 20px 22px;
+        }
+
+        .delete-confirm-button {
+            min-width: 120px;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 10px;
+            background: #dc2626;
+            color: #ffffff;
+            font-weight: 900;
+        }
+
+        /* ==========================================
+           TOAST
+        ========================================== */
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform:
+                translate(-50%, 20px);
+            min-width: 250px;
+            max-width: calc(100% - 30px);
+            padding: 13px 16px;
+            border-radius: 12px;
+            color: #ffffff;
+            background: #0f172a;
+            box-shadow:
+                0 12px 30px
+                rgba(15, 23, 42, 0.2);
+            font-size: 13px;
+            font-weight: 800;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition:
+                opacity 0.2s ease,
+                transform 0.2s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform:
+                translate(-50%, 0);
+        }
+
+        .toast.success {
+            background: #15803d;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 1100px) {
+
+            .service-row {
+                grid-template-columns:
+                    minmax(220px, 1.4fr)
+                    minmax(130px, 0.8fr)
+                    minmax(120px, 0.7fr)
+                    auto;
+            }
+
+            .service-row .detail:nth-child(3) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 850px) {
+
+            .page {
+                padding: 18px;
+            }
+
+            .page-header {
+                flex-direction: column;
+            }
+
+            .add-service-button {
+                width: 100%;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .status-filter,
+            .refresh-button {
+                width: 100%;
+            }
+
+            .service-row {
+                grid-template-columns: 1fr auto;
+                gap: 12px;
+            }
+
+            .service-main {
+                grid-column: 1 / 2;
+            }
+
+            .service-row .detail {
+                display: block;
+            }
+
+            .service-row .detail.status {
+                grid-column: 1 / 2;
+            }
+
+            .service-actions {
+                grid-column: 2 / 3;
+                grid-row: 1 / span 3;
+                align-self: center;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .page {
+                padding: 14px;
+            }
+
+            .dukaflow-menu-wrapper {
+                margin-bottom: 14px;
+            }
+
+            .dukaflow-menu-button {
+                min-height: 50px;
+                padding: 12px 14px;
+                font-size: 14px;
+                border-radius: 13px;
+            }
+
+            .page-title {
+                font-size: 25px;
+            }
+
+            .summary-grid {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+            .summary-card:last-child {
+                grid-column: 1 / -1;
+            }
+
+            .summary-value {
+                font-size: 25px;
+            }
+
+            .services-card-header {
+                padding: 16px;
+            }
+
+            .service-row {
+                padding: 16px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .modal {
+                border-radius: 18px;
+            }
+        }
+
+        @media (max-width: 420px) {
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-card:last-child {
+                grid-column: auto;
+            }
+
+            .service-row {
+                grid-template-columns: 1fr;
+            }
+
+            .service-main {
+                grid-column: auto;
+            }
+
+            .service-actions {
+                grid-column: auto;
+                grid-row: auto;
+                flex-direction: row;
+                justify-content: flex-start;
+            }
+
+            .modal-footer {
+                flex-direction: column-reverse;
+            }
+
+            .cancel-button,
+            .save-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- ==========================================
+         DUKAFLOW MENU
+    ========================================== -->
+
+    <div class="dukaflow-menu-wrapper">
+
+        <button
+            type="button"
+            class="dukaflow-menu-button"
+            id="dukaflowMenuButton"
+            aria-expanded="false"
+            aria-controls="dukaflowMenuPanel"
+        >
+            <span>☰ DukaFlow Menu</span>
+            <span class="dukaflow-menu-arrow">▼</span>
+        </button>
+
+        <div
+            class="dukaflow-menu-panel"
+            id="dukaflowMenuPanel"
+        >
+
+            <a href="index.html">
+                🏠 Dashboard
+            </a>
+
+            <a href="products.html">
+                📦 Products & Stock
+            </a>
+
+            <a href="sales.html">
+                💰 Sales
+            </a>
+
+            <a href="expenses.html">
+                💸 Expenses
+            </a>
+
+            <a href="reports.html">
+                📊 Reports
+            </a>
+
+            <a href="users.html">
+                👥 Manage Users
+            </a>
+
+            <a href="service-dashboard.html">
+                🧩 Service Business
+            </a>
+
+            <a href="service-clients.html">
+                👤 Service Clients
+            </a>
+
+            <a
+                href="service-services.html"
+                class="active"
+            >
+                🛠️ Services
+            </a>
+
+            <a href="service-assignments.html">
+                📋 Assignments
+            </a>
+
+            <a href="service-attendance.html">
+                🕒 Attendance
+            </a>
+
+            <a href="service-invoices.html">
+                🧾 Invoices
+            </a>
+
+            <a href="service-payments.html">
+                💳 Invoice Payments
+            </a>
+
+            <a href="service-reports.html">
+                📈 Service Reports
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ==========================================
+         PAGE HEADER
+    ========================================== -->
+
+    <header class="page-header">
+
+        <div class="page-title-area">
+
+            <div class="eyebrow">
+                🧩 Service Business
+            </div>
+
+            <h1 class="page-title">
+                Services
+            </h1>
+
+            <p class="page-subtitle">
+                Create and manage the services your business offers,
+                including descriptions, pricing and availability.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="add-service-button"
+            id="addServiceButton"
+        >
+            ＋ Add Service
+        </button>
+
+    </header>
+
+    <!-- ==========================================
+         SUMMARY
+    ========================================== -->
+
+    <section class="summary-grid">
+
+        <div class="summary-card total">
+
+            <div class="summary-icon">
+                🛠️
+            </div>
+
+            <div class="summary-label">
+                Total Services
+            </div>
+
+            <div
+                class="summary-value"
+                id="totalServices"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="summary-card active">
+
+            <div class="summary-icon">
+                ✓
+            </div>
+
+            <div class="summary-label">
+                Active Services
+            </div>
+
+            <div
+                class="summary-value"
+                id="activeServices"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="summary-card inactive">
+
+            <div class="summary-icon">
+                ◌
+            </div>
+
+            <div class="summary-label">
+                Inactive Services
+            </div>
+
+            <div
+                class="summary-value"
+                id="inactiveServices"
+            >
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ==========================================
+         SEARCH / FILTER
+    ========================================== -->
+
+    <section class="toolbar">
+
+        <div class="search-wrapper">
+
+            <span class="search-icon">
+                🔎
+            </span>
+
+            <input
+                type="search"
+                id="searchInput"
+                class="search-input"
+                placeholder="Search services by name or description..."
+                autocomplete="off"
+            >
+
+        </div>
+
+        <select
+            id="statusFilter"
+            class="status-filter"
+        >
+
+            <option value="all">
+                All statuses
+            </option>
+
+            <option value="active">
+                Active
+            </option>
+
+            <option value="inactive">
+                Inactive
+            </option>
+
+        </select>
+
+        <button
+            type="button"
+            class="refresh-button"
+            id="refreshButton"
+        >
+            🔄 Refresh
+        </button>
+
+    </section>
+
+    <!-- ==========================================
+         SERVICES LIST
+    ========================================== -->
+
+    <section class="services-card">
+
+        <div class="services-card-header">
+
+            <h2 class="services-card-title">
+                Your Services
+            </h2>
+
+            <span
+                class="services-count"
+                id="servicesCount"
+            >
+                0 services
+            </span>
+
+        </div>
+
+        <div
+            class="services-list"
+            id="servicesList"
+        >
+
+            <div class="state-box">
+
+                <div class="state-icon loading-icon">
+                    ⏳
+                </div>
+
+                <h3 class="state-title">
+                    Loading services...
+                </h3>
+
+                <p class="state-text">
+                    Please wait while DukaFlow loads your services.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- ==========================================
+     ADD / EDIT SERVICE MODAL
+========================================== -->
+
+<div
+    class="modal-overlay"
+    id="serviceModal"
+>
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <h2
+                class="modal-title"
+                id="modalTitle"
+            >
+                Add Service
+            </h2>
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeModalButton"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="serviceForm">
+
+            <div class="modal-body">
+
+                <div class="form-grid">
+
+                    <div class="form-group full">
+
+                        <label
+                            class="form-label"
+                            for="serviceName"
+                        >
+                            Service Name
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="serviceName"
+                            class="form-input"
+                            placeholder="e.g. Security Guard Services"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group full">
+
+                        <label
+                            class="form-label"
+                            for="serviceDescription"
+                        >
+                            Description
+                        </label>
+
+                        <textarea
+                            id="serviceDescription"
+                            class="form-textarea"
+                            placeholder="Describe what this service includes..."
+                        ></textarea>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="servicePrice"
+                        >
+                            Default Price
+                        </label>
+
+                        <input
+                            type="number"
+                            id="servicePrice"
+                            class="form-input"
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="serviceStatus"
+                        >
+                            Status
+                        </label>
+
+                        <select
+                            id="serviceStatus"
+                            class="form-select"
+                        >
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="inactive">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="cancel-button"
+                    id="cancelModalButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-button"
+                    id="saveServiceButton"
+                >
+                    Save Service
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     DELETE CONFIRMATION
+========================================== -->
+
+<div
+    class="modal-overlay"
+    id="deleteModal"
+>
+
+    <div class="modal confirm-modal">
+
+        <div class="confirm-body">
+
+            <div class="confirm-icon">
+                🗑️
+            </div>
+
+            <h2 class="confirm-title">
+                Delete Service?
+            </h2>
+
+            <p class="confirm-text">
+                This will permanently remove
+                <strong id="deleteServiceName"></strong>
+                from your service list.
+            </p>
+
+        </div>
+
+        <div class="confirm-footer">
+
+            <button
+                type="button"
+                class="cancel-button"
+                id="cancelDeleteButton"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="delete-confirm-button"
+                id="confirmDeleteButton"
+            >
+                Delete Service
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     TOAST
+========================================== -->
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+<script>
+    /* ==========================================
+       SUPABASE
+    ========================================== */
+
+    const SUPABASE_URL =
+        "https://uwfghbctckinymatcbro.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    /* ==========================================
+       GLOBAL STATE
+    ========================================== */
+
+    let services = [];
+
+    let currentServiceId = null;
+
+    let deleteServiceId = null;
+
+    let currentBusinessId = null;
+
+    let currentUserId = null;
+
+
+    /* ==========================================
+       DOM REFERENCES
+    ========================================== */
+
+    const dukaflowMenuButton =
+        document.getElementById(
+            "dukaflowMenuButton"
+        );
+
+    const dukaflowMenuPanel =
+        document.getElementById(
+            "dukaflowMenuPanel"
+        );
+
+    const servicesList =
+        document.getElementById(
+            "servicesList"
+        );
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+    const statusFilter =
+        document.getElementById(
+            "statusFilter"
+        );
+
+    const refreshButton =
+        document.getElementById(
+            "refreshButton"
+        );
+
+    const addServiceButton =
+        document.getElementById(
+            "addServiceButton"
+        );
+
+    const serviceModal =
+        document.getElementById(
+            "serviceModal"
+        );
+
+    const deleteModal =
+        document.getElementById(
+            "deleteModal"
+        );
+
+    const serviceForm =
+        document.getElementById(
+            "serviceForm"
+        );
+
+    const modalTitle =
+        document.getElementById(
+            "modalTitle"
+        );
+
+    const saveServiceButton =
+        document.getElementById(
+            "saveServiceButton"
+        );
+
+    const deleteServiceName =
+        document.getElementById(
+            "deleteServiceName"
+        );
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    /* ==========================================
+       DUKAFLOW MENU
+    ========================================== */
+
+    dukaflowMenuButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+            const isOpen =
+                dukaflowMenuPanel.classList.contains(
+                    "open"
+                );
+
+            dukaflowMenuPanel.classList.toggle(
+                "open"
+            );
+
+            dukaflowMenuButton.setAttribute(
+                "aria-expanded",
+                String(!isOpen)
+            );
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                !event.target.closest(
+                    ".dukaflow-menu-wrapper"
+                )
+            ) {
+
+                dukaflowMenuPanel.classList.remove(
+                    "open"
+                );
+
+                dukaflowMenuButton.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+
+                dukaflowMenuPanel.classList.remove(
+                    "open"
+                );
+
+                dukaflowMenuButton.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                closeServiceModal();
+
+                closeDeleteModal();
+            }
+        }
+    );
+
+
+    /* ==========================================
+       HELPERS
+    ========================================== */
+
+    function escapeHTML(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function formatPrice(value) {
+
+        const number =
+            Number(value || 0);
+
+        return "KSh " +
+            number.toLocaleString(
+                "en-KE",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            );
+    }
+
+
+    function showToast(
+        message,
+        type = "success"
+    ) {
+
+        toast.textContent =
+            message;
+
+        toast.className =
+            "toast " +
+            type +
+            " show";
+
+        clearTimeout(
+            showToast.timeout
+        );
+
+        showToast.timeout =
+            setTimeout(
+                function() {
+
+                    toast.classList.remove(
+                        "show"
+                    );
+
+                },
+                2800
+            );
+    }
+
+
+    function setLoading(
+        loading
+    ) {
+
+        refreshButton.disabled =
+            loading;
+
+        refreshButton.textContent =
+            loading
+                ? "⏳ Loading..."
+                : "🔄 Refresh";
+    }
+
+
+    /* ==========================================
+       AUTH / BUSINESS
+    ========================================== */
+
+    async function getCurrentUserAndBusiness() {
+
+        const {
+            data: {
+                user
+            },
+            error
+        } =
+            await supabaseClient.auth.getUser();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!user) {
+
+            window.location.href =
+                "login.html";
+
+            return null;
+        }
+
+        currentUserId =
+            user.id;
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(
+                    "business_id, role"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .maybeSingle();
+
+        if (profileError) {
+            throw profileError;
+        }
+
+        if (
+            !profile ||
+            !profile.business_id
+        ) {
+
+            throw new Error(
+                "Your account is not linked to a business yet."
+            );
+        }
+
+        currentBusinessId =
+            profile.business_id;
+
+        return {
+            user,
+            profile
+        };
+    }
+
+
+    /* ==========================================
+       LOAD SERVICES
+    ========================================== */
+
+    async function loadServices() {
+
+        setLoading(true);
+
+        try {
+
+            const context =
+                await getCurrentUserAndBusiness();
+
+            if (!context) {
+                return;
+            }
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("services")
+                    .select(
+                        `
+                        id,
+                        business_id,
+                        name,
+                        description,
+                        price,
+                        status,
+                        created_at
+                        `
+                    )
+                    .eq(
+                        "business_id",
+                        currentBusinessId
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+            if (error) {
+                throw error;
+            }
+
+            services =
+                data || [];
+
+            updateSummary();
+
+            renderServices();
+
+        } catch (error) {
+
+            console.error(
+                "Error loading services:",
+                error
+            );
+
+            services = [];
+
+            updateSummary();
+
+            servicesList.innerHTML = `
+
+                <div class="state-box">
+
+                    <div class="state-icon error-icon">
+                        ⚠️
+                    </div>
+
+                    <h3 class="state-title">
+                        Could not load services
+                    </h3>
+
+                    <p class="state-text">
+                        ${
+                            escapeHTML(
+                                error.message ||
+                                "Something went wrong while loading your services."
+                            )
+                        }
+                    </p>
+
+                    <button
+                        type="button"
+                        class="retry-button"
+                        onclick="loadServices()"
+                    >
+                        Try Again
+                    </button>
+
+                </div>
+
+            `;
+
+        } finally {
+
+            setLoading(false);
+        }
+    }
+
+
+    /* ==========================================
+       SUMMARY
+    ========================================== */
+
+    function updateSummary() {
+
+        const total =
+            services.length;
+
+        const active =
+            services.filter(
+                service =>
+                    service.status ===
+                    "active"
+            ).length;
+
+        const inactive =
+            services.filter(
+                service =>
+                    service.status ===
+                    "inactive"
+            ).length;
+
+        document.getElementById(
+            "totalServices"
+        ).textContent =
+            total;
+
+        document.getElementById(
+            "activeServices"
+        ).textContent =
+            active;
+
+        document.getElementById(
+            "inactiveServices"
+        ).textContent =
+            inactive;
+    }
+
+
+    /* ==========================================
+       FILTER
+    ========================================== */
+
+    function getFilteredServices() {
+
+        const search =
+            searchInput.value
+                .trim()
+                .toLowerCase();
+
+        const status =
+            statusFilter.value;
+
+        return services.filter(
+            service => {
+
+                const searchableText =
+                    [
+                        service.name,
+                        service.description
+                    ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+
+                const matchesSearch =
+                    !search ||
+                    searchableText.includes(
+                        search
+                    );
+
+                const matchesStatus =
+                    status === "all" ||
+                    service.status === status;
+
+                return (
+                    matchesSearch &&
+                    matchesStatus
+                );
+            }
+        );
+    }
+
+
+    /* ==========================================
+       RENDER SERVICES
+    ========================================== */
+
+    function renderServices() {
+
+        const filteredServices =
+            getFilteredServices();
+
+        document.getElementById(
+            "servicesCount"
+        ).textContent =
+            filteredServices.length +
+            (
+                filteredServices.length === 1
+                    ? " service"
+                    : " services"
+            );
+
+        if (!filteredServices.length) {
+
+            if (services.length) {
+
+                servicesList.innerHTML = `
+
+                    <div class="state-box">
+
+                        <div class="state-icon empty-icon">
+                            🔎
+                        </div>
+
+                        <h3 class="state-title">
+                            No matching services
+                        </h3>
+
+                        <p class="state-text">
+                            Try another search term or change the status filter.
+                        </p>
+
+                    </div>
+
+                `;
+
+            } else {
+
+                servicesList.innerHTML = `
+
+                    <div class="state-box">
+
+                        <div class="state-icon empty-icon">
+                            🛠️
+                        </div>
+
+                        <h3 class="state-title">
+                            No services yet
+                        </h3>
+
+                        <p class="state-text">
+                            Add your first service to start building your service business.
+                        </p>
+
+                        <button
+                            type="button"
+                            class="retry-button"
+                            onclick="openAddServiceModal()"
+                        >
+                            ＋ Add First Service
+                        </button>
+
+                    </div>
+
+                `;
+            }
+
+            return;
+        }
+
+        servicesList.innerHTML =
+            filteredServices
+                .map(
+                    service => {
+
+                        const status =
+                            service.status ||
+                            "active";
+
+                        const statusClass =
+                            status === "active"
+                                ? "status-active"
+                                : "status-inactive";
+
+                        const statusLabel =
+                            status === "active"
+                                ? "Active"
+                                : "Inactive";
+
+                        return `
+
+                            <div
+                                class="service-row"
+                                data-service-id="${escapeHTML(service.id)}"
+                            >
+
+                                <div class="service-main">
+
+                                    <div class="service-icon">
+                                        🛠️
+                                    </div>
+
+                                    <div class="service-name-block">
+
+                                        <p class="service-name">
+                                            ${escapeHTML(
+                                                service.name
+                                            )}
+                                        </p>
+
+                                        <div class="service-description">
+                                            ${
+                                                escapeHTML(
+                                                    service.description ||
+                                                    "No description provided."
+                                                )
+                                            }
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="detail">
+
+                                    <div class="detail-label">
+                                        Default Price
+                                    </div>
+
+                                    <div class="price-value">
+                                        ${formatPrice(
+                                            service.price
+                                        )}
+                                    </div>
+
+                                </div>
+
+                                <div class="detail">
+
+                                    <div class="detail-label">
+                                        Service Type
+                                    </div>
+
+                                    <div class="detail-value">
+                                        Professional Service
+                                    </div>
+
+                                </div>
+
+                                <div class="detail status">
+
+                                    <div class="detail-label">
+                                        Status
+                                    </div>
+
+                                    <span
+                                        class="status-badge ${statusClass}"
+                                    >
+                                        ${statusLabel}
+                                    </span>
+
+                                </div>
+
+                                <div class="service-actions">
+
+                                    <button
+                                        type="button"
+                                        class="action-button edit-button"
+                                        title="Edit service"
+                                        onclick="openEditServiceModal('${escapeHTML(service.id)}')"
+                                    >
+                                        ✏️
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="action-button delete-button"
+                                        title="Delete service"
+                                        onclick="openDeleteModal('${escapeHTML(service.id)}')"
+                                    >
+                                        🗑️
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        `;
+                    }
+                )
+                .join("");
+    }
+
+
+    /* ==========================================
+       ADD SERVICE
+    ========================================== */
+
+    function openAddServiceModal() {
+
+        currentServiceId = null;
+
+        modalTitle.textContent =
+            "Add Service";
+
+        saveServiceButton.textContent =
+            "Save Service";
+
+        serviceForm.reset();
+
+        document.getElementById(
+            "serviceStatus"
+        ).value = "active";
+
+        serviceModal.classList.add(
+            "open"
+        );
+
+        setTimeout(
+            function() {
+
+                document.getElementById(
+                    "serviceName"
+                ).focus();
+
+            },
+            50
+        );
+    }
+
+
+    /* ==========================================
+       EDIT SERVICE
+    ========================================== */
+
+    function openEditServiceModal(
+        serviceId
+    ) {
+
+        const service =
+            services.find(
+                item =>
+                    item.id === serviceId
+            );
+
+        if (!service) {
+
+            showToast(
+                "Service could not be found.",
+                "error"
+            );
+
+            return;
+        }
+
+        currentServiceId =
+            service.id;
+
+        modalTitle.textContent =
+            "Edit Service";
+
+        saveServiceButton.textContent =
+            "Update Service";
+
+        document.getElementById(
+            "serviceName"
+        ).value =
+            service.name || "";
+
+        document.getElementById(
+            "serviceDescription"
+        ).value =
+            service.description || "";
+
+        document.getElementById(
+            "servicePrice"
+        ).value =
+            service.price ?? "";
+
+        document.getElementById(
+            "serviceStatus"
+        ).value =
+            service.status || "active";
+
+        serviceModal.classList.add(
+            "open"
+        );
+
+        setTimeout(
+            function() {
+
+                document.getElementById(
+                    "serviceName"
+                ).focus();
+
+            },
+            50
+        );
+    }
+
+
+    /* ==========================================
+       CLOSE SERVICE MODAL
+    ========================================== */
+
+    function closeServiceModal() {
+
+        serviceModal.classList.remove(
+            "open"
+        );
+
+        currentServiceId = null;
+
+        serviceForm.reset();
+
+        document.getElementById(
+            "serviceStatus"
+        ).value = "active";
+    }
+
+
+    /* ==========================================
+       SAVE SERVICE
+    ========================================== */
+
+    serviceForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            const name =
+                document.getElementById(
+                    "serviceName"
+                ).value.trim();
+
+            const description =
+                document.getElementById(
+                    "serviceDescription"
+                ).value.trim();
+
+            const priceInput =
+                document.getElementById(
+                    "servicePrice"
+                ).value.trim();
+
+            const status =
+                document.getElementById(
+                    "serviceStatus"
+                ).value;
+
+            if (!name) {
+
+                showToast(
+                    "Service name is required.",
+                    "error"
+                );
+
+                document.getElementById(
+                    "serviceName"
+                ).focus();
+
+                return;
+            }
+
+            let price = 0;
+
+            if (priceInput !== "") {
+
+                price =
+                    Number(priceInput);
+
+                if (
+                    !Number.isFinite(price) ||
+                    price < 0
+                ) {
+
+                    showToast(
+                        "Please enter a valid non-negative price.",
+                        "error"
+                    );
+
+                    document.getElementById(
+                        "servicePrice"
+                    ).focus();
+
+                    return;
+                }
+            }
+
+            saveServiceButton.disabled =
+                true;
+
+            saveServiceButton.textContent =
+                currentServiceId
+                    ? "Updating..."
+                    : "Saving...";
+
+            try {
+
+                const context =
+                    await getCurrentUserAndBusiness();
+
+                if (!context) {
+                    return;
+                }
+
+                const payload = {
+
+                    business_id:
+                        currentBusinessId,
+
+                    name:
+                        name,
+
+                    description:
+                        description ||
+                        null,
+
+                    price:
+                        price,
+
+                    status:
+                        status
+                };
+
+                let result;
+
+                if (currentServiceId) {
+
+                    result =
+                        await supabaseClient
+                            .from("services")
+                            .update(
+                                payload
+                            )
+                            .eq(
+                                "id",
+                                currentServiceId
+                            )
+                            .eq(
+                                "business_id",
+                                currentBusinessId
+                            );
+
+                } else {
+
+                    result =
+                        await supabaseClient
+                            .from("services")
+                            .insert(
+                                payload
+                            );
+                }
+
+                if (result.error) {
+                    throw result.error;
+                }
+
+                const wasEditing =
+                    Boolean(
+                        currentServiceId
+                    );
+
+                closeServiceModal();
+
+                showToast(
+                    wasEditing
+                        ? "Service updated successfully."
+                        : "Service added successfully."
+                );
+
+                await loadServices();
+
+            } catch (error) {
+
+                console.error(
+                    "Error saving service:",
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    "Could not save service.",
+                    "error"
+                );
+
+            } finally {
+
+                saveServiceButton.disabled =
+                    false;
+
+                saveServiceButton.textContent =
+                    currentServiceId
+                        ? "Update Service"
+                        : "Save Service";
+            }
+        }
+    );
+
+
+    /* ==========================================
+       DELETE SERVICE
+    ========================================== */
+
+    function openDeleteModal(
+        serviceId
+    ) {
+
+        const service =
+            services.find(
+                item =>
+                    item.id === serviceId
+            );
+
+        if (!service) {
+
+            showToast(
+                "Service could not be found.",
+                "error"
+            );
+
+            return;
+        }
+
+        deleteServiceId =
+            service.id;
+
+        deleteServiceName.textContent =
+            service.name ||
+            "this service";
+
+        deleteModal.classList.add(
+            "open"
+        );
+    }
+
+
+    function closeDeleteModal() {
+
+        deleteModal.classList.remove(
+            "open"
+        );
+
+        deleteServiceId = null;
+    }
+
+
+    async function deleteService() {
+
+        if (!deleteServiceId) {
+            return;
+        }
+
+        const serviceId =
+            deleteServiceId;
+
+        const button =
+            document.getElementById(
+                "confirmDeleteButton"
+            );
+
+        button.disabled = true;
+
+        button.textContent =
+            "Deleting...";
+
+        try {
+
+            const context =
+                await getCurrentUserAndBusiness();
+
+            if (!context) {
+                return;
+            }
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("services")
+                    .delete()
+                    .eq(
+                        "id",
+                        serviceId
+                    )
+                    .eq(
+                        "business_id",
+                        currentBusinessId
+                    );
+
+            if (error) {
+                throw error;
+            }
+
+            closeDeleteModal();
+
+            showToast(
+                "Service deleted successfully."
+            );
+
+            await loadServices();
+
+        } catch (error) {
+
+            console.error(
+                "Error deleting service:",
+                error
+            );
+
+            /*
+             * If the service is already being used
+             * by an assignment or invoice item,
+             * PostgreSQL may correctly prevent deletion.
+             */
+            showToast(
+                error.message ||
+                "Could not delete service. It may already be in use.",
+                "error"
+            );
+
+        } finally {
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                "Delete Service";
+        }
+    }
+
+
+    /* ==========================================
+       EVENTS
+    ========================================== */
+
+    addServiceButton.addEventListener(
+        "click",
+        openAddServiceModal
+    );
+
+    refreshButton.addEventListener(
+        "click",
+        loadServices
+    );
+
+    searchInput.addEventListener(
+        "input",
+        renderServices
+    );
+
+    statusFilter.addEventListener(
+        "change",
+        renderServices
+    );
+
+    document.getElementById(
+        "closeModalButton"
+    ).addEventListener(
+        "click",
+        closeServiceModal
+    );
+
+    document.getElementById(
+        "cancelModalButton"
+    ).addEventListener(
+        "click",
+        closeServiceModal
+    );
+
+    document.getElementById(
+        "cancelDeleteButton"
+    ).addEventListener(
+        "click",
+        closeDeleteModal
+    );
+
+    document.getElementById(
+        "confirmDeleteButton"
+    ).addEventListener(
+        "click",
+        deleteService
+    );
+
+
+    serviceModal.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                serviceModal
+            ) {
+                closeServiceModal();
+            }
+        }
+    );
+
+
+    deleteModal.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                deleteModal
+            ) {
+                closeDeleteModal();
+            }
+        }
+    );
+
+
+    /* ==========================================
+       START
+    ========================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            loadServices();
+
+        }
+    );
+</script>
+
+</body>
+</html>

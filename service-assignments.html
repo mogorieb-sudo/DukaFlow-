@@ -1,0 +1,3654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087f3f">
+
+<title>DukaFlow - Service Assignments</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --green:#087f3f;
+  --green-dark:#066b35;
+  --green-soft:#ecfdf5;
+  --blue:#2563eb;
+  --blue-soft:#eff6ff;
+  --purple:#7c3aed;
+  --purple-soft:#f5f3ff;
+  --orange:#ea580c;
+  --orange-soft:#fff7ed;
+  --red:#dc2626;
+  --red-soft:#fef2f2;
+  --bg:#f4f7f6;
+  --white:#fff;
+  --text:#17202a;
+  --muted:#64748b;
+  --border:#dce7e1;
+  --shadow:0 10px 28px rgba(15,23,42,.07);
+  --radius:18px;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+button,
+input,
+select,
+textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.page{
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+  padding:20px;
+}
+
+/* ==========================================
+   DUKAFLOW MENU
+========================================== */
+
+.menu-wrap{
+  width:100%;
+  position:relative;
+  margin-bottom:18px;
+}
+
+.menu-btn{
+  width:100%;
+  min-height:52px;
+  padding:13px 16px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(135deg,#087f3f,#0b7a3b);
+  color:#fff;
+  font-size:15px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 8px 20px rgba(8,127,63,.16);
+}
+
+.menu-btn:hover{
+  background:linear-gradient(135deg,#076d36,#096b34);
+}
+
+.menu-arrow{
+  transition:transform .2s ease;
+}
+
+.menu-btn[aria-expanded="true"] .menu-arrow{
+  transform:rotate(180deg);
+}
+
+.menu-panel{
+  display:none;
+  width:100%;
+  margin-top:8px;
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  box-shadow:0 14px 30px rgba(15,23,42,.12);
+  overflow:hidden;
+  position:relative;
+  z-index:100;
+}
+
+.menu-panel.open{
+  display:block;
+}
+
+.menu-panel a{
+  display:block;
+  padding:13px 16px;
+  color:#1f2937;
+  text-decoration:none;
+  font-weight:700;
+  border-bottom:1px solid #f1f5f9;
+}
+
+.menu-panel a:last-child{
+  border-bottom:none;
+}
+
+.menu-panel a:hover{
+  background:#f0fdf4;
+  color:var(--green);
+}
+
+.menu-panel a.active{
+  background:#ecfdf5;
+  color:var(--green);
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:20px;
+}
+
+.header-text{
+  min-width:0;
+}
+
+.header-text h1{
+  margin:0;
+  font-size:28px;
+  line-height:1.2;
+}
+
+.header-text p{
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.primary{
+  flex:0 0 auto;
+  min-height:46px;
+  border:0;
+  border-radius:12px;
+  padding:0 18px;
+  background:linear-gradient(135deg,var(--green),#0b7a3b);
+  color:#fff;
+  font-weight:900;
+  box-shadow:0 7px 16px rgba(8,127,63,.18);
+}
+
+.primary:hover{
+  background:linear-gradient(135deg,var(--green-dark),#075e30);
+}
+
+/* ==========================================
+   MESSAGE
+========================================== */
+
+.message{
+  display:none;
+  margin-bottom:16px;
+  padding:12px 14px;
+  border-radius:11px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.message.show{
+  display:block;
+}
+
+.message.success{
+  background:#dcfce7;
+  color:#166534;
+  border:1px solid #bbf7d0;
+}
+
+.message.error{
+  background:#fee2e2;
+  color:#991b1b;
+  border:1px solid #fecaca;
+}
+
+/* ==========================================
+   SUMMARY
+========================================== */
+
+.summary{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.card{
+  min-width:0;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:17px;
+  box-shadow:var(--shadow);
+}
+
+.summary .card:nth-child(1){
+  background:linear-gradient(135deg,#ecfdf5,#dff7eb);
+}
+
+.summary .card:nth-child(2){
+  background:linear-gradient(135deg,#eff6ff,#e4efff);
+}
+
+.summary .card:nth-child(3){
+  background:linear-gradient(135deg,#f5f3ff,#ece7ff);
+}
+
+.summary .card:nth-child(4){
+  background:linear-gradient(135deg,#ecfdf5,#e0f8eb);
+}
+
+.summary .card:nth-child(5){
+  background:linear-gradient(135deg,#fff7ed,#ffedd5);
+}
+
+.summary .card:nth-child(6){
+  background:linear-gradient(135deg,#fef2f2,#fee2e2);
+}
+
+.card-label{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.45px;
+}
+
+.card-value{
+  margin-top:7px;
+  font-size:25px;
+  font-weight:900;
+}
+
+/* ==========================================
+   TOOLBAR
+========================================== */
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+
+.search-main{
+  flex:1 1 300px;
+  min-width:220px;
+}
+
+.search-main input,
+.toolbar select{
+  width:100%;
+  min-height:45px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:#fff;
+  padding:11px 13px;
+  outline:none;
+}
+
+.search-main input:focus,
+.toolbar select:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(8,127,63,.08);
+}
+
+.filter-select{
+  flex:0 0 180px;
+}
+
+.refresh-btn{
+  min-height:45px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:0 15px;
+  background:#fff;
+  color:var(--text);
+  font-weight:800;
+}
+
+.refresh-btn:hover{
+  background:var(--green-soft);
+  color:var(--green);
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.table-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.table-scroll{
+  width:100%;
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  min-width:930px;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#f0fdf4;
+}
+
+th{
+  padding:14px 13px;
+  text-align:left;
+  font-size:11px;
+  color:#475569;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  white-space:nowrap;
+}
+
+td{
+  padding:14px 13px;
+  border-top:1px solid #edf2ef;
+  font-size:14px;
+  vertical-align:middle;
+}
+
+tbody tr:hover{
+  background:#fafdfb;
+}
+
+.main-name{
+  font-weight:800;
+}
+
+.sub-text{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  text-transform:capitalize;
+}
+
+.status-active{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status-completed{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+
+.status-cancelled{
+  background:#fee2e2;
+  color:#b91c1c;
+}
+
+.actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.action-btn{
+  border:0;
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.edit-btn{
+  background:#eff6ff;
+  color:#1d4ed8;
+}
+
+.edit-btn:hover{
+  background:#dbeafe;
+}
+
+.cancel-btn{
+  background:#fff7ed;
+  color:#c2410c;
+}
+
+.cancel-btn:hover{
+  background:#ffedd5;
+}
+
+.empty{
+  padding:45px 20px;
+  text-align:center;
+  color:var(--muted);
+}
+
+.empty strong{
+  display:block;
+  color:var(--text);
+  font-size:16px;
+  margin-bottom:6px;
+}
+
+.loading{
+  padding:35px;
+  text-align:center;
+  color:var(--muted);
+}
+
+/* ==========================================
+   MODAL
+========================================== */
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.52);
+  z-index:4000;
+  padding:18px;
+  overflow-y:auto;
+}
+
+.modal.open{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+}
+
+.modal-box{
+  width:100%;
+  max-width:850px;
+  margin:20px auto;
+  background:#fff;
+  border-radius:22px;
+  box-shadow:0 25px 70px rgba(15,23,42,.25);
+}
+
+.modal-header{
+  padding:19px 20px;
+  border-bottom:1px solid #edf2ef;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.modal-header h2{
+  margin:0;
+  font-size:21px;
+}
+
+.close-btn{
+  width:38px;
+  height:38px;
+  border:0;
+  border-radius:10px;
+  background:#f1f5f3;
+  color:#475569;
+  font-size:22px;
+  font-weight:800;
+}
+
+.close-btn:hover{
+  background:#e2e8e5;
+}
+
+.modal-body{
+  padding:20px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:15px;
+}
+
+.field{
+  min-width:0;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  display:block;
+  margin-bottom:7px;
+  font-size:12px;
+  font-weight:900;
+  color:#475569;
+}
+
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  min-height:44px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  outline:none;
+  background:#fff;
+}
+
+.field textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(8,127,63,.08);
+}
+
+/* ==========================================
+   SEARCHABLE FIELDS
+========================================== */
+
+.search-box{
+  width:100%;
+  position:relative;
+}
+
+.search-box input{
+  width:100%;
+}
+
+.selected{
+  width:100%;
+  min-height:44px;
+  border:1px solid var(--green);
+  border-radius:10px;
+  background:#f0fdf4;
+  padding:8px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.selected span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#166534;
+  font-weight:800;
+}
+
+.clear{
+  flex:0 0 auto;
+  width:27px;
+  height:27px;
+  border:0;
+  border-radius:7px;
+  background:#dcfce7;
+  color:#166534;
+  font-weight:900;
+}
+
+.results{
+  position:fixed;
+  display:none;
+  width:min(500px,calc(100vw - 24px));
+  max-height:240px;
+  overflow-y:auto;
+  background:#fff;
+  border:1px solid #dbe5df;
+  border-radius:11px;
+  box-shadow:0 18px 40px rgba(15,23,42,.18);
+  z-index:5000;
+}
+
+.results.open{
+  display:block;
+}
+
+.result{
+  padding:12px 13px;
+  border-bottom:1px solid #edf2ef;
+  cursor:pointer;
+}
+
+.result:last-child{
+  border-bottom:0;
+}
+
+.result:hover{
+  background:#f0fdf4;
+}
+
+.result-title{
+  color:#17202a;
+  font-weight:800;
+}
+
+.result-meta{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.modal-footer{
+  padding:15px 20px 20px;
+  border-top:1px solid #edf2ef;
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+
+.secondary{
+  min-height:44px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:0 16px;
+  background:#fff;
+  color:#475569;
+  font-weight:800;
+}
+
+.secondary:hover{
+  background:#f8faf9;
+}
+
+.save-btn{
+  min-height:44px;
+  border:0;
+  border-radius:10px;
+  padding:0 18px;
+  background:linear-gradient(135deg,var(--green),#0b7a3b);
+  color:#fff;
+  font-weight:900;
+}
+
+.save-btn:hover{
+  background:linear-gradient(135deg,var(--green-dark),#075e30);
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media(max-width:1100px){
+
+  .summary{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+}
+
+@media(max-width:760px){
+
+  .page{
+    padding:14px;
+  }
+
+  .header{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .header-text h1{
+    font-size:24px;
+  }
+
+  .primary{
+    width:100%;
+  }
+
+  .summary{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .toolbar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .search-main,
+  .filter-select,
+  .refresh-btn{
+    width:100%;
+    flex:1 1 auto;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .field.full{
+    grid-column:auto;
+  }
+
+  .modal{
+    padding:10px;
+  }
+
+  .modal-box{
+    margin:8px auto;
+    border-radius:18px;
+  }
+
+  .modal-body{
+    padding:15px;
+  }
+
+  .modal-footer{
+    padding:13px 15px 15px;
+    flex-direction:column-reverse;
+  }
+
+  .modal-footer button{
+    width:100%;
+  }
+
+}
+
+@media(max-width:420px){
+
+  .summary{
+    grid-template-columns:1fr;
+  }
+
+  .menu-btn{
+    min-height:50px;
+    font-size:14px;
+  }
+
+  .card-value{
+    font-size:23px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="menu-wrap">
+
+    <button
+      type="button"
+      class="menu-btn"
+      id="menuButton"
+      aria-expanded="false"
+      aria-controls="menuPanel"
+    >
+      <span>☰ DukaFlow Menu</span>
+      <span class="menu-arrow">▼</span>
+    </button>
+
+    <div
+      class="menu-panel"
+      id="menuPanel"
+    >
+
+      <a href="index.html">
+        🏠 Dashboard
+      </a>
+
+      <a href="products.html">
+        📦 Products & Stock
+      </a>
+
+      <a href="sales.html">
+        💰 Sales
+      </a>
+
+      <a href="expenses.html">
+        💸 Expenses
+      </a>
+
+      <a href="reports.html">
+        📊 Reports
+      </a>
+
+      <a href="users.html">
+        👥 Manage Users
+      </a>
+
+      <a href="service-dashboard.html">
+        🧩 Service Dashboard
+      </a>
+
+      <a href="service-clients.html">
+        👤 Clients
+      </a>
+
+      <a href="service-services.html">
+        🛠️ Services
+      </a>
+
+      <a
+        href="service-assignments.html"
+        class="active"
+      >
+        📋 Assignments
+      </a>
+
+      <a href="service-attendance.html">
+        🕒 Attendance
+      </a>
+
+      <a href="service-invoices.html">
+        🧾 Invoices
+      </a>
+
+      <a href="service-payments.html">
+        💳 Payments
+      </a>
+
+      <a href="service-reports.html">
+        📊 Service Reports
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <div class="header">
+
+    <div class="header-text">
+
+      <h1>
+        📋 Service Assignments
+      </h1>
+
+      <p>
+        Assign services to clients and manage staff work.
+      </p>
+
+    </div>
+
+    <button
+      type="button"
+      class="primary"
+      id="newAssignmentButton"
+    >
+      + New Assignment
+    </button>
+
+  </div>
+
+
+  <div
+    id="message"
+    class="message"
+  ></div>
+
+
+  <div class="summary">
+
+    <div class="card">
+      <div class="card-label">
+        Total Assignments
+      </div>
+      <div
+        class="card-value"
+        id="totalAssignments"
+      >
+        0
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        Active
+      </div>
+      <div
+        class="card-value"
+        id="activeAssignments"
+      >
+        0
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        Completed
+      </div>
+      <div
+        class="card-value"
+        id="completedAssignments"
+      >
+        0
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        Assigned Staff
+      </div>
+      <div
+        class="card-value"
+        id="assignedStaff"
+      >
+        0
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        Starting Soon
+      </div>
+      <div
+        class="card-value"
+        id="startingSoon"
+      >
+        0
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        Cancelled
+      </div>
+      <div
+        class="card-value"
+        id="cancelledAssignments"
+      >
+        0
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="toolbar">
+
+    <div class="search-main">
+
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Search client, service or staff..."
+        autocomplete="off"
+      >
+
+    </div>
+
+    <div class="filter-select">
+
+      <select id="statusFilter">
+
+        <option value="">
+          All Statuses
+        </option>
+
+        <option value="active">
+          Active
+        </option>
+
+        <option value="completed">
+          Completed
+        </option>
+
+        <option value="cancelled">
+          Cancelled
+        </option>
+
+      </select>
+
+    </div>
+
+    <button
+      type="button"
+      class="refresh-btn"
+      id="refreshButton"
+    >
+      🔄 Refresh
+    </button>
+
+  </div>
+
+
+  <div class="table-card">
+
+    <div class="table-scroll">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Client</th>
+            <th>Service</th>
+            <th>Assigned Staff</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="assignmentTableBody">
+
+          <tr>
+
+            <td colspan="7">
+
+              <div class="loading">
+                Loading assignments...
+              </div>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ==========================================
+     ASSIGNMENT MODAL
+========================================== -->
+
+<div
+  class="modal"
+  id="assignmentModal"
+>
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <h2 id="modalTitle">
+        New Assignment
+      </h2>
+
+      <button
+        type="button"
+        class="close-btn"
+        id="closeModalButton"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <form id="assignmentForm">
+
+        <div class="form-grid">
+
+          <!-- CLIENT -->
+
+          <div class="field">
+
+            <label>
+              Client
+            </label>
+
+            <div class="search-box">
+
+              <input
+                type="text"
+                id="clientSearch"
+                placeholder="Search client..."
+                autocomplete="off"
+              >
+
+              <div
+                class="selected"
+                id="selectedClient"
+                style="display:none;"
+              >
+
+                <span
+                  id="selectedClientName"
+                ></span>
+
+                <button
+                  type="button"
+                  class="clear"
+                  id="clearClient"
+                >
+                  ×
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- SERVICE -->
+
+          <div class="field">
+
+            <label>
+              Service
+            </label>
+
+            <div class="search-box">
+
+              <input
+                type="text"
+                id="serviceSearch"
+                placeholder="Search service..."
+                autocomplete="off"
+              >
+
+              <div
+                class="selected"
+                id="selectedService"
+                style="display:none;"
+              >
+
+                <span
+                  id="selectedServiceName"
+                ></span>
+
+                <button
+                  type="button"
+                  class="clear"
+                  id="clearService"
+                >
+                  ×
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- STAFF -->
+
+          <div class="field">
+
+            <label>
+              Assigned Staff
+            </label>
+
+            <div class="search-box">
+
+              <input
+                type="text"
+                id="staffSearch"
+                placeholder="Search staff..."
+                autocomplete="off"
+              >
+
+              <div
+                class="selected"
+                id="selectedStaff"
+                style="display:none;"
+              >
+
+                <span
+                  id="selectedStaffName"
+                ></span>
+
+                <button
+                  type="button"
+                  class="clear"
+                  id="clearStaff"
+                >
+                  ×
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- STATUS -->
+
+          <div class="field">
+
+            <label for="assignmentStatus">
+              Status
+            </label>
+
+            <select id="assignmentStatus">
+
+              <option value="active">
+                Active
+              </option>
+
+              <option value="completed">
+                Completed
+              </option>
+
+              <option value="cancelled">
+                Cancelled
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- START DATE -->
+
+          <div class="field">
+
+            <label for="startDate">
+              Start Date
+            </label>
+
+            <input
+              type="date"
+              id="startDate"
+              required
+            >
+
+          </div>
+
+
+          <!-- END DATE -->
+
+          <div class="field">
+
+            <label for="endDate">
+              End Date
+            </label>
+
+            <input
+              type="date"
+              id="endDate"
+              required
+            >
+
+          </div>
+
+
+          <!-- NOTES -->
+
+          <div class="field full">
+
+            <label for="notes">
+              Notes
+            </label>
+
+            <textarea
+              id="notes"
+              placeholder="Add assignment notes..."
+            ></textarea>
+
+          </div>
+
+        </div>
+
+      </form>
+
+    </div>
+
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="secondary"
+        id="cancelModalButton"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="submit"
+        form="assignmentForm"
+        class="save-btn"
+        id="saveButton"
+      >
+        Save Assignment
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   SUPABASE
+========================================== */
+
+const SUPABASE_URL =
+  "https://uwfghbctckinymatcbro.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* ==========================================
+   STATE
+========================================== */
+
+let businessId = null;
+
+let clients = [];
+let services = [];
+let staff = [];
+let assignments = [];
+
+let editingAssignmentId = null;
+
+let selectedClientId = null;
+let selectedServiceId = null;
+let selectedStaffId = null;
+
+
+/* ==========================================
+   HELPERS
+========================================== */
+
+function $(id){
+  return document.getElementById(id);
+}
+
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+function today(){
+
+  const date =
+    new Date();
+
+  const year =
+    date.getFullYear();
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2,"0");
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2,"0");
+
+  return `${year}-${month}-${day}`;
+
+}
+
+
+function formatDate(value){
+
+  if(!value){
+    return "—";
+  }
+
+  const date =
+    new Date(
+      value + "T00:00:00"
+    );
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+    return value;
+  }
+
+  return date.toLocaleDateString(
+    "en-KE",
+    {
+      day:"2-digit",
+      month:"short",
+      year:"numeric"
+    }
+  );
+
+}
+
+
+function showMessage(
+  message,
+  type="success"
+){
+
+  const element =
+    $("message");
+
+  element.textContent =
+    message;
+
+  element.className =
+    `message show ${type}`;
+
+  clearTimeout(
+    showMessage.timer
+  );
+
+  showMessage.timer =
+    setTimeout(
+      function(){
+
+        element.className =
+          "message";
+
+      },
+      4000
+    );
+
+}
+
+
+/* ==========================================
+   MENU
+========================================== */
+
+function setupMenu(){
+
+  const menuButton =
+    $("menuButton");
+
+  const menuPanel =
+    $("menuPanel");
+
+  if(
+    !menuButton ||
+    !menuPanel
+  ){
+    return;
+  }
+
+
+  menuButton.addEventListener(
+    "click",
+    function(event){
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      const isOpen =
+        menuPanel.classList.contains(
+          "open"
+        );
+
+      menuPanel.classList.toggle(
+        "open"
+      );
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        String(!isOpen)
+      );
+
+    }
+  );
+
+
+  document.addEventListener(
+    "click",
+    function(event){
+
+      if(
+        !event.target.closest(
+          ".menu-wrap"
+        )
+      ){
+
+        menuPanel.classList.remove(
+          "open"
+        );
+
+        menuButton.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ==========================================
+   BUSINESS
+========================================== */
+
+async function getBusiness(){
+
+  const {
+    data:{
+      user
+    },
+    error
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if(error){
+    throw error;
+  }
+
+
+  if(!user){
+
+    window.location.href =
+      "login.html";
+
+    return null;
+
+  }
+
+
+  const {
+    data:profile,
+    error:profileError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select("business_id")
+      .eq(
+        "user_id",
+        user.id
+      )
+      .single();
+
+
+  if(profileError){
+    throw profileError;
+  }
+
+
+  if(!profile?.business_id){
+
+    throw new Error(
+      "No business is associated with this account."
+    );
+
+  }
+
+
+  return profile.business_id;
+
+}
+
+
+/* ==========================================
+   LOAD DATA
+========================================== */
+
+async function loadData(){
+
+  businessId =
+    await getBusiness();
+
+
+  if(!businessId){
+    return;
+  }
+
+
+  const [
+    clientsResult,
+    servicesResult,
+    staffResult,
+    assignmentsResult
+  ] =
+    await Promise.all([
+
+      supabaseClient
+        .from("clients")
+        .select(`
+          id,
+          name,
+          company_name,
+          phone,
+          email,
+          status
+        `)
+        .eq(
+          "business_id",
+          businessId
+        )
+        .order(
+          "name",
+          {
+            ascending:true
+          }
+        ),
+
+      supabaseClient
+        .from("services")
+        .select(`
+          id,
+          name,
+          description,
+          price,
+          status
+        `)
+        .eq(
+          "business_id",
+          businessId
+        )
+        .order(
+          "name",
+          {
+            ascending:true
+          }
+        ),
+
+      supabaseClient
+        .from("profiles")
+        .select(`
+          user_id,
+          full_name,
+          username,
+          role
+        `)
+        .eq(
+          "business_id",
+          businessId
+        )
+        .eq(
+          "role",
+          "staff"
+        )
+        .order(
+          "full_name",
+          {
+            ascending:true
+          }
+        ),
+
+      supabaseClient
+        .from("assignments")
+        .select(`
+          id,
+          business_id,
+          client_id,
+          service_id,
+          assigned_staff_id,
+          start_date,
+          end_date,
+          status,
+          notes
+        `)
+        .eq(
+          "business_id",
+          businessId
+        )
+        .order(
+          "start_date",
+          {
+            ascending:false
+          }
+        )
+
+    ]);
+
+
+  if(clientsResult.error){
+    throw clientsResult.error;
+  }
+
+  if(servicesResult.error){
+    throw servicesResult.error;
+  }
+
+  if(staffResult.error){
+    throw staffResult.error;
+  }
+
+  if(assignmentsResult.error){
+    throw assignmentsResult.error;
+  }
+
+
+  clients =
+    clientsResult.data || [];
+
+  services =
+    servicesResult.data || [];
+
+  staff =
+    staffResult.data || [];
+
+  assignments =
+    assignmentsResult.data || [];
+
+
+  renderSummary();
+
+  renderAssignments();
+
+}
+
+
+/* ==========================================
+   LOOKUPS
+========================================== */
+
+function getClient(id){
+
+  return clients.find(
+    client =>
+      client.id === id
+  );
+
+}
+
+
+function getService(id){
+
+  return services.find(
+    service =>
+      service.id === id
+  );
+
+}
+
+
+function getStaff(id){
+
+  return staff.find(
+    person =>
+      person.user_id === id
+  );
+
+}
+
+
+/* ==========================================
+   SUMMARY
+========================================== */
+
+function renderSummary(){
+
+  const total =
+    assignments.length;
+
+  const active =
+    assignments.filter(
+      item =>
+        item.status === "active"
+    ).length;
+
+  const completed =
+    assignments.filter(
+      item =>
+        item.status === "completed"
+    ).length;
+
+  const cancelled =
+    assignments.filter(
+      item =>
+        item.status === "cancelled"
+    ).length;
+
+
+  const staffIds =
+    new Set(
+      assignments
+        .map(
+          item =>
+            item.assigned_staff_id
+        )
+        .filter(Boolean)
+    );
+
+
+  const currentDate =
+    today();
+
+
+  const future =
+    new Date();
+
+  future.setDate(
+    future.getDate() + 7
+  );
+
+
+  const futureDate =
+    `${future.getFullYear()}-${
+      String(
+        future.getMonth()+1
+      ).padStart(2,"0")
+    }-${
+      String(
+        future.getDate()
+      ).padStart(2,"0")
+    }`;
+
+
+  const startingSoon =
+    assignments.filter(
+      item =>
+        item.status === "active" &&
+        item.start_date >= currentDate &&
+        item.start_date <= futureDate
+    ).length;
+
+
+  $("totalAssignments")
+    .textContent =
+    total;
+
+  $("activeAssignments")
+    .textContent =
+    active;
+
+  $("completedAssignments")
+    .textContent =
+    completed;
+
+  $("assignedStaff")
+    .textContent =
+    staffIds.size;
+
+  $("startingSoon")
+    .textContent =
+    startingSoon;
+
+  $("cancelledAssignments")
+    .textContent =
+    cancelled;
+
+}
+
+
+/* ==========================================
+   STATUS
+========================================== */
+
+function statusHTML(status){
+
+  let className =
+    "status-active";
+
+  if(status === "completed"){
+    className =
+      "status-completed";
+  }
+
+  if(status === "cancelled"){
+    className =
+      "status-cancelled";
+  }
+
+  return `
+    <span class="status ${className}">
+      ${escapeHTML(status || "active")}
+    </span>
+  `;
+
+}
+
+
+/* ==========================================
+   RENDER ASSIGNMENTS
+========================================== */
+
+function renderAssignments(){
+
+  const body =
+    $("assignmentTableBody");
+
+  const search =
+    $("searchInput")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const status =
+    $("statusFilter")
+      .value;
+
+
+  const filtered =
+    assignments.filter(
+      assignment => {
+
+        if(
+          status &&
+          assignment.status !== status
+        ){
+          return false;
+        }
+
+
+        const client =
+          getClient(
+            assignment.client_id
+          );
+
+        const service =
+          getService(
+            assignment.service_id
+          );
+
+        const assignedStaff =
+          getStaff(
+            assignment.assigned_staff_id
+          );
+
+
+        const searchText =
+          [
+            client?.name,
+            client?.company_name,
+            client?.phone,
+            service?.name,
+            service?.description,
+            assignedStaff?.full_name,
+            assignedStaff?.username,
+            assignment.notes
+          ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        return (
+          !search ||
+          searchText.includes(search)
+        );
+
+      }
+    );
+
+
+  if(!filtered.length){
+
+    body.innerHTML = `
+      <tr>
+
+        <td colspan="7">
+
+          <div class="empty">
+
+            <strong>
+              No assignments found
+            </strong>
+
+            Try changing your search or filter,
+            or create a new assignment.
+
+          </div>
+
+        </td>
+
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    filtered
+      .map(
+        assignment => {
+
+          const client =
+            getClient(
+              assignment.client_id
+            );
+
+          const service =
+            getService(
+              assignment.service_id
+            );
+
+          const assignedStaff =
+            getStaff(
+              assignment.assigned_staff_id
+            );
+
+
+          const clientName =
+            client?.name ||
+            "Unknown client";
+
+          const serviceName =
+            service?.name ||
+            "Unknown service";
+
+          const staffName =
+            assignedStaff?.full_name ||
+            assignedStaff?.username ||
+            "Unassigned";
+
+
+          return `
+            <tr>
+
+              <td>
+
+                <div class="main-name">
+                  ${escapeHTML(
+                    clientName
+                  )}
+                </div>
+
+                ${
+                  client?.company_name
+                    ? `
+                      <div class="sub-text">
+                        ${escapeHTML(
+                          client.company_name
+                        )}
+                      </div>
+                    `
+                    : ""
+                }
+
+              </td>
+
+
+              <td>
+
+                <div class="main-name">
+                  ${escapeHTML(
+                    serviceName
+                  )}
+                </div>
+
+              </td>
+
+
+              <td>
+
+                <div class="main-name">
+                  ${escapeHTML(
+                    staffName
+                  )}
+                </div>
+
+              </td>
+
+
+              <td>
+                ${formatDate(
+                  assignment.start_date
+                )}
+              </td>
+
+
+              <td>
+                ${formatDate(
+                  assignment.end_date
+                )}
+              </td>
+
+
+              <td>
+                ${statusHTML(
+                  assignment.status
+                )}
+              </td>
+
+
+              <td>
+
+                <div class="actions">
+
+                  <button
+                    type="button"
+                    class="action-btn edit-btn"
+                    data-edit-id="${escapeHTML(
+                      assignment.id
+                    )}"
+                  >
+                    Edit
+                  </button>
+
+                  ${
+                    assignment.status === "active"
+                      ? `
+                        <button
+                          type="button"
+                          class="action-btn cancel-btn"
+                          data-cancel-id="${escapeHTML(
+                            assignment.id
+                          )}"
+                        >
+                          Cancel
+                        </button>
+                      `
+                      : ""
+                  }
+
+                </div>
+
+              </td>
+
+            </tr>
+          `;
+
+        }
+      )
+      .join("");
+
+
+  body
+    .querySelectorAll(
+      "[data-edit-id]"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            editAssignment(
+              this.dataset.editId
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  body
+    .querySelectorAll(
+      "[data-cancel-id]"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            cancelAssignment(
+              this.dataset.cancelId
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* ==========================================
+   SEARCH RESULTS
+========================================== */
+
+function closeResults(){
+
+  document
+    .querySelectorAll(
+      ".results"
+    )
+    .forEach(
+      element =>
+        element.remove()
+    );
+
+}
+
+
+function showResults(
+  input,
+  items,
+  formatter,
+  onSelect
+){
+
+  closeResults();
+
+  if(!items.length){
+    return;
+  }
+
+
+  const results =
+    document.createElement(
+      "div"
+    );
+
+  results.className =
+    "results open";
+
+
+  items.forEach(
+    item => {
+
+      const result =
+        document.createElement(
+          "div"
+        );
+
+      result.className =
+        "result";
+
+      result.innerHTML =
+        formatter(item);
+
+
+      result.addEventListener(
+        "mousedown",
+        function(event){
+
+          event.preventDefault();
+
+          onSelect(item);
+
+          results.remove();
+
+        }
+      );
+
+
+      results.appendChild(
+        result
+      );
+
+    }
+  );
+
+
+  document.body.appendChild(
+    results
+  );
+
+
+  const rect =
+    input.getBoundingClientRect();
+
+  const width =
+    Math.min(
+      500,
+      window.innerWidth - 24
+    );
+
+
+  let left =
+    rect.left;
+
+
+  if(
+    left + width >
+    window.innerWidth - 12
+  ){
+
+    left =
+      window.innerWidth -
+      width -
+      12;
+
+  }
+
+
+  let top =
+    rect.bottom + 6;
+
+
+  if(
+    top + 240 >
+    window.innerHeight - 12
+  ){
+
+    top =
+      rect.top - 246;
+
+  }
+
+
+  results.style.left =
+    `${Math.max(12,left)}px`;
+
+  results.style.top =
+    `${Math.max(12,top)}px`;
+
+  results.style.width =
+    `${width}px`;
+
+}
+
+
+window.addEventListener(
+  "resize",
+  closeResults
+);
+
+window.addEventListener(
+  "scroll",
+  closeResults,
+  true
+);
+
+
+/* ==========================================
+   CLIENT SEARCH
+========================================== */
+
+function setupClientSearch(){
+
+  const input =
+    $("clientSearch");
+
+
+  input.addEventListener(
+    "input",
+    function(){
+
+      const query =
+        this.value
+          .trim()
+          .toLowerCase();
+
+
+      selectedClientId =
+        null;
+
+      $("selectedClient")
+        .style.display =
+        "none";
+
+
+      if(!query){
+
+        closeResults();
+
+        return;
+
+      }
+
+
+      const matches =
+        clients
+          .filter(
+            client => {
+
+              const text =
+                [
+                  client.name,
+                  client.company_name,
+                  client.phone,
+                  client.email
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+              return text.includes(
+                query
+              );
+
+            }
+          )
+          .slice(0,20);
+
+
+      showResults(
+        input,
+        matches,
+        client => `
+          <div class="result-title">
+            ${escapeHTML(
+              client.name
+            )}
+          </div>
+
+          ${
+            client.company_name
+              ? `
+                <div class="result-meta">
+                  ${escapeHTML(
+                    client.company_name
+                  )}
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            client.phone
+              ? `
+                <div class="result-meta">
+                  ${escapeHTML(
+                    client.phone
+                  )}
+                </div>
+              `
+              : ""
+          }
+        `,
+        selectClient
+      );
+
+    }
+  );
+
+}
+
+
+function selectClient(client){
+
+  selectedClientId =
+    client.id;
+
+  $("clientSearch")
+    .value =
+    "";
+
+  $("selectedClientName")
+    .textContent =
+      client.company_name
+        ? `${client.name} — ${client.company_name}`
+        : client.name;
+
+  $("selectedClient")
+    .style.display =
+    "flex";
+
+  closeResults();
+
+}
+
+
+$("clearClient")
+  .addEventListener(
+    "click",
+    function(){
+
+      selectedClientId =
+        null;
+
+      $("selectedClient")
+        .style.display =
+        "none";
+
+      $("clientSearch")
+        .value =
+        "";
+
+    }
+  );
+
+
+/* ==========================================
+   SERVICE SEARCH
+========================================== */
+
+function setupServiceSearch(){
+
+  const input =
+    $("serviceSearch");
+
+
+  input.addEventListener(
+    "input",
+    function(){
+
+      const query =
+        this.value
+          .trim()
+          .toLowerCase();
+
+
+      selectedServiceId =
+        null;
+
+      $("selectedService")
+        .style.display =
+        "none";
+
+
+      if(!query){
+
+        closeResults();
+
+        return;
+
+      }
+
+
+      const matches =
+        services
+          .filter(
+            service => {
+
+              const text =
+                [
+                  service.name,
+                  service.description
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+              return text.includes(
+                query
+              );
+
+            }
+          )
+          .slice(0,20);
+
+
+      showResults(
+        input,
+        matches,
+        service => `
+          <div class="result-title">
+            ${escapeHTML(
+              service.name
+            )}
+          </div>
+
+          ${
+            service.description
+              ? `
+                <div class="result-meta">
+                  ${escapeHTML(
+                    service.description
+                  )}
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            service.price != null
+              ? `
+                <div class="result-meta">
+                  KSh ${Number(
+                    service.price
+                  ).toLocaleString(
+                    "en-KE",
+                    {
+                      minimumFractionDigits:2
+                    }
+                  )}
+                </div>
+              `
+              : ""
+          }
+        `,
+        selectService
+      );
+
+    }
+  );
+
+}
+
+
+function selectService(service){
+
+  selectedServiceId =
+    service.id;
+
+  $("serviceSearch")
+    .value =
+    "";
+
+  $("selectedServiceName")
+    .textContent =
+    service.name;
+
+  $("selectedService")
+    .style.display =
+    "flex";
+
+  closeResults();
+
+}
+
+
+$("clearService")
+  .addEventListener(
+    "click",
+    function(){
+
+      selectedServiceId =
+        null;
+
+      $("selectedService")
+        .style.display =
+        "none";
+
+      $("serviceSearch")
+        .value =
+        "";
+
+    }
+  );
+
+
+/* ==========================================
+   STAFF SEARCH
+========================================== */
+
+function setupStaffSearch(){
+
+  const input =
+    $("staffSearch");
+
+
+  input.addEventListener(
+    "input",
+    function(){
+
+      const query =
+        this.value
+          .trim()
+          .toLowerCase();
+
+
+      selectedStaffId =
+        null;
+
+      $("selectedStaff")
+        .style.display =
+        "none";
+
+
+      if(!query){
+
+        closeResults();
+
+        return;
+
+      }
+
+
+      const matches =
+        staff
+          .filter(
+            person => {
+
+              const text =
+                [
+                  person.full_name,
+                  person.username
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+              return text.includes(
+                query
+              );
+
+            }
+          )
+          .slice(0,20);
+
+
+      showResults(
+        input,
+        matches,
+        person => `
+          <div class="result-title">
+            ${escapeHTML(
+              person.full_name ||
+              person.username ||
+              "Staff member"
+            )}
+          </div>
+
+          ${
+            person.username
+              ? `
+                <div class="result-meta">
+                  @${escapeHTML(
+                    person.username
+                  )}
+                </div>
+              `
+              : ""
+          }
+        `,
+        selectStaff
+      );
+
+    }
+  );
+
+}
+
+
+function selectStaff(person){
+
+  selectedStaffId =
+    person.user_id;
+
+  $("staffSearch")
+    .value =
+    "";
+
+  $("selectedStaffName")
+    .textContent =
+    person.full_name ||
+    person.username ||
+    "Staff member";
+
+  $("selectedStaff")
+    .style.display =
+    "flex";
+
+  closeResults();
+
+}
+
+
+$("clearStaff")
+  .addEventListener(
+    "click",
+    function(){
+
+      selectedStaffId =
+        null;
+
+      $("selectedStaff")
+        .style.display =
+        "none";
+
+      $("staffSearch")
+        .value =
+        "";
+
+    }
+  );
+
+
+/* ==========================================
+   RESET FORM
+========================================== */
+
+function resetForm(){
+
+  $("assignmentForm")
+    .reset();
+
+
+  $("assignmentStatus")
+    .value =
+    "active";
+
+
+  $("startDate")
+    .value =
+    today();
+
+
+  $("endDate")
+    .value =
+    today();
+
+
+  selectedClientId =
+    null;
+
+  selectedServiceId =
+    null;
+
+  selectedStaffId =
+    null;
+
+
+  $("selectedClient")
+    .style.display =
+    "none";
+
+  $("selectedService")
+    .style.display =
+    "none";
+
+  $("selectedStaff")
+    .style.display =
+    "none";
+
+
+  $("clientSearch")
+    .value =
+    "";
+
+  $("serviceSearch")
+    .value =
+    "";
+
+  $("staffSearch")
+    .value =
+    "";
+
+}
+
+
+/* ==========================================
+   OPEN MODAL
+========================================== */
+
+function openModal(
+  assignment=null
+){
+
+  closeResults();
+
+
+  $("assignmentModal")
+    .classList.add("open");
+
+
+  if(!assignment){
+
+    editingAssignmentId =
+      null;
+
+    $("modalTitle")
+      .textContent =
+      "New Assignment";
+
+    $("saveButton")
+      .textContent =
+      "Save Assignment";
+
+    resetForm();
+
+    return;
+
+  }
+
+
+  editingAssignmentId =
+    assignment.id;
+
+
+  $("modalTitle")
+    .textContent =
+    "Edit Assignment";
+
+
+  $("saveButton")
+    .textContent =
+    "Update Assignment";
+
+
+  $("assignmentStatus")
+    .value =
+    assignment.status ||
+    "active";
+
+
+  $("startDate")
+    .value =
+    assignment.start_date ||
+    today();
+
+
+  $("endDate")
+    .value =
+    assignment.end_date ||
+    assignment.start_date ||
+    today();
+
+
+  $("notes")
+    .value =
+    assignment.notes ||
+    "";
+
+
+  const client =
+    getClient(
+      assignment.client_id
+    );
+
+  if(client){
+
+    selectedClientId =
+      client.id;
+
+    $("selectedClientName")
+      .textContent =
+      client.company_name
+        ? `${client.name} — ${client.company_name}`
+        : client.name;
+
+    $("selectedClient")
+      .style.display =
+      "flex";
+
+  }
+
+
+  const service =
+    getService(
+      assignment.service_id
+    );
+
+  if(service){
+
+    selectedServiceId =
+      service.id;
+
+    $("selectedServiceName")
+      .textContent =
+      service.name;
+
+    $("selectedService")
+      .style.display =
+      "flex";
+
+  }
+
+
+  const person =
+    getStaff(
+      assignment.assigned_staff_id
+    );
+
+  if(person){
+
+    selectedStaffId =
+      person.user_id;
+
+    $("selectedStaffName")
+      .textContent =
+      person.full_name ||
+      person.username ||
+      "Staff member";
+
+    $("selectedStaff")
+      .style.display =
+      "flex";
+
+  }
+
+}
+
+
+/* ==========================================
+   CLOSE MODAL
+========================================== */
+
+function closeModal(){
+
+  closeResults();
+
+  $("assignmentModal")
+    .classList.remove("open");
+
+  editingAssignmentId =
+    null;
+
+  resetForm();
+
+}
+
+
+/* ==========================================
+   MODAL CONTROLS
+========================================== */
+
+function setupModal(){
+
+  const newAssignmentButton =
+    $("newAssignmentButton");
+
+
+  if(newAssignmentButton){
+
+    newAssignmentButton.onclick =
+      function(event){
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        openModal();
+
+      };
+
+  }
+
+
+  $("closeModalButton")
+    .addEventListener(
+      "click",
+      function(){
+
+        closeModal();
+
+      }
+    );
+
+
+  $("cancelModalButton")
+    .addEventListener(
+      "click",
+      function(){
+
+        closeModal();
+
+      }
+    );
+
+
+  $("assignmentModal")
+    .addEventListener(
+      "click",
+      function(event){
+
+        if(
+          event.target ===
+          $("assignmentModal")
+        ){
+
+          closeModal();
+
+        }
+
+      }
+    );
+
+
+  document.addEventListener(
+    "keydown",
+    function(event){
+
+      if(
+        event.key === "Escape" &&
+        $("assignmentModal")
+          .classList.contains("open")
+      ){
+
+        closeModal();
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ==========================================
+   EDIT ASSIGNMENT
+========================================== */
+
+function editAssignment(id){
+
+  const assignment =
+    assignments.find(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+
+  if(!assignment){
+
+    showMessage(
+      "Assignment could not be found.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  openModal(
+    assignment
+  );
+
+}
+
+
+/* ==========================================
+   SAVE ASSIGNMENT
+========================================== */
+
+async function saveAssignment(){
+
+  if(!businessId){
+
+    showMessage(
+      "Business information is missing.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!selectedClientId){
+
+    showMessage(
+      "Please select a client.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!selectedServiceId){
+
+    showMessage(
+      "Please select a service.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!selectedStaffId){
+
+    showMessage(
+      "Please select assigned staff.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const startDate =
+    $("startDate").value;
+
+  const endDate =
+    $("endDate").value;
+
+
+  if(!startDate){
+
+    showMessage(
+      "Please select a start date.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!endDate){
+
+    showMessage(
+      "Please select an end date.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(endDate < startDate){
+
+    showMessage(
+      "End date cannot be earlier than start date.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const payload = {
+
+    business_id:
+      businessId,
+
+    client_id:
+      selectedClientId,
+
+    service_id:
+      selectedServiceId,
+
+    assigned_staff_id:
+      selectedStaffId,
+
+    start_date:
+      startDate,
+
+    end_date:
+      endDate,
+
+    status:
+      $("assignmentStatus").value,
+
+    notes:
+      $("notes").value.trim() ||
+      null
+
+  };
+
+
+  const button =
+    $("saveButton");
+
+  const originalText =
+    button.textContent;
+
+  const wasEditing =
+    Boolean(
+      editingAssignmentId
+    );
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    wasEditing
+      ? "Updating..."
+      : "Saving...";
+
+
+  try{
+
+    if(wasEditing){
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("assignments")
+          .update(payload)
+          .eq(
+            "id",
+            editingAssignmentId
+          )
+          .eq(
+            "business_id",
+            businessId
+          );
+
+
+      if(error){
+        throw error;
+      }
+
+
+      closeModal();
+
+      await loadData();
+
+      showMessage(
+        "Assignment updated successfully."
+      );
+
+    }else{
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("assignments")
+          .insert(
+            payload
+          );
+
+
+      if(error){
+        throw error;
+      }
+
+
+      closeModal();
+
+      await loadData();
+
+      showMessage(
+        "Assignment created successfully."
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "Save assignment error:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Unable to save assignment.",
+      "error"
+    );
+
+  }finally{
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      originalText;
+
+  }
+
+}
+
+
+/* ==========================================
+   FORM SUBMIT
+========================================== */
+
+function setupForm(){
+
+  $("assignmentForm")
+    .addEventListener(
+      "submit",
+      async function(event){
+
+        event.preventDefault();
+
+        await saveAssignment();
+
+      }
+    );
+
+}
+
+
+/* ==========================================
+   CANCEL ASSIGNMENT
+========================================== */
+
+async function cancelAssignment(id){
+
+  const assignment =
+    assignments.find(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+
+  if(!assignment){
+    return;
+  }
+
+
+  const confirmed =
+    window.confirm(
+      "Cancel this assignment?"
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  try{
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("assignments")
+        .update({
+          status:"cancelled"
+        })
+        .eq(
+          "id",
+          id
+        )
+        .eq(
+          "business_id",
+          businessId
+        );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    await loadData();
+
+    showMessage(
+      "Assignment cancelled successfully."
+    );
+
+  }catch(error){
+
+    console.error(
+      "Cancel assignment error:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Unable to cancel assignment.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* ==========================================
+   FILTERS
+========================================== */
+
+function setupFilters(){
+
+  $("searchInput")
+    .addEventListener(
+      "input",
+      renderAssignments
+    );
+
+
+  $("statusFilter")
+    .addEventListener(
+      "change",
+      renderAssignments
+    );
+
+
+  $("refreshButton")
+    .addEventListener(
+      "click",
+      async function(){
+
+        const button =
+          $("refreshButton");
+
+        button.disabled =
+          true;
+
+        button.textContent =
+          "Refreshing...";
+
+
+        try{
+
+          await loadData();
+
+          showMessage(
+            "Assignments refreshed successfully."
+          );
+
+        }catch(error){
+
+          console.error(
+            "Refresh error:",
+            error
+          );
+
+          showMessage(
+            error.message ||
+            "Unable to refresh assignments.",
+            "error"
+          );
+
+        }finally{
+
+          button.disabled =
+            false;
+
+          button.textContent =
+            "🔄 Refresh";
+
+        }
+
+      }
+    );
+
+}
+
+
+/* ==========================================
+   START APPLICATION
+========================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function(){
+
+    setupMenu();
+
+    setupModal();
+
+    setupForm();
+
+    setupFilters();
+
+    setupClientSearch();
+
+    setupServiceSearch();
+
+    setupStaffSearch();
+
+
+    try{
+
+      await loadData();
+
+    }catch(error){
+
+      console.error(
+        "Initial assignment load error:",
+        error
+      );
+
+
+      $("assignmentTableBody")
+        .innerHTML = `
+          <tr>
+
+            <td colspan="7">
+
+              <div class="empty">
+
+                <strong>
+                  Unable to load assignments
+                </strong>
+
+                ${escapeHTML(
+                  error.message ||
+                  "Please refresh and try again."
+                )}
+
+              </div>
+
+            </td>
+
+          </tr>
+        `;
+
+
+      showMessage(
+        error.message ||
+        "Unable to load assignments.",
+        "error"
+      );
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>

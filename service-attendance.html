@@ -1,0 +1,3209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta name="theme-color" content="#087f3f">
+
+    <title>DukaFlow | Service Attendance</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #087f3f;
+            --primary-dark: #066b35;
+            --primary-light: #ecfdf5;
+
+            --blue: #2563eb;
+            --blue-light: #eff6ff;
+
+            --purple: #7c3aed;
+            --purple-light: #f5f3ff;
+
+            --orange: #ea580c;
+            --orange-light: #fff7ed;
+
+            --red: #dc2626;
+            --red-light: #fef2f2;
+
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+
+            --cyan: #0891b2;
+            --cyan-light: #ecfeff;
+
+            --background: #f5f7fb;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+
+            --radius-lg: 20px;
+            --radius-md: 14px;
+
+            --shadow:
+                0 10px 30px rgba(15, 23, 42, .07);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =====================================================
+           DUKAFLOW MENU
+        ====================================================== */
+
+        .dukaflow-menu-wrapper {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 18px;
+            position: relative;
+        }
+
+        .dukaflow-menu-button {
+            width: 100%;
+            min-height: 52px;
+            padding: 13px 16px;
+            border: none;
+            border-radius: 14px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #087f3f,
+                    #0b7a3b
+                );
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow:
+                0 8px 20px rgba(8, 127, 63, .16);
+        }
+
+        .dukaflow-menu-button:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #076d36,
+                    #096b34
+                );
+        }
+
+        .dukaflow-menu-arrow {
+            transition: transform .2s ease;
+        }
+
+        .dukaflow-menu-button[aria-expanded="true"]
+        .dukaflow-menu-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dukaflow-menu-panel {
+            display: none;
+            width: 100%;
+            margin-top: 8px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow:
+                0 14px 30px rgba(15, 23, 42, .12);
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .dukaflow-menu-panel.open {
+            display: block;
+        }
+
+        .dukaflow-menu-panel a {
+            display: block;
+            padding: 13px 16px;
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: 700;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .dukaflow-menu-panel a:last-child {
+            border-bottom: none;
+        }
+
+        .dukaflow-menu-panel a:hover {
+            background: #f0fdf4;
+            color: #087f3f;
+        }
+
+        .dukaflow-menu-panel a.active {
+            background: #ecfdf5;
+            color: #087f3f;
+        }
+
+        /* =====================================================
+           PAGE
+        ====================================================== */
+
+        .page {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 7px;
+            font-size: 30px;
+            line-height: 1.15;
+            font-weight: 850;
+            letter-spacing: -.5px;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .primary-button {
+            border: none;
+            border-radius: 13px;
+            padding: 13px 18px;
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    #0b7a3b
+                );
+            color: #fff;
+            font-weight: 800;
+            box-shadow:
+                0 8px 18px rgba(8, 127, 63, .18);
+            white-space: nowrap;
+        }
+
+        /* =====================================================
+           SUMMARY
+        ====================================================== */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            min-height: 128px;
+            border: 1px solid transparent;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-card::after {
+            content: "";
+            position: absolute;
+            width: 85px;
+            height: 85px;
+            right: -25px;
+            bottom: -30px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.28);
+        }
+
+        .summary-card.green {
+            background: linear-gradient(
+                145deg,
+                #ecfdf5,
+                #d1fae5
+            );
+            border-color: #bbf7d0;
+        }
+
+        .summary-card.blue {
+            background: linear-gradient(
+                145deg,
+                #eff6ff,
+                #dbeafe
+            );
+            border-color: #bfdbfe;
+        }
+
+        .summary-card.orange {
+            background: linear-gradient(
+                145deg,
+                #fff7ed,
+                #ffedd5
+            );
+            border-color: #fed7aa;
+        }
+
+        .summary-card.red {
+            background: linear-gradient(
+                145deg,
+                #fef2f2,
+                #fee2e2
+            );
+            border-color: #fecaca;
+        }
+
+        .summary-card.purple {
+            background: linear-gradient(
+                145deg,
+                #f5f3ff,
+                #ede9fe
+            );
+            border-color: #ddd6fe;
+        }
+
+        .summary-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,.72);
+            font-size: 20px;
+            margin-bottom: 13px;
+        }
+
+        .summary-label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .summary-value {
+            font-size: 26px;
+            font-weight: 850;
+            line-height: 1;
+        }
+
+        /* =====================================================
+           FILTERS
+        ====================================================== */
+
+        .toolbar-card {
+            margin-bottom: 18px;
+            padding: 18px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            background:
+                linear-gradient(
+                    145deg,
+                    #ffffff,
+                    #f8fafc
+                );
+            box-shadow: var(--shadow);
+        }
+
+        .toolbar {
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1fr)
+                180px
+                180px
+                auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field-group label {
+            color: #475569;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .field-group input,
+        .field-group select,
+        .field-group textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 11px;
+            background: #fff;
+            color: var(--text);
+            outline: none;
+        }
+
+        .field-group input:focus,
+        .field-group select:focus,
+        .field-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow:
+                0 0 0 3px rgba(8,127,63,.10);
+        }
+
+        .secondary-button {
+            min-height: 44px;
+            padding: 10px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 11px;
+            background: #fff;
+            color: #334155;
+            font-weight: 800;
+        }
+
+        .secondary-button:hover {
+            background: #f8fafc;
+        }
+
+        /* =====================================================
+           TABLE
+        ====================================================== */
+
+        .table-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #f8fafc
+                );
+        }
+
+        .table-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 850;
+        }
+
+        .record-count {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            min-width: 980px;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 13px 16px;
+            text-align: left;
+            background: #f8fafc;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 15px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .staff-name {
+            color: #0f172a;
+            font-weight: 800;
+        }
+
+        .sub-text {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .assignment-name {
+            color: #334155;
+            font-weight: 750;
+        }
+
+        /* =====================================================
+           STATUS
+        ====================================================== */
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 850;
+        }
+
+        .status-badge::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status-present {
+            color: #15803d;
+            background: #dcfce7;
+        }
+
+        .status-late {
+            color: #c2410c;
+            background: #ffedd5;
+        }
+
+        .status-absent {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+
+        .status-off {
+            color: #7c3aed;
+            background: #ede9fe;
+        }
+
+        /* =====================================================
+           ACTIONS
+        ====================================================== */
+
+        .actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            padding: 7px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            background: #fff;
+            color: #334155;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .action-button.edit {
+            color: #2563eb;
+            border-color: #bfdbfe;
+            background: #eff6ff;
+        }
+
+        .action-button.delete {
+            color: #dc2626;
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        /* =====================================================
+           EMPTY / LOADING
+        ====================================================== */
+
+        .empty-state,
+        .loading-state {
+            text-align: center;
+            padding: 52px 20px;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            background: var(--primary-light);
+            font-size: 30px;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 7px;
+            color: #334155;
+            font-size: 17px;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .spinner {
+            width: 34px;
+            height: 34px;
+            margin: 0 auto 12px;
+            border: 3px solid #dbe5df;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            display: none;
+            margin-bottom: 18px;
+            padding: 13px 15px;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           MODAL
+        ====================================================== */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(15,23,42,.58);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 650px;
+            max-height: 92vh;
+            overflow-y: auto;
+            border-radius: 22px;
+            background: #fff;
+            box-shadow:
+                0 25px 70px rgba(15,23,42,.25);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--border);
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #f8fafc
+                );
+        }
+
+        .modal-header h2 {
+            margin: 0 0 5px;
+            font-size: 20px;
+        }
+
+        .modal-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .close-button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 19px;
+        }
+
+        .modal-body {
+            padding: 22px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        textarea {
+            min-height: 95px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 16px 22px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .save-button {
+            border: none;
+            border-radius: 11px;
+            padding: 11px 18px;
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    #0b7a3b
+                );
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .save-button:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+        }
+
+        /* =====================================================
+           MOBILE
+        ====================================================== */
+
+        @media (max-width: 1100px) {
+            .summary-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .toolbar {
+                grid-template-columns:
+                    minmax(0, 1fr)
+                    1fr
+                    1fr;
+            }
+
+            .toolbar .secondary-button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .page {
+                padding: 16px;
+            }
+
+            .dukaflow-menu-wrapper {
+                margin-bottom: 14px;
+            }
+
+            .dukaflow-menu-button {
+                min-height: 50px;
+                padding: 12px 14px;
+                font-size: 14px;
+                border-radius: 13px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                margin-bottom: 20px;
+            }
+
+            .page-header h1 {
+                font-size: 25px;
+            }
+
+            .primary-button {
+                width: 100%;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .summary-card {
+                min-height: 115px;
+                padding: 15px;
+                border-radius: 17px;
+            }
+
+            .summary-value {
+                font-size: 23px;
+            }
+
+            .toolbar {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar-card {
+                padding: 14px;
+            }
+
+            .modal {
+                border-radius: 18px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .summary-card {
+                padding: 13px;
+            }
+
+            .summary-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+
+            .summary-label {
+                font-size: 11px;
+            }
+
+            .summary-value {
+                font-size: 21px;
+            }
+
+            .modal-body {
+                padding: 17px;
+            }
+
+            .modal-footer {
+                padding: 14px 17px 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="page">
+
+    <!-- =====================================================
+         DUKAFLOW MENU
+    ====================================================== -->
+
+    <div class="dukaflow-menu-wrapper">
+
+        <button
+            type="button"
+            class="dukaflow-menu-button"
+            id="dukaflowMenuButton"
+            aria-expanded="false"
+            aria-controls="dukaflowMenuPanel"
+        >
+            <span>☰ DukaFlow Menu</span>
+            <span class="dukaflow-menu-arrow">▼</span>
+        </button>
+
+        <div
+            class="dukaflow-menu-panel"
+            id="dukaflowMenuPanel"
+        >
+            <a href="index.html">🏠 Dashboard</a>
+            <a href="products.html">📦 Products & Stock</a>
+            <a href="sales.html">💰 Sales</a>
+            <a href="expenses.html">💸 Expenses</a>
+            <a href="reports.html">📊 Reports</a>
+            <a href="users.html">👥 Manage Users</a>
+
+            <a href="service-dashboard.html">
+                🧩 Service Dashboard
+            </a>
+
+            <a href="service-clients.html">
+                👤 Clients
+            </a>
+
+            <a href="service-services.html">
+                🛠️ Services
+            </a>
+
+            <a href="service-assignments.html">
+                📋 Assignments
+            </a>
+
+            <a
+                href="service-attendance.html"
+                class="active"
+            >
+                🕒 Attendance
+            </a>
+
+            <a href="service-invoices.html">
+                🧾 Invoices
+            </a>
+
+            <a href="service-payments.html">
+                💳 Payments
+            </a>
+
+            <a href="service-reports.html">
+                📈 Service Reports
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <section class="page-header">
+
+        <div>
+
+            <h1>🕒 Service Attendance</h1>
+
+            <p>
+                Track staff attendance against service assignments,
+                including check-in, check-out and daily status.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="primary-button"
+            id="addAttendanceButton"
+        >
+            ＋ Record Attendance
+        </button>
+
+    </section>
+
+
+    <!-- =====================================================
+         ERROR
+    ====================================================== -->
+
+    <div
+        class="error-message"
+        id="errorMessage"
+    ></div>
+
+
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+    <section class="summary-grid">
+
+        <div class="summary-card green">
+
+            <div class="summary-icon">🕒</div>
+
+            <div class="summary-label">
+                Total Records
+            </div>
+
+            <div
+                class="summary-value"
+                id="totalRecords"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card blue">
+
+            <div class="summary-icon">✓</div>
+
+            <div class="summary-label">
+                Present
+            </div>
+
+            <div
+                class="summary-value"
+                id="presentRecords"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card orange">
+
+            <div class="summary-icon">⏰</div>
+
+            <div class="summary-label">
+                Late
+            </div>
+
+            <div
+                class="summary-value"
+                id="lateRecords"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card red">
+
+            <div class="summary-icon">✕</div>
+
+            <div class="summary-label">
+                Absent
+            </div>
+
+            <div
+                class="summary-value"
+                id="absentRecords"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card purple">
+
+            <div class="summary-icon">○</div>
+
+            <div class="summary-label">
+                Off
+            </div>
+
+            <div
+                class="summary-value"
+                id="offRecords"
+            >
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FILTERS
+    ====================================================== -->
+
+    <section class="toolbar-card">
+
+        <div class="toolbar">
+
+            <div class="field-group">
+
+                <label for="searchInput">
+                    Search
+                </label>
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Search staff, client or service..."
+                >
+
+            </div>
+
+
+            <div class="field-group">
+
+                <label for="dateFilter">
+                    Attendance Date
+                </label>
+
+                <input
+                    type="date"
+                    id="dateFilter"
+                >
+
+            </div>
+
+
+            <div class="field-group">
+
+                <label for="statusFilter">
+                    Status
+                </label>
+
+                <select id="statusFilter">
+
+                    <option value="all">
+                        All statuses
+                    </option>
+
+                    <option value="present">
+                        Present
+                    </option>
+
+                    <option value="late">
+                        Late
+                    </option>
+
+                    <option value="absent">
+                        Absent
+                    </option>
+
+                    <option value="off">
+                        Off
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="secondary-button"
+                id="refreshButton"
+            >
+                🔄 Refresh
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TABLE
+    ====================================================== -->
+
+    <section class="table-card">
+
+        <div class="table-header">
+
+            <h2>
+                Attendance Records
+            </h2>
+
+            <span
+                class="record-count"
+                id="recordCount"
+            >
+                0 records
+            </span>
+
+        </div>
+
+
+        <div class="table-scroll">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Staff</th>
+                        <th>Assignment</th>
+                        <th>Date</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="attendanceTableBody">
+
+                    <tr>
+
+                        <td colspan="7">
+
+                            <div class="loading-state">
+
+                                <div class="spinner"></div>
+
+                                Loading attendance...
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     ATTENDANCE MODAL
+========================================================== -->
+
+<div
+    class="modal-overlay"
+    id="attendanceModal"
+>
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2 id="modalTitle">
+                    Record Attendance
+                </h2>
+
+                <p>
+                    Record daily attendance for assigned staff.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="close-button"
+                id="closeModalButton"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="attendanceForm">
+
+            <div class="modal-body">
+
+                <div class="form-grid">
+
+                    <!-- ASSIGNMENT -->
+
+                    <div class="field-group full-width">
+
+                        <label for="assignmentSelect">
+                            Assignment
+                        </label>
+
+                        <select
+                            id="assignmentSelect"
+                            required
+                        >
+
+                            <option value="">
+                                Select assignment
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DATE -->
+
+                    <div class="field-group">
+
+                        <label for="attendanceDate">
+                            Attendance Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="attendanceDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div class="field-group">
+
+                        <label for="attendanceStatus">
+                            Status
+                        </label>
+
+                        <select
+                            id="attendanceStatus"
+                            required
+                        >
+
+                            <option value="present">
+                                Present
+                            </option>
+
+                            <option value="late">
+                                Late
+                            </option>
+
+                            <option value="absent">
+                                Absent
+                            </option>
+
+                            <option value="off">
+                                Off
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- CHECK IN -->
+
+                    <div class="field-group">
+
+                        <label for="checkIn">
+                            Check In
+                        </label>
+
+                        <input
+                            type="time"
+                            id="checkIn"
+                        >
+
+                    </div>
+
+
+                    <!-- CHECK OUT -->
+
+                    <div class="field-group">
+
+                        <label for="checkOut">
+                            Check Out
+                        </label>
+
+                        <input
+                            type="time"
+                            id="checkOut"
+                        >
+
+                    </div>
+
+
+                    <!-- NOTES -->
+
+                    <div class="field-group full-width">
+
+                        <label for="attendanceNotes">
+                            Notes
+                        </label>
+
+                        <textarea
+                            id="attendanceNotes"
+                            placeholder="Add attendance notes..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelModalButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-button"
+                    id="saveAttendanceButton"
+                >
+                    Save Attendance
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+    /* =========================================================
+       SUPABASE
+    ========================================================== */
+
+    const SUPABASE_URL =
+        "https://uwfghbctckinymatcbro.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    /* =========================================================
+       DUKAFLOW MENU
+    ========================================================== */
+
+    const dukaflowMenuButton =
+        document.getElementById(
+            "dukaflowMenuButton"
+        );
+
+    const dukaflowMenuPanel =
+        document.getElementById(
+            "dukaflowMenuPanel"
+        );
+
+
+    dukaflowMenuButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+            const isOpen =
+                dukaflowMenuPanel.classList.contains(
+                    "open"
+                );
+
+            dukaflowMenuPanel.classList.toggle(
+                "open"
+            );
+
+            dukaflowMenuButton.setAttribute(
+                "aria-expanded",
+                String(!isOpen)
+            );
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                !event.target.closest(
+                    ".dukaflow-menu-wrapper"
+                )
+            ) {
+
+                dukaflowMenuPanel.classList.remove(
+                    "open"
+                );
+
+                dukaflowMenuButton.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+
+                dukaflowMenuPanel.classList.remove(
+                    "open"
+                );
+
+                dukaflowMenuButton.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+            }
+        }
+    );
+
+
+    /* =========================================================
+       STATE
+    ========================================================== */
+
+    let currentUser = null;
+    let currentBusinessId = null;
+
+    let attendanceRecords = [];
+    let assignments = [];
+    let clients = [];
+    let services = [];
+    let staff = [];
+
+    let editingAttendanceId = null;
+
+
+    /* =========================================================
+       DOM
+    ========================================================== */
+
+    const errorMessage =
+        document.getElementById(
+            "errorMessage"
+        );
+
+    const attendanceTableBody =
+        document.getElementById(
+            "attendanceTableBody"
+        );
+
+    const recordCount =
+        document.getElementById(
+            "recordCount"
+        );
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+    const dateFilter =
+        document.getElementById(
+            "dateFilter"
+        );
+
+    const statusFilter =
+        document.getElementById(
+            "statusFilter"
+        );
+
+    const refreshButton =
+        document.getElementById(
+            "refreshButton"
+        );
+
+    const addAttendanceButton =
+        document.getElementById(
+            "addAttendanceButton"
+        );
+
+    const attendanceModal =
+        document.getElementById(
+            "attendanceModal"
+        );
+
+    const closeModalButton =
+        document.getElementById(
+            "closeModalButton"
+        );
+
+    const cancelModalButton =
+        document.getElementById(
+            "cancelModalButton"
+        );
+
+    const attendanceForm =
+        document.getElementById(
+            "attendanceForm"
+        );
+
+    const modalTitle =
+        document.getElementById(
+            "modalTitle"
+        );
+
+    const assignmentSelect =
+        document.getElementById(
+            "assignmentSelect"
+        );
+
+    const attendanceDate =
+        document.getElementById(
+            "attendanceDate"
+        );
+
+    const attendanceStatus =
+        document.getElementById(
+            "attendanceStatus"
+        );
+
+    const checkIn =
+        document.getElementById(
+            "checkIn"
+        );
+
+    const checkOut =
+        document.getElementById(
+            "checkOut"
+        );
+
+    const attendanceNotes =
+        document.getElementById(
+            "attendanceNotes"
+        );
+
+    const saveAttendanceButton =
+        document.getElementById(
+            "saveAttendanceButton"
+        );
+
+
+    /* =========================================================
+       HELPERS
+    ========================================================== */
+
+    function escapeHTML(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function showError(message) {
+
+        errorMessage.textContent =
+            message;
+
+        errorMessage.style.display =
+            "block";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+    function hideError() {
+
+        errorMessage.style.display =
+            "none";
+
+        errorMessage.textContent =
+            "";
+    }
+
+
+    function todayString() {
+
+        const now = new Date();
+
+        const year =
+            now.getFullYear();
+
+        const month =
+            String(
+                now.getMonth() + 1
+            ).padStart(2, "0");
+
+        const day =
+            String(
+                now.getDate()
+            ).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+
+    function formatDate(value) {
+
+        if (!value) {
+            return "—";
+        }
+
+        const date =
+            new Date(
+                value + "T00:00:00"
+            );
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+            return value;
+        }
+
+        return date.toLocaleDateString(
+            "en-KE",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
+    }
+
+
+    function formatTime(value) {
+
+        if (!value) {
+            return "—";
+        }
+
+        return value.slice(
+            0,
+            5
+        );
+    }
+
+
+    function statusClass(status) {
+
+        return {
+            present: "status-present",
+            late: "status-late",
+            absent: "status-absent",
+            off: "status-off"
+        }[status] || "status-present";
+    }
+
+
+    function statusLabel(status) {
+
+        return {
+            present: "Present",
+            late: "Late",
+            absent: "Absent",
+            off: "Off"
+        }[status] || status;
+    }
+
+
+    /* =========================================================
+       AUTH
+    ========================================================== */
+
+    async function getCurrentUser() {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .auth
+            .getUser();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data.user) {
+
+            window.location.href =
+                "login.html";
+
+            return null;
+        }
+
+        return data.user;
+    }
+
+
+    async function getBusinessId(userId) {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("profiles")
+            .select("business_id")
+            .eq(
+                "user_id",
+                userId
+            )
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        if (
+            !data ||
+            !data.business_id
+        ) {
+            throw new Error(
+                "Your DukaFlow business could not be found."
+            );
+        }
+
+        return data.business_id;
+    }
+
+
+    /* =========================================================
+       LOAD SUPPORTING DATA
+    ========================================================== */
+
+    async function loadClients() {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("clients")
+            .select(
+                "id,name,company_name"
+            )
+            .eq(
+                "business_id",
+                currentBusinessId
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        clients = data || [];
+    }
+
+
+    async function loadServices() {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("services")
+            .select(
+                "id,name"
+            )
+            .eq(
+                "business_id",
+                currentBusinessId
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        services = data || [];
+    }
+
+
+    async function loadStaff() {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("profiles")
+            .select(
+                "user_id,full_name,username,role"
+            )
+            .eq(
+                "business_id",
+                currentBusinessId
+            )
+            .eq(
+                "role",
+                "staff"
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        staff = data || [];
+    }
+
+
+    async function loadAssignments() {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("assignments")
+            .select(`
+                id,
+                client_id,
+                service_id,
+                assigned_staff_id,
+                start_date,
+                end_date,
+                status,
+                notes
+            `)
+            .eq(
+                "business_id",
+                currentBusinessId
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        assignments =
+            data || [];
+
+        renderAssignmentOptions();
+    }
+
+
+    function findClient(id) {
+
+        return clients.find(
+            client =>
+                client.id === id
+        );
+    }
+
+
+    function findService(id) {
+
+        return services.find(
+            service =>
+                service.id === id
+        );
+    }
+
+
+    function findStaff(id) {
+
+        return staff.find(
+            member =>
+                member.user_id === id
+        );
+    }
+
+
+    function findAssignment(id) {
+
+        return assignments.find(
+            assignment =>
+                assignment.id === id
+        );
+    }
+
+
+    function renderAssignmentOptions() {
+
+        assignmentSelect.innerHTML = `
+            <option value="">
+                Select assignment
+            </option>
+        `;
+
+        assignments
+            .filter(
+                assignment =>
+                    assignment.status ===
+                    "active"
+            )
+            .forEach(
+                function(assignment) {
+
+                    const client =
+                        findClient(
+                            assignment.client_id
+                        );
+
+                    const service =
+                        findService(
+                            assignment.service_id
+                        );
+
+                    const member =
+                        findStaff(
+                            assignment.assigned_staff_id
+                        );
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        assignment.id;
+
+                    option.textContent =
+                        `${client?.name || "Client"} — ${
+                            service?.name || "Service"
+                        } — ${
+                            member?.full_name ||
+                            member?.username ||
+                            "Staff"
+                        }`;
+
+                    assignmentSelect.appendChild(
+                        option
+                    );
+                }
+            );
+    }
+
+
+    /* =========================================================
+       LOAD ATTENDANCE
+    ========================================================== */
+
+    async function loadAttendance() {
+
+        attendanceTableBody.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        Loading attendance...
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("attendance")
+            .select(`
+                id,
+                business_id,
+                assignment_id,
+                staff_id,
+                attendance_date,
+                check_in,
+                check_out,
+                status,
+                notes,
+                created_at
+            `)
+            .eq(
+                "business_id",
+                currentBusinessId
+            )
+            .order(
+                "attendance_date",
+                {
+                    ascending: false
+                }
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        attendanceRecords =
+            data || [];
+
+        renderAttendance();
+        updateSummary();
+    }
+
+
+    /* =========================================================
+       FILTER
+    ========================================================== */
+
+    function getFilteredRecords() {
+
+        const search =
+            searchInput.value
+                .trim()
+                .toLowerCase();
+
+        const selectedDate =
+            dateFilter.value;
+
+        const selectedStatus =
+            statusFilter.value;
+
+        return attendanceRecords.filter(
+            function(record) {
+
+                if (
+                    selectedDate &&
+                    record.attendance_date !==
+                    selectedDate
+                ) {
+                    return false;
+                }
+
+                if (
+                    selectedStatus !== "all" &&
+                    record.status !==
+                    selectedStatus
+                ) {
+                    return false;
+                }
+
+                if (!search) {
+                    return true;
+                }
+
+                const staffMember =
+                    findStaff(
+                        record.staff_id
+                    );
+
+                const assignment =
+                    findAssignment(
+                        record.assignment_id
+                    );
+
+                const client =
+                    assignment
+                        ? findClient(
+                            assignment.client_id
+                        )
+                        : null;
+
+                const service =
+                    assignment
+                        ? findService(
+                            assignment.service_id
+                        )
+                        : null;
+
+                const searchable = [
+
+                    staffMember?.full_name,
+                    staffMember?.username,
+
+                    client?.name,
+                    client?.company_name,
+
+                    service?.name,
+
+                    record.status,
+                    record.notes
+
+                ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+
+                return searchable.includes(
+                    search
+                );
+            }
+        );
+    }
+
+
+    /* =========================================================
+       RENDER
+    ========================================================== */
+
+    function renderAttendance() {
+
+        const filtered =
+            getFilteredRecords();
+
+        recordCount.textContent =
+            `${filtered.length} ${
+                filtered.length === 1
+                    ? "record"
+                    : "records"
+            }`;
+
+
+        if (!filtered.length) {
+
+            attendanceTableBody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+
+                        <div class="empty-state">
+
+                            <div class="empty-icon">
+                                🕒
+                            </div>
+
+                            <h3>
+                                No attendance records found
+                            </h3>
+
+                            <p>
+                                Record attendance to start
+                                tracking staff activity.
+                            </p>
+
+                        </div>
+
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        attendanceTableBody.innerHTML =
+            filtered.map(
+                function(record) {
+
+                    const member =
+                        findStaff(
+                            record.staff_id
+                        );
+
+                    const assignment =
+                        findAssignment(
+                            record.assignment_id
+                        );
+
+                    const client =
+                        assignment
+                            ? findClient(
+                                assignment.client_id
+                            )
+                            : null;
+
+                    const service =
+                        assignment
+                            ? findService(
+                                assignment.service_id
+                            )
+                            : null;
+
+                    const staffName =
+                        member?.full_name ||
+                        member?.username ||
+                        "Unknown staff";
+
+                    const clientName =
+                        client?.name ||
+                        "Unknown client";
+
+                    const serviceName =
+                        service?.name ||
+                        "Unknown service";
+
+                    return `
+                        <tr>
+
+                            <td>
+
+                                <span class="staff-name">
+                                    ${escapeHTML(
+                                        staffName
+                                    )}
+                                </span>
+
+                                ${
+                                    member?.username &&
+                                    member?.full_name
+                                        ? `
+                                            <span class="sub-text">
+                                                @${escapeHTML(
+                                                    member.username
+                                                )}
+                                            </span>
+                                        `
+                                        : ""
+                                }
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="assignment-name">
+                                    ${escapeHTML(
+                                        serviceName
+                                    )}
+                                </span>
+
+                                <span class="sub-text">
+                                    ${escapeHTML(
+                                        clientName
+                                    )}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+                                ${formatDate(
+                                    record.attendance_date
+                                )}
+                            </td>
+
+
+                            <td>
+                                ${formatTime(
+                                    record.check_in
+                                )}
+                            </td>
+
+
+                            <td>
+                                ${formatTime(
+                                    record.check_out
+                                )}
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="
+                                        status-badge
+                                        ${statusClass(
+                                            record.status
+                                        )}
+                                    "
+                                >
+                                    ${statusLabel(
+                                        record.status
+                                    )}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="actions">
+
+                                    <button
+                                        type="button"
+                                        class="action-button edit"
+                                        data-action="edit"
+                                        data-id="${escapeHTML(
+                                            record.id
+                                        )}"
+                                    >
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="action-button delete"
+                                        data-action="delete"
+                                        data-id="${escapeHTML(
+                                            record.id
+                                        )}"
+                                    >
+                                        Delete
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    `;
+                }
+            ).join("");
+    }
+
+
+    /* =========================================================
+       SUMMARY
+    ========================================================== */
+
+    function updateSummary() {
+
+        const total =
+            attendanceRecords.length;
+
+        const present =
+            attendanceRecords.filter(
+                item =>
+                    item.status ===
+                    "present"
+            ).length;
+
+        const late =
+            attendanceRecords.filter(
+                item =>
+                    item.status ===
+                    "late"
+            ).length;
+
+        const absent =
+            attendanceRecords.filter(
+                item =>
+                    item.status ===
+                    "absent"
+            ).length;
+
+        const off =
+            attendanceRecords.filter(
+                item =>
+                    item.status ===
+                    "off"
+            ).length;
+
+
+        document.getElementById(
+            "totalRecords"
+        ).textContent = total;
+
+        document.getElementById(
+            "presentRecords"
+        ).textContent = present;
+
+        document.getElementById(
+            "lateRecords"
+        ).textContent = late;
+
+        document.getElementById(
+            "absentRecords"
+        ).textContent = absent;
+
+        document.getElementById(
+            "offRecords"
+        ).textContent = off;
+    }
+
+
+    /* =========================================================
+       MODAL
+    ========================================================== */
+
+    function openModal(record = null) {
+
+        hideError();
+
+        attendanceForm.reset();
+
+        editingAttendanceId =
+            record
+                ? record.id
+                : null;
+
+        modalTitle.textContent =
+            record
+                ? "Edit Attendance"
+                : "Record Attendance";
+
+        saveAttendanceButton.textContent =
+            record
+                ? "Update Attendance"
+                : "Save Attendance";
+
+
+        attendanceDate.value =
+            record?.attendance_date ||
+            todayString();
+
+        attendanceStatus.value =
+            record?.status ||
+            "present";
+
+        checkIn.value =
+            record?.check_in
+                ? record.check_in.slice(0,5)
+                : "";
+
+        checkOut.value =
+            record?.check_out
+                ? record.check_out.slice(0,5)
+                : "";
+
+        attendanceNotes.value =
+            record?.notes ||
+            "";
+
+        assignmentSelect.value =
+            record?.assignment_id ||
+            "";
+
+
+        /*
+         * Existing records must remain editable even
+         * if their assignment has since been completed.
+         */
+        if (
+            record &&
+            !Array.from(
+                assignmentSelect.options
+            ).some(
+                option =>
+                    option.value ===
+                    record.assignment_id
+            )
+        ) {
+
+            const assignment =
+                findAssignment(
+                    record.assignment_id
+                );
+
+            if (assignment) {
+
+                const client =
+                    findClient(
+                        assignment.client_id
+                    );
+
+                const service =
+                    findService(
+                        assignment.service_id
+                    );
+
+                const member =
+                    findStaff(
+                        assignment.assigned_staff_id
+                    );
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    assignment.id;
+
+                option.textContent =
+                    `${client?.name || "Client"} — ${
+                        service?.name || "Service"
+                    } — ${
+                        member?.full_name ||
+                        member?.username ||
+                        "Staff"
+                    }`;
+
+                assignmentSelect.appendChild(
+                    option
+                );
+            }
+        }
+
+
+        attendanceModal.classList.add(
+            "open"
+        );
+
+        setTimeout(
+            function() {
+                assignmentSelect.focus();
+            },
+            50
+        );
+    }
+
+
+    function closeModal() {
+
+        attendanceModal.classList.remove(
+            "open"
+        );
+
+        editingAttendanceId =
+            null;
+
+        attendanceForm.reset();
+
+        attendanceDate.value =
+            todayString();
+
+        attendanceStatus.value =
+            "present";
+    }
+
+
+    /* =========================================================
+       SAVE
+    ========================================================== */
+
+    async function saveAttendance(event) {
+
+        event.preventDefault();
+
+        hideError();
+
+        const assignmentId =
+            assignmentSelect.value;
+
+        const date =
+            attendanceDate.value;
+
+        const status =
+            attendanceStatus.value;
+
+        const inTime =
+            checkIn.value ||
+            null;
+
+        const outTime =
+            checkOut.value ||
+            null;
+
+        const notes =
+            attendanceNotes.value
+                .trim() ||
+            null;
+
+
+        if (!assignmentId) {
+
+            showError(
+                "Please select an assignment."
+            );
+
+            return;
+        }
+
+
+        if (!date) {
+
+            showError(
+                "Please select an attendance date."
+            );
+
+            return;
+        }
+
+
+        if (
+            inTime &&
+            outTime &&
+            outTime < inTime
+        ) {
+
+            showError(
+                "Check-out time cannot be before check-in time."
+            );
+
+            return;
+        }
+
+
+        const assignment =
+            findAssignment(
+                assignmentId
+            );
+
+
+        if (!assignment) {
+
+            showError(
+                "The selected assignment could not be found."
+            );
+
+            return;
+        }
+
+
+        /*
+         * The database requires staff_id.
+         * We derive it from the selected assignment
+         * instead of asking the user to choose staff twice.
+         */
+        const staffId =
+            assignment.assigned_staff_id;
+
+
+        if (!staffId) {
+
+            showError(
+                "This assignment has no staff member assigned."
+            );
+
+            return;
+        }
+
+
+        saveAttendanceButton.disabled =
+            true;
+
+        saveAttendanceButton.textContent =
+            editingAttendanceId
+                ? "Updating..."
+                : "Saving...";
+
+
+        try {
+
+            const payload = {
+
+                business_id:
+                    currentBusinessId,
+
+                assignment_id:
+                    assignmentId,
+
+                staff_id:
+                    staffId,
+
+                attendance_date:
+                    date,
+
+                check_in:
+                    inTime,
+
+                check_out:
+                    outTime,
+
+                status:
+                    status,
+
+                notes:
+                    notes
+            };
+
+
+            if (editingAttendanceId) {
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from("attendance")
+                    .update(payload)
+                    .eq(
+                        "id",
+                        editingAttendanceId
+                    )
+                    .eq(
+                        "business_id",
+                        currentBusinessId
+                    );
+
+                if (error) {
+                    throw error;
+                }
+
+            } else {
+
+                /*
+                 * The database has a unique rule for:
+                 * business + staff + attendance date.
+                 *
+                 * We check first so the user gets a clear
+                 * message instead of a raw database error.
+                 */
+
+                const {
+                    data: existing,
+                    error: existingError
+                } = await supabaseClient
+                    .from("attendance")
+                    .select("id")
+                    .eq(
+                        "business_id",
+                        currentBusinessId
+                    )
+                    .eq(
+                        "staff_id",
+                        staffId
+                    )
+                    .eq(
+                        "attendance_date",
+                        date
+                    )
+                    .maybeSingle();
+
+                if (existingError) {
+                    throw existingError;
+                }
+
+                if (existing) {
+
+                    throw new Error(
+                        "Attendance has already been recorded for this staff member on this date."
+                    );
+                }
+
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from("attendance")
+                    .insert(
+                        payload
+                    );
+
+                if (error) {
+                    throw error;
+                }
+            }
+
+
+            closeModal();
+
+            await loadAttendance();
+
+        } catch (error) {
+
+            console.error(
+                "Attendance save error:",
+                error
+            );
+
+            showError(
+                error.message ||
+                "Unable to save attendance."
+            );
+
+        } finally {
+
+            saveAttendanceButton.disabled =
+                false;
+
+            saveAttendanceButton.textContent =
+                editingAttendanceId
+                    ? "Update Attendance"
+                    : "Save Attendance";
+        }
+    }
+
+
+    /* =========================================================
+       DELETE
+    ========================================================== */
+
+    async function deleteAttendance(id) {
+
+        const confirmed =
+            window.confirm(
+                "Delete this attendance record?"
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        hideError();
+
+        try {
+
+            const {
+                error
+            } = await supabaseClient
+                .from("attendance")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                )
+                .eq(
+                    "business_id",
+                    currentBusinessId
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            await loadAttendance();
+
+        } catch (error) {
+
+            console.error(
+                "Attendance delete error:",
+                error
+            );
+
+            showError(
+                error.message ||
+                "Unable to delete attendance record."
+            );
+        }
+    }
+
+
+    /* =========================================================
+       TABLE ACTIONS
+    ========================================================== */
+
+    attendanceTableBody.addEventListener(
+        "click",
+        function(event) {
+
+            const button =
+                event.target.closest(
+                    "[data-action]"
+                );
+
+            if (!button) {
+                return;
+            }
+
+            const action =
+                button.dataset.action;
+
+            const id =
+                button.dataset.id;
+
+
+            const record =
+                attendanceRecords.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+
+            if (
+                action === "edit" &&
+                record
+            ) {
+
+                openModal(record);
+
+                return;
+            }
+
+
+            if (
+                action === "delete"
+            ) {
+
+                deleteAttendance(id);
+
+                return;
+            }
+        }
+    );
+
+
+    /* =========================================================
+       EVENTS
+    ========================================================== */
+
+    searchInput.addEventListener(
+        "input",
+        renderAttendance
+    );
+
+    dateFilter.addEventListener(
+        "change",
+        renderAttendance
+    );
+
+    statusFilter.addEventListener(
+        "change",
+        renderAttendance
+    );
+
+
+    refreshButton.addEventListener(
+        "click",
+        async function() {
+
+            hideError();
+
+            refreshButton.disabled =
+                true;
+
+            refreshButton.textContent =
+                "⏳ Loading...";
+
+            try {
+
+                await loadAssignments();
+
+                await loadAttendance();
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+                showError(
+                    error.message ||
+                    "Unable to refresh attendance."
+                );
+
+            } finally {
+
+                refreshButton.disabled =
+                    false;
+
+                refreshButton.textContent =
+                    "🔄 Refresh";
+            }
+        }
+    );
+
+
+    addAttendanceButton.addEventListener(
+        "click",
+        function() {
+
+            openModal();
+
+        }
+    );
+
+
+    closeModalButton.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    cancelModalButton.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    attendanceForm.addEventListener(
+        "submit",
+        saveAttendance
+    );
+
+
+    attendanceModal.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                attendanceModal
+            ) {
+                closeModal();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Escape" &&
+                attendanceModal.classList.contains(
+                    "open"
+                )
+            ) {
+                closeModal();
+            }
+        }
+    );
+
+
+    /* =========================================================
+       STATUS / TIME BEHAVIOUR
+    ========================================================== */
+
+    attendanceStatus.addEventListener(
+        "change",
+        function() {
+
+            const status =
+                attendanceStatus.value;
+
+            /*
+             * Absent and Off normally do not
+             * require check-in/out times.
+             */
+            if (
+                status === "absent" ||
+                status === "off"
+            ) {
+
+                checkIn.value = "";
+                checkOut.value = "";
+            }
+        }
+    );
+
+
+    /* =========================================================
+       INITIAL LOAD
+    ========================================================== */
+
+    async function initializePage() {
+
+        try {
+
+            hideError();
+
+            currentUser =
+                await getCurrentUser();
+
+            if (!currentUser) {
+                return;
+            }
+
+            currentBusinessId =
+                await getBusinessId(
+                    currentUser.id
+                );
+
+
+            /*
+             * Load lookup data first because
+             * attendance records depend on them
+             * for readable names.
+             */
+            await Promise.all([
+                loadClients(),
+                loadServices(),
+                loadStaff()
+            ]);
+
+
+            await loadAssignments();
+
+            await loadAttendance();
+
+
+            const today =
+                todayString();
+
+            attendanceDate.value =
+                today;
+
+            /*
+             * Showing today's records first makes
+             * the attendance page immediately useful.
+             */
+            dateFilter.value =
+                today;
+
+            renderAttendance();
+
+        } catch (error) {
+
+            console.error(
+                "Attendance initialization error:",
+                error
+            );
+
+            attendanceTableBody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+
+                        <div class="empty-state">
+
+                            <div class="empty-icon">
+                                ⚠️
+                            </div>
+
+                            <h3>
+                                Unable to load attendance
+                            </h3>
+
+                            <p>
+                                ${escapeHTML(
+                                    error.message ||
+                                    "Please refresh and try again."
+                                )}
+                            </p>
+
+                        </div>
+
+                    </td>
+                </tr>
+            `;
+
+            showError(
+                error.message ||
+                "Unable to load the service attendance page."
+            );
+        }
+    }
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializePage
+    );
+</script>
+
+</body>
+</html>

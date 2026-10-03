@@ -19,42 +19,72 @@
 
 <style>
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
 .register-container {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 25px;
+    width: 100%;
+    max-width: 440px;
+    margin: 30px auto;
+    padding: 20px;
 }
 
 .register-card {
-    background: white;
+    background: #ffffff;
     padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
 .register-card h1 {
+    margin: 0;
     text-align: center;
-    margin-bottom: 5px;
+    color: #087f3f;
+    font-size: 30px;
 }
 
-.register-card p {
+.register-subtitle {
+    margin: 7px 0 24px;
     text-align: center;
+    color: #64748b;
+    font-size: 14px;
 }
 
-.register-card label {
+.register-card label.form-label {
     display: block;
     margin-top: 15px;
-    margin-bottom: 6px;
-    font-weight: bold;
+    margin-bottom: 7px;
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 700;
 }
 
-.register-card input {
+.register-card input[type="text"],
+.register-card input[type="email"],
+.register-card input[type="password"] {
     width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    padding: 13px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #0f172a;
     font-size: 15px;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.register-card input[type="text"]:focus,
+.register-card input[type="email"]:focus,
+.register-card input[type="password"]:focus {
+    border-color: #087f3f;
+    box-shadow: 0 0 0 3px rgba(8, 127, 63, 0.10);
 }
 
 .password-box {
@@ -63,7 +93,7 @@
 }
 
 .password-box input {
-    padding-right: 45px;
+    padding-right: 48px !important;
 }
 
 .show-password {
@@ -72,39 +102,215 @@
     top: 50%;
     transform: translateY(-50%);
     width: 38px !important;
+    height: 38px;
     margin: 0 !important;
-    padding: 7px !important;
+    padding: 0 !important;
+    border: none !important;
     background: transparent !important;
-    color: #555 !important;
-    border: none;
+    color: #64748b !important;
+    font-size: 17px !important;
     cursor: pointer;
 }
 
-.register-card button.create-button {
-    width: 100%;
-    margin-top: 20px;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: green;
-    color: white;
+.show-password:hover {
+    color: #087f3f !important;
+}
+
+/* =====================================================
+   BUSINESS WORKSPACE
+===================================================== */
+
+.workspace-heading {
+    margin-top: 22px;
+    margin-bottom: 5px;
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.workspace-help {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.workspace-options {
+    display: grid;
+    gap: 10px;
+}
+
+.workspace-option {
+    position: relative;
+    display: block;
+    cursor: pointer;
+}
+
+.workspace-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.workspace-card {
+    position: relative;
+    display: block;
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 13px;
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        #f8fafc
+    );
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.workspace-card:hover {
+    border-color: #86efac;
+    background: #f0fdf4;
+    transform: translateY(-1px);
+}
+
+.workspace-option input:checked + .workspace-card {
+    border-color: #087f3f;
+    background: linear-gradient(
+        135deg,
+        #ecfdf5,
+        #f0fdf4
+    );
+    box-shadow:
+        0 5px 15px rgba(8, 127, 63, 0.12);
+}
+
+.workspace-option input:checked + .workspace-card::after {
+    content: "✓";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #087f3f;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.workspace-title {
+    display: block;
+    padding-right: 35px;
+    color: #0f172a;
     font-size: 15px;
-    cursor: pointer;
+    font-weight: 800;
 }
 
-.register-card button.create-button:disabled {
-    opacity: 0.6;
+.workspace-description {
+    display: block;
+    margin-top: 5px;
+    padding-right: 15px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+/* =====================================================
+   CREATE BUTTON
+===================================================== */
+
+.create-button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 13px 16px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(
+        135deg,
+        #087f3f,
+        #0b7a3b
+    );
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow:
+        0 5px 14px rgba(8, 127, 63, 0.20);
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.create-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.create-button:disabled {
+    opacity: 0.65;
     cursor: not-allowed;
 }
 
+/* =====================================================
+   MESSAGE
+===================================================== */
+
 #registerMessage {
-    margin-top: 15px;
+    min-height: 20px;
+    margin: 15px 0 0;
     text-align: center;
-    font-weight: bold;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.45;
 }
 
+/* =====================================================
+   LOGIN LINK
+===================================================== */
+
 .login-link {
-    margin-top: 20px;
+    margin: 20px 0 0;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #087f3f;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 480px) {
+
+    .register-container {
+        margin: 10px auto;
+        padding: 12px;
+    }
+
+    .register-card {
+        padding: 23px 18px;
+        border-radius: 15px;
+    }
+
+    .register-card h1 {
+        font-size: 27px;
+    }
+
 }
 
 </style>
@@ -120,13 +326,22 @@
 
 <h1>DukaFlow</h1>
 
-<p>Create your business account</p>
+<p class="register-subtitle">
+Create your business account
+</p>
 
 
 <form id="registerForm">
 
 
-<label>
+<!-- =====================================================
+     PERSONAL INFORMATION
+===================================================== -->
+
+<label
+    class="form-label"
+    for="fullName"
+>
 Full Name
 </label>
 
@@ -139,7 +354,14 @@ Full Name
 >
 
 
-<label>
+<!-- =====================================================
+     BUSINESS INFORMATION
+===================================================== -->
+
+<label
+    class="form-label"
+    for="businessName"
+>
 Business Name
 </label>
 
@@ -152,7 +374,10 @@ Business Name
 >
 
 
-<label>
+<label
+    class="form-label"
+    for="email"
+>
 Email
 </label>
 
@@ -165,7 +390,10 @@ Email
 >
 
 
-<label>
+<label
+    class="form-label"
+    for="username"
+>
 Username
 </label>
 
@@ -178,7 +406,80 @@ Username
 >
 
 
-<label>
+<!-- =====================================================
+     BUSINESS WORKSPACE
+===================================================== -->
+
+<p class="workspace-heading">
+Choose your business workspace
+</p>
+
+<p class="workspace-help">
+This helps DukaFlow open the tools that match how your business operates.
+</p>
+
+
+<div class="workspace-options">
+
+
+<label class="workspace-option">
+
+<input
+    type="radio"
+    name="businessType"
+    value="product"
+    required
+>
+
+<span class="workspace-card">
+
+<span class="workspace-title">
+🛍️ Product Business
+</span>
+
+<span class="workspace-description">
+For shops, pharmacies, retail, hardware, wholesalers and businesses selling products.
+</span>
+
+</span>
+
+</label>
+
+
+<label class="workspace-option">
+
+<input
+    type="radio"
+    name="businessType"
+    value="service"
+>
+
+<span class="workspace-card">
+
+<span class="workspace-title">
+🧑‍💼 Service Business
+</span>
+
+<span class="workspace-description">
+For companies managing clients, services, staff, assignments, attendance, invoices and payments.
+</span>
+
+</span>
+
+</label>
+
+
+</div>
+
+
+<!-- =====================================================
+     PASSWORD
+===================================================== -->
+
+<label
+    class="form-label"
+    for="password"
+>
 Password
 </label>
 
@@ -197,6 +498,7 @@ Password
     type="button"
     class="show-password"
     id="showPassword"
+    aria-label="Show password"
 >
 👁️
 </button>
@@ -204,7 +506,10 @@ Password
 </div>
 
 
-<label>
+<label
+    class="form-label"
+    for="confirmPassword"
+>
 Confirm Password
 </label>
 
@@ -223,6 +528,7 @@ Confirm Password
     type="button"
     class="show-password"
     id="showConfirmPassword"
+    aria-label="Show confirm password"
 >
 👁️
 </button>
@@ -351,6 +657,12 @@ const button =
     );
 
 
+const businessTypeInputs =
+    document.querySelectorAll(
+        'input[name="businessType"]'
+    );
+
+
 // =====================================================
 // SHOW / HIDE PASSWORD
 // =====================================================
@@ -361,28 +673,21 @@ document
         "click",
         function() {
 
-            if (
+            const isHidden =
                 passwordInput.type ===
-                "password"
-            ) {
+                "password";
 
-                passwordInput.type =
-                    "text";
 
-                this.innerHTML =
-                    "🙈";
+            passwordInput.type =
+                isHidden
+                    ? "text"
+                    : "password";
 
-            }
 
-            else {
-
-                passwordInput.type =
-                    "password";
-
-                this.innerHTML =
-                    "👁️";
-
-            }
+            this.innerHTML =
+                isHidden
+                    ? "🙈"
+                    : "👁️";
 
         }
     );
@@ -394,31 +699,53 @@ document
         "click",
         function() {
 
-            if (
+            const isHidden =
                 confirmPasswordInput.type ===
-                "password"
-            ) {
+                "password";
 
-                confirmPasswordInput.type =
-                    "text";
 
-                this.innerHTML =
-                    "🙈";
+            confirmPasswordInput.type =
+                isHidden
+                    ? "text"
+                    : "password";
 
-            }
 
-            else {
-
-                confirmPasswordInput.type =
-                    "password";
-
-                this.innerHTML =
-                    "👁️";
-
-            }
+            this.innerHTML =
+                isHidden
+                    ? "🙈"
+                    : "👁️";
 
         }
     );
+
+
+// =====================================================
+// CLEAR MESSAGE WHEN WORKSPACE CHANGES
+// =====================================================
+
+businessTypeInputs.forEach(
+    function(input) {
+
+        input.addEventListener(
+            "change",
+            function() {
+
+                if (
+                    message.innerHTML.includes(
+                        "business workspace"
+                    )
+                ) {
+
+                    message.innerHTML =
+                        "";
+
+                }
+
+            }
+        );
+
+    }
+);
 
 
 // =====================================================
@@ -461,6 +788,18 @@ form.addEventListener(
             confirmPasswordInput.value;
 
 
+        const selectedBusinessType =
+            document.querySelector(
+                'input[name="businessType"]:checked'
+            );
+
+
+        const businessType =
+            selectedBusinessType
+                ? selectedBusinessType.value
+                : "";
+
+
         // =================================================
         // VALIDATION
         // =================================================
@@ -469,6 +808,8 @@ form.addEventListener(
 
             message.innerHTML =
                 "❌ Enter your full name.";
+
+            fullNameInput.focus();
 
             return;
 
@@ -480,6 +821,8 @@ form.addEventListener(
             message.innerHTML =
                 "❌ Enter your business name.";
 
+            businessNameInput.focus();
+
             return;
 
         }
@@ -490,6 +833,8 @@ form.addEventListener(
             message.innerHTML =
                 "❌ Enter your email.";
 
+            emailInput.focus();
+
             return;
 
         }
@@ -499,6 +844,30 @@ form.addEventListener(
 
             message.innerHTML =
                 "❌ Choose a username.";
+
+            usernameInput.focus();
+
+            return;
+
+        }
+
+
+        if (!businessType) {
+
+            message.innerHTML =
+                "❌ Choose a business workspace.";
+
+            return;
+
+        }
+
+
+        if (password.length < 6) {
+
+            message.innerHTML =
+                "❌ Password must be at least 6 characters.";
+
+            passwordInput.focus();
 
             return;
 
@@ -513,17 +882,7 @@ form.addEventListener(
             message.innerHTML =
                 "❌ Passwords do not match.";
 
-            return;
-
-        }
-
-
-        if (
-            password.length < 6
-        ) {
-
-            message.innerHTML =
-                "❌ Password must be at least 6 characters.";
+            confirmPasswordInput.focus();
 
             return;
 
@@ -531,7 +890,7 @@ form.addEventListener(
 
 
         // =================================================
-        // START
+        // START REGISTRATION
         // =================================================
 
         button.disabled =
@@ -543,10 +902,23 @@ form.addEventListener(
 
 
         message.innerHTML =
-            "Please wait...";
+            "Creating your DukaFlow account...";
 
 
         try {
+
+
+            // =================================================
+            // SAVE WORKSPACE LOCALLY
+            // =================================================
+            // This allows the next onboarding step to know
+            // what the user selected before login.
+            // It does NOT replace Supabase storage.
+
+            localStorage.setItem(
+                "dukaflow_signup_business_type",
+                businessType
+            );
 
 
             // =================================================
@@ -582,7 +954,10 @@ form.addEventListener(
                                 username,
 
                             business_name:
-                                businessName
+                                businessName,
+
+                            business_type:
+                                businessType
 
                         }
 
@@ -592,7 +967,7 @@ form.addEventListener(
 
 
             // =================================================
-            // ERROR
+            // SUPABASE ERROR
             // =================================================
 
             if (error) {
@@ -600,6 +975,11 @@ form.addEventListener(
                 console.error(
                     "Supabase registration error:",
                     error
+                );
+
+
+                localStorage.removeItem(
+                    "dukaflow_signup_business_type"
                 );
 
 
@@ -637,12 +1017,15 @@ form.addEventListener(
                     "✅ Account created successfully!";
 
 
-                form.reset();
-
-
                 button.innerHTML =
                     "ACCOUNT CREATED";
 
+
+                /*
+                 * Do not reset the form here.
+                 * Keeping the values temporarily avoids
+                 * unnecessary UI changes while redirecting.
+                 */
 
                 setTimeout(
                     function() {
@@ -651,7 +1034,7 @@ form.addEventListener(
                             "login.html";
 
                     },
-                    2000
+                    1500
                 );
 
             }
@@ -679,6 +1062,11 @@ form.addEventListener(
             console.error(
                 "Unexpected registration error:",
                 error
+            );
+
+
+            localStorage.removeItem(
+                "dukaflow_signup_business_type"
             );
 
 

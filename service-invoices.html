@@ -1,0 +1,3429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087f3f">
+<title>DukaFlow - Service Invoices</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+  --green:#087f3f;
+  --green2:#0b7a3b;
+  --dark:#0f172a;
+  --bg:#f4f7f6;
+  --text:#17202a;
+  --muted:#64748b;
+  --border:#dce7e1;
+  --white:#fff;
+  --red:#dc2626;
+  --blue:#2563eb;
+  --purple:#7c3aed;
+  --orange:#ea580c
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif
+}
+
+button,
+input,
+select,
+textarea{
+  font:inherit;
+  box-sizing:border-box
+}
+
+button{
+  cursor:pointer
+}
+
+.page{
+  width:min(1400px,100%);
+  margin:auto;
+  padding:18px
+}
+
+/* MENU */
+.menu-wrap{
+  position:relative;
+  margin-bottom:18px
+}
+
+.menu-btn{
+  width:100%;
+  min-height:52px;
+  border:0;
+  border-radius:14px;
+  padding:13px 16px;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  color:white;
+  font-weight:800;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 7px 18px #087f3f22
+}
+
+.menu-arrow{
+  transition:.2s
+}
+
+.menu-btn[aria-expanded=true] .menu-arrow{
+  transform:rotate(180deg)
+}
+
+.menu-panel{
+  display:none;
+  margin-top:8px;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 12px 28px #0f172a18;
+  position:relative;
+  z-index:20
+}
+
+.menu-panel.open{
+  display:block
+}
+
+.menu-panel a{
+  display:block;
+  padding:13px 16px;
+  text-decoration:none;
+  color:#263238;
+  font-weight:700;
+  border-bottom:1px solid #edf2ef
+}
+
+.menu-panel a:last-child{
+  border:0
+}
+
+.menu-panel a:hover,
+.menu-panel a.active{
+  background:#ecfdf5;
+  color:var(--green)
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin-bottom:18px
+}
+
+.header h1{
+  margin:0 0 5px;
+  font-size:27px
+}
+
+.header p{
+  margin:0;
+  color:var(--muted)
+}
+
+.primary{
+  border:0;
+  border-radius:12px;
+  background:var(--green);
+  color:white;
+  padding:12px 17px;
+  font-weight:800;
+  white-space:nowrap
+}
+
+.primary:hover{
+  background:#076d36
+}
+
+/* SUMMARY */
+.summary{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:12px;
+  margin-bottom:18px
+}
+
+.card{
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:16px;
+  box-shadow:0 5px 15px #0f172a0b
+}
+
+.summary .card:nth-child(1){
+  background:linear-gradient(135deg,#e8f7ef,#fff)
+}
+
+.summary .card:nth-child(2){
+  background:linear-gradient(135deg,#eff6ff,#fff)
+}
+
+.summary .card:nth-child(3){
+  background:linear-gradient(135deg,#f5f3ff,#fff)
+}
+
+.summary .card:nth-child(4){
+  background:linear-gradient(135deg,#ecfdf5,#fff)
+}
+
+.summary .card:nth-child(5){
+  background:linear-gradient(135deg,#fff7ed,#fff)
+}
+
+.summary .card:nth-child(6){
+  background:linear-gradient(135deg,#ecfeff,#fff)
+}
+
+.label{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700
+}
+
+.value{
+  font-size:25px;
+  font-weight:900;
+  margin-top:7px
+}
+
+/* TOOLBAR */
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:13px;
+  margin-bottom:16px
+}
+
+.toolbar input,
+.toolbar select{
+  min-height:43px;
+  border:1px solid #d7e2dc;
+  border-radius:10px;
+  padding:9px 11px;
+  background:#fff
+}
+
+.search{
+  flex:1;
+  min-width:190px
+}
+
+.toolbar button{
+  min-height:43px;
+  border:0;
+  border-radius:10px;
+  padding:9px 14px;
+  background:#e9f7ef;
+  color:var(--green);
+  font-weight:800
+}
+
+/* TABLE */
+.table-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 6px 18px #0f172a0b
+}
+
+.table-scroll{
+  overflow-x:auto
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:850px
+}
+
+th,
+td{
+  padding:13px 14px;
+  text-align:left;
+  border-bottom:1px solid #edf2ef
+}
+
+th{
+  font-size:12px;
+  color:#64748b;
+  background:#f8faf9
+}
+
+td{
+  font-size:14px
+}
+
+tr:last-child td{
+  border-bottom:0
+}
+
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800
+}
+
+.status.draft{
+  background:#f1f5f9;
+  color:#475569
+}
+
+.status.sent{
+  background:#dbeafe;
+  color:#1d4ed8
+}
+
+.status.paid{
+  background:#dcfce7;
+  color:#15803d
+}
+
+.status.partial{
+  background:#fef3c7;
+  color:#a16207
+}
+
+.status.overdue{
+  background:#ffedd5;
+  color:#c2410c
+}
+
+.status.cancelled{
+  background:#fee2e2;
+  color:#b91c1c
+}
+
+.actions{
+  display:flex;
+  gap:6px
+}
+
+.small-btn{
+  border:0;
+  border-radius:8px;
+  padding:7px 9px;
+  font-size:12px;
+  font-weight:800
+}
+
+.edit{
+  background:#eaf2ff;
+  color:#1d4ed8
+}
+
+.delete{
+  background:#feecec;
+  color:#b91c1c
+}
+
+.empty{
+  text-align:center;
+  padding:40px;
+  color:var(--muted)
+}
+
+/* MODAL */
+.modal-bg{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0f172a88;
+  z-index:1000;
+  padding:18px;
+  overflow:auto
+}
+
+.modal-bg.open{
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+
+.modal{
+  width:min(900px,100%);
+  max-height:calc(100vh - 36px);
+  background:white;
+  border-radius:20px;
+  box-shadow:0 25px 70px #0005;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column
+}
+
+.modal-head{
+  flex:0 0 auto;
+  padding:18px 20px;
+  background:linear-gradient(135deg,#087f3f,#0b7a3b);
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center
+}
+
+.modal-head h2{
+  margin:0;
+  font-size:20px
+}
+
+.close{
+  width:36px;
+  height:36px;
+  border:0;
+  border-radius:50%;
+  background:#ffffff22;
+  color:white;
+  font-size:22px
+}
+
+.form{
+  padding:20px;
+  overflow-y:auto;
+  overflow-x:hidden
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px
+}
+
+.field{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px
+}
+
+.field.full{
+  grid-column:1/-1
+}
+
+.field label{
+  font-size:12px;
+  font-weight:800;
+  color:#475569
+}
+
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  min-width:0;
+  min-height:43px;
+  border:1px solid #d5e0da;
+  border-radius:10px;
+  padding:9px 11px;
+  background:white
+}
+
+.field textarea{
+  min-height:80px;
+  resize:vertical
+}
+
+/* SEARCH FIELDS */
+.search-box{
+  position:relative;
+  width:100%;
+  min-width:0
+}
+
+.search-box input{
+  width:100%;
+  padding-right:35px
+}
+
+.selected{
+  margin-top:6px;
+  min-width:0;
+  padding:8px 10px;
+  border-radius:9px;
+  background:#ecfdf5;
+  color:var(--green);
+  font-size:13px;
+  font-weight:800;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px
+}
+
+.selected span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+
+.clear{
+  flex:0 0 auto;
+  border:0;
+  background:none;
+  color:#b91c1c;
+  font-weight:900;
+  padding:0 3px
+}
+
+.results{
+  display:none;
+  position:fixed;
+  background:white;
+  border:1px solid #dbe5df;
+  border-radius:11px;
+  box-shadow:0 14px 35px #0f172a30;
+  max-height:230px;
+  overflow-y:auto;
+  z-index:5000
+}
+
+.results.open{
+  display:block
+}
+
+.result{
+  padding:11px 12px;
+  border-bottom:1px solid #edf2ef;
+  cursor:pointer
+}
+
+.result:last-child{
+  border:0
+}
+
+.result:hover{
+  background:#f0fdf4
+}
+
+.result strong{
+  display:block;
+  font-size:13px
+}
+
+.result small{
+  color:#64748b;
+  display:block;
+  margin-top:2px
+}
+
+/* INVOICE ITEMS */
+.items{
+  margin-top:18px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  background:#f8fbf9
+}
+
+.items-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px
+}
+
+.items-head h3{
+  margin:0;
+  font-size:16px
+}
+
+.add-item{
+  flex:0 0 auto;
+  border:0;
+  border-radius:9px;
+  background:#e8f7ef;
+  color:var(--green);
+  padding:8px 11px;
+  font-weight:800
+}
+
+.item{
+  background:white;
+  border:1px solid #e1ebe5;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:10px
+}
+
+.item:last-child{
+  margin-bottom:0
+}
+
+/*
+  DESKTOP / TABLET ITEM STRUCTURE
+
+  Service      Description      Quantity      Unit Price      Amount      Remove
+  large        large            small         medium          medium       small
+*/
+.item-grid{
+  display:grid;
+  grid-template-columns:
+    minmax(180px,1.8fr)
+    minmax(170px,1.6fr)
+    minmax(75px,.65fr)
+    minmax(105px,1fr)
+    minmax(105px,1fr)
+    auto;
+  gap:10px;
+  align-items:start
+}
+
+.item-grid > .field{
+  min-width:0
+}
+
+.item-grid > .field label{
+  min-height:15px
+}
+
+.item-total{
+  width:100%;
+  min-height:43px;
+  padding:12px 9px;
+  background:#f1f5f3;
+  border-radius:9px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  white-space:nowrap
+}
+
+.remove-item{
+  min-height:43px;
+  border:0;
+  border-radius:9px;
+  background:#fee2e2;
+  color:#b91c1c;
+  font-weight:900;
+  padding:0 11px;
+  white-space:nowrap
+}
+
+.totals{
+  margin-top:13px;
+  margin-left:auto;
+  max-width:300px;
+  border-top:1px solid #dce7e1;
+  padding-top:10px
+}
+
+.total-row{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:5px 0
+}
+
+.grand{
+  font-size:18px;
+  font-weight:900;
+  color:var(--green);
+  border-top:1px solid #dce7e1;
+  margin-top:5px;
+  padding-top:9px
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:9px;
+  margin-top:18px
+}
+
+.secondary{
+  border:1px solid #d5e0da;
+  background:white;
+  color:#475569;
+  border-radius:10px;
+  padding:11px 15px;
+  font-weight:800
+}
+
+.save{
+  border:0;
+  background:var(--green);
+  color:white;
+  border-radius:10px;
+  padding:11px 18px;
+  font-weight:800
+}
+
+.save:disabled{
+  opacity:.6;
+  cursor:not-allowed
+}
+
+/* MESSAGE */
+.message{
+  display:none;
+  padding:12px 14px;
+  border-radius:10px;
+  margin-bottom:12px;
+  font-weight:700;
+  font-size:13px
+}
+
+.message.show{
+  display:block
+}
+
+.message.error{
+  background:#fee2e2;
+  color:#b91c1c
+}
+
+.message.ok{
+  background:#dcfce7;
+  color:#166534
+}
+
+/* TABLET */
+@media(max-width:1050px){
+  .summary{
+    grid-template-columns:repeat(3,1fr)
+  }
+
+  .item-grid{
+    grid-template-columns:
+      minmax(150px,1.6fr)
+      minmax(150px,1.4fr)
+      minmax(70px,.65fr)
+      minmax(95px,1fr)
+      minmax(95px,1fr)
+      auto;
+    gap:8px
+  }
+
+  .remove-item{
+    padding:0 8px
+  }
+}
+
+/* MOBILE */
+@media(max-width:700px){
+
+  .page{
+    padding:12px
+  }
+
+  .header{
+    align-items:stretch;
+    flex-direction:column
+  }
+
+  .header h1{
+    font-size:23px
+  }
+
+  .primary{
+    width:100%
+  }
+
+  .summary{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .toolbar>*{
+    width:100%
+  }
+
+  .grid{
+    grid-template-columns:1fr
+  }
+
+  .field.full{
+    grid-column:auto
+  }
+
+  /*
+    MOBILE ITEM STRUCTURE:
+
+    SERVICE
+    [........................]
+
+    DESCRIPTION
+    [........................]
+
+    QUANTITY       UNIT PRICE       AMOUNT
+    [.....]        [.........]      [.....]
+
+    [ × Remove ]
+  */
+  .item-grid{
+    grid-template-columns:
+      minmax(0,1fr)
+      minmax(0,1fr)
+      minmax(0,1fr);
+    gap:10px
+  }
+
+  .item-grid > .service-field{
+    grid-column:1/-1
+  }
+
+  .item-grid > .description-field{
+    grid-column:1/-1
+  }
+
+  .item-grid > .quantity-field{
+    grid-column:1
+  }
+
+  .item-grid > .price-field{
+    grid-column:2
+  }
+
+  .item-grid > .amount-field{
+    grid-column:3
+  }
+
+  .item-grid > .remove-item{
+    grid-column:1/-1;
+    width:100%
+  }
+
+  .item-total{
+    min-height:43px;
+    padding:12px 8px
+  }
+
+  .remove-item{
+    width:100%;
+    min-height:42px
+  }
+
+  .modal-bg{
+    padding:10px
+  }
+
+  .modal{
+    max-height:calc(100vh - 20px)
+  }
+
+  .form{
+    padding:14px
+  }
+
+  .items{
+    padding:11px
+  }
+
+  .items-head{
+    align-items:stretch;
+    flex-direction:column
+  }
+
+  .add-item{
+    width:100%
+  }
+}
+
+/* VERY SMALL PHONES */
+@media(max-width:400px){
+
+  .summary{
+    grid-template-columns:1fr
+  }
+
+  .item-grid{
+    gap:9px
+  }
+
+  .item-grid > .quantity-field,
+  .item-grid > .price-field,
+  .item-grid > .amount-field{
+    min-width:0
+  }
+
+  .field label{
+    font-size:11px
+  }
+
+  .field input{
+    padding:9px 8px
+  }
+
+  .item-total{
+    font-size:13px
+    ;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="menu-wrap">
+
+    <button
+      class="menu-btn"
+      id="menuBtn"
+      type="button"
+      aria-expanded="false"
+      aria-controls="menuPanel">
+      <span>☰ DukaFlow Menu</span>
+      <span class="menu-arrow">▼</span>
+    </button>
+
+    <div class="menu-panel" id="menuPanel">
+
+      <a href="index.html">🏠 Dashboard</a>
+      <a href="products.html">📦 Products & Stock</a>
+      <a href="sales.html">💰 Sales</a>
+      <a href="expenses.html">💸 Expenses</a>
+      <a href="reports.html">📊 Reports</a>
+      <a href="users.html">👥 Manage Users</a>
+
+      <a href="service-dashboard.html">🧩 Service Business</a>
+      <a href="service-clients.html">👤 Clients</a>
+      <a href="service-services.html">🛠️ Services</a>
+      <a href="service-assignments.html">📋 Assignments</a>
+      <a href="service-attendance.html">🕒 Attendance</a>
+      <a class="active" href="service-invoices.html">🧾 Invoices</a>
+      <a href="service-payments.html">💳 Payments</a>
+      <a href="service-reports.html">📊 Service Reports</a>
+
+    </div>
+
+  </div>
+
+  <div class="header">
+
+    <div>
+      <h1>🧾 Service Invoices</h1>
+      <p>Create, manage and track customer invoices.</p>
+    </div>
+
+    <button class="primary" id="newInvoice" type="button">
+      ＋ New Invoice
+    </button>
+
+  </div>
+
+  <div class="summary">
+
+    <div class="card">
+      <div class="label">Total Invoices</div>
+      <div class="value" id="totalCount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Draft</div>
+      <div class="value" id="draftCount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Sent</div>
+      <div class="value" id="sentCount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Paid</div>
+      <div class="value" id="paidCount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Overdue</div>
+      <div class="value" id="overdueCount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Total Value</div>
+      <div class="value" id="totalValue">0</div>
+    </div>
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search"
+      id="invoiceSearch"
+      placeholder="🔎 Search invoice, client or assignment"
+      autocomplete="off">
+
+    <select id="statusFilter">
+      <option value="">All statuses</option>
+      <option value="draft">Draft</option>
+      <option value="sent">Sent</option>
+      <option value="paid">Paid</option>
+      <option value="partial">Partial</option>
+      <option value="overdue">Overdue</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+
+    <button id="refreshBtn" type="button">
+      ↻ Refresh
+    </button>
+
+  </div>
+
+  <div id="message" class="message"></div>
+
+  <div class="table-card">
+
+    <div class="table-scroll">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Invoice #</th>
+            <th>Client</th>
+            <th>Assignment</th>
+            <th>Issue / Due</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="invoiceBody"></tbody>
+
+      </table>
+
+    </div>
+
+    <div class="empty" id="emptyState" style="display:none">
+      No invoices found.
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- INVOICE MODAL -->
+<div class="modal-bg" id="modalBg">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <h2 id="modalTitle">New Invoice</h2>
+
+      <button
+        class="close"
+        id="closeModal"
+        type="button"
+        aria-label="Close">
+        ×
+      </button>
+
+    </div>
+
+    <form class="form" id="invoiceForm">
+
+      <div class="grid">
+
+        <div class="field">
+          <label for="invoiceNumber">Invoice Number</label>
+          <input id="invoiceNumber" required>
+        </div>
+
+        <div class="field">
+          <label for="invoiceStatus">Status</label>
+
+          <select id="invoiceStatus">
+
+            <option value="draft">Draft</option>
+            <option value="sent">Sent</option>
+            <option value="paid">Paid</option>
+            <option value="partial">Partial</option>
+            <option value="overdue">Overdue</option>
+            <option value="cancelled">Cancelled</option>
+
+          </select>
+
+        </div>
+
+        <div class="field">
+          <label for="clientSearch">Client</label>
+
+          <div class="search-box">
+
+            <input
+              id="clientSearch"
+              placeholder="Search client..."
+              autocomplete="off">
+
+            <div
+              class="selected"
+              id="selectedClient"
+              style="display:none">
+
+              <span id="selectedClientText"></span>
+
+              <button
+                type="button"
+                class="clear"
+                id="clearClient"
+                aria-label="Clear client">
+                ×
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="field">
+          <label for="assignmentSearch">Assignment</label>
+
+          <div class="search-box">
+
+            <input
+              id="assignmentSearch"
+              placeholder="Search assignment..."
+              autocomplete="off">
+
+            <div
+              class="selected"
+              id="selectedAssignment"
+              style="display:none">
+
+              <span id="selectedAssignmentText"></span>
+
+              <button
+                type="button"
+                class="clear"
+                id="clearAssignment"
+                aria-label="Clear assignment">
+                ×
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="field">
+          <label for="issueDate">Issue Date</label>
+          <input type="date" id="issueDate" required>
+        </div>
+
+        <div class="field">
+          <label for="dueDate">Due Date</label>
+          <input type="date" id="dueDate" required>
+        </div>
+
+        <div class="field">
+          <label for="tax">Tax</label>
+          <input
+            type="number"
+            id="tax"
+            min="0"
+            step="0.01"
+            value="0">
+        </div>
+
+        <div class="field">
+          <label for="notes">Notes</label>
+          <textarea
+            id="notes"
+            placeholder="Optional notes"></textarea>
+        </div>
+
+      </div>
+
+
+      <!-- ITEMS -->
+      <div class="items">
+
+        <div class="items-head">
+
+          <h3>Invoice Items</h3>
+
+          <button
+            type="button"
+            class="add-item"
+            id="addItem">
+            ＋ Add Item
+          </button>
+
+        </div>
+
+        <div id="itemsList"></div>
+
+        <div class="totals">
+
+          <div class="total-row">
+            <span>Subtotal</span>
+            <strong id="subtotal">0.00</strong>
+          </div>
+
+          <div class="total-row">
+            <span>Tax</span>
+            <strong id="taxTotal">0.00</strong>
+          </div>
+
+          <div class="total-row grand">
+            <span>Total</span>
+            <strong id="grandTotal">0.00</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="secondary"
+          id="cancelModal">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="save"
+          id="saveBtn">
+          Save Invoice
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<script>
+const SUPABASE_URL="https://uwfghbctckinymatcbro.supabase.co";
+
+const SUPABASE_KEY="sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+const supabaseClient=supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+let businessId=null;
+
+let clients=[];
+
+let services=[];
+
+let assignments=[];
+
+let invoices=[];
+
+let editingId=null;
+
+let selectedClientId=null;
+
+let selectedAssignmentId=null;
+
+let activeResults=null;
+
+
+/* SHORT SELECTOR */
+const $=id=>document.getElementById(id);
+
+
+/* MENU */
+const menuBtn=$("menuBtn");
+
+const menuPanel=$("menuPanel");
+
+
+menuBtn.addEventListener("click",event=>{
+
+  event.stopPropagation();
+
+  const open=menuPanel.classList.toggle("open");
+
+  menuBtn.setAttribute(
+    "aria-expanded",
+    String(open)
+  );
+
+});
+
+
+document.addEventListener("click",event=>{
+
+  if(!event.target.closest(".menu-wrap")){
+
+    menuPanel.classList.remove("open");
+
+    menuBtn.setAttribute(
+      "aria-expanded",
+      "false"
+    );
+
+  }
+
+});
+
+
+/* HELPERS */
+function money(value){
+
+  return Number(value||0).toLocaleString(
+    "en-KE",
+    {
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    }
+  );
+
+}
+
+
+function today(){
+
+  return new Date()
+    .toISOString()
+    .slice(0,10);
+
+}
+
+
+function makeInvoiceNumber(){
+
+  const date=today().replaceAll("-","");
+
+  const random=Math.random()
+    .toString(36)
+    .slice(2,8)
+    .toUpperCase();
+
+  return `INV-${date}-${random}`;
+
+}
+
+
+function escapeHTML(value){
+
+  return String(value??"")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+function showMessage(text,error=false){
+
+  $("message").textContent=text;
+
+  $("message").className=
+    "message show "+(error?"error":"ok");
+
+  clearTimeout(showMessage.timer);
+
+  showMessage.timer=setTimeout(()=>{
+
+    $("message").className="message";
+
+  },3500);
+
+}
+
+
+/* AUTH */
+async function getBusiness(){
+
+  const {
+    data:{user},
+    error
+  }=await supabaseClient.auth.getUser();
+
+
+  if(error||!user){
+
+    location.href="login.html";
+
+    return null;
+
+  }
+
+
+  const {
+    data:profile,
+    error:profileError
+  }=await supabaseClient
+    .from("profiles")
+    .select("business_id")
+    .eq("user_id",user.id)
+    .single();
+
+
+  if(
+    profileError||
+    !profile||
+    !profile.business_id
+  ){
+
+    showMessage(
+      "Business profile could not be loaded.",
+      true
+    );
+
+    return null;
+
+  }
+
+
+  return profile.business_id;
+
+}
+
+
+/* LOAD DATA */
+async function loadData(){
+
+  if(!businessId)return;
+
+
+  const [
+    clientsResult,
+    servicesResult,
+    assignmentsResult,
+    invoicesResult
+  ]=await Promise.all([
+
+    supabaseClient
+      .from("clients")
+      .select("*")
+      .eq("business_id",businessId)
+      .order("name"),
+
+    supabaseClient
+      .from("services")
+      .select("*")
+      .eq("business_id",businessId)
+      .order("name"),
+
+    supabaseClient
+      .from("assignments")
+      .select(
+        "*,clients(name,company_name),services(name)"
+      )
+      .eq("business_id",businessId)
+      .order(
+        "created_at",
+        {ascending:false}
+      ),
+
+    supabaseClient
+      .from("invoices")
+      .select(
+        "*,clients(name,company_name),assignments(id,status,services(name))"
+      )
+      .eq("business_id",businessId)
+      .order(
+        "created_at",
+        {ascending:false}
+      )
+
+  ]);
+
+
+  if(
+    clientsResult.error||
+    servicesResult.error||
+    assignmentsResult.error||
+    invoicesResult.error
+  ){
+
+    console.error(
+      clientsResult.error,
+      servicesResult.error,
+      assignmentsResult.error,
+      invoicesResult.error
+    );
+
+    showMessage(
+      "Some invoice data could not be loaded.",
+      true
+    );
+
+    return;
+
+  }
+
+
+  clients=clientsResult.data||[];
+
+  services=servicesResult.data||[];
+
+  assignments=assignmentsResult.data||[];
+
+  invoices=invoicesResult.data||[];
+
+
+  renderSummary();
+
+  renderInvoices();
+
+}
+
+
+/* SUMMARY */
+function renderSummary(){
+
+  const active=invoices.filter(
+    invoice=>invoice.status!=="cancelled"
+  );
+
+
+  $("totalCount").textContent=
+    invoices.length;
+
+  $("draftCount").textContent=
+    invoices.filter(
+      invoice=>invoice.status==="draft"
+    ).length;
+
+  $("sentCount").textContent=
+    invoices.filter(
+      invoice=>invoice.status==="sent"
+    ).length;
+
+  $("paidCount").textContent=
+    invoices.filter(
+      invoice=>invoice.status==="paid"
+    ).length;
+
+  $("overdueCount").textContent=
+    invoices.filter(
+      invoice=>invoice.status==="overdue"
+    ).length;
+
+
+  const total=active.reduce(
+    (sum,invoice)=>
+      sum+Number(invoice.total||0),
+    0
+  );
+
+
+  $("totalValue").textContent=
+    money(total);
+
+}
+
+
+/* TABLE */
+function renderInvoices(){
+
+  const search=$("invoiceSearch")
+    .value
+    .trim()
+    .toLowerCase();
+
+  const status=$("statusFilter").value;
+
+
+  const rows=invoices.filter(invoice=>{
+
+    const client=
+      invoice.clients?.name||"";
+
+    const company=
+      invoice.clients?.company_name||"";
+
+    const assignment=
+      invoice.assignments?.services?.name||"";
+
+
+    const searchable=
+      `${invoice.invoice_number}
+       ${client}
+       ${company}
+       ${assignment}`
+      .toLowerCase();
+
+
+    const matchesSearch=
+      !search||
+      searchable.includes(search);
+
+
+    const matchesStatus=
+      !status||
+      invoice.status===status;
+
+
+    return matchesSearch&&matchesStatus;
+
+  });
+
+
+  $("invoiceBody").innerHTML=
+    rows.map(invoice=>{
+
+      const client=
+        invoice.clients?.name||
+        "No client";
+
+      const company=
+        invoice.clients?.company_name||
+        "";
+
+      const assignment=
+        invoice.assignments?.services?.name||
+        "No assignment";
+
+
+      return `
+        <tr>
+
+          <td>
+            <strong>
+              ${escapeHTML(invoice.invoice_number)}
+            </strong>
+          </td>
+
+          <td>
+            ${escapeHTML(client)}
+            ${
+              company
+              ?`<br><small>${escapeHTML(company)}</small>`
+              :""
+            }
+          </td>
+
+          <td>
+            ${escapeHTML(assignment)}
+          </td>
+
+          <td>
+            ${escapeHTML(invoice.issue_date||"—")}
+            <br>
+            ${escapeHTML(invoice.due_date||"—")}
+          </td>
+
+          <td>
+            <strong>
+              ${money(invoice.total)}
+            </strong>
+          </td>
+
+          <td>
+            <span class="status ${escapeHTML(invoice.status)}">
+              ${escapeHTML(invoice.status)}
+            </span>
+          </td>
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                class="small-btn edit"
+                type="button"
+                onclick="editInvoice('${invoice.id}')">
+                Edit
+              </button>
+
+              <button
+                class="small-btn delete"
+                type="button"
+                onclick="deleteInvoice('${invoice.id}')">
+                Delete
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+
+
+  $("emptyState").style.display=
+    rows.length
+    ?"none"
+    :"block";
+
+}
+
+
+/* SEARCH RESULT PORTAL */
+function closeResults(){
+
+  if(activeResults){
+
+    activeResults.remove();
+
+    activeResults=null;
+
+  }
+
+}
+
+
+function showResults(
+  input,
+  items,
+  onSelect,
+  labelFn
+){
+
+  closeResults();
+
+
+  if(!items.length)return;
+
+
+  const box=document.createElement("div");
+
+  box.className="results open";
+
+
+  items.forEach(item=>{
+
+    const row=document.createElement("div");
+
+    row.className="result";
+
+    row.innerHTML=labelFn(item);
+
+
+    row.addEventListener("click",()=>{
+
+      onSelect(item);
+
+      closeResults();
+
+    });
+
+
+    box.appendChild(row);
+
+  });
+
+
+  document.body.appendChild(box);
+
+  activeResults=box;
+
+
+  const rect=
+    input.getBoundingClientRect();
+
+
+  const height=Math.min(
+    230,
+    items.length*60+4
+  );
+
+
+  const below=
+    window.innerHeight-rect.bottom;
+
+
+  box.style.left=
+    `${rect.left}px`;
+
+  box.style.width=
+    `${Math.max(rect.width,240)}px`;
+
+
+  if(
+    below<height&&
+    rect.top>height
+  ){
+
+    box.style.top=
+      `${rect.top-height-5}px`;
+
+  }else{
+
+    box.style.top=
+      `${rect.bottom+5}px`;
+
+  }
+
+}
+
+
+/* CLIENT SEARCH */
+$("clientSearch")
+  .addEventListener("input",event=>{
+
+    const query=
+      event.target.value
+        .trim()
+        .toLowerCase();
+
+
+    if(selectedClientId){
+
+      selectedClientId=null;
+
+      $("selectedClient")
+        .style.display="none";
+
+    }
+
+
+    const matches=
+      clients
+        .filter(client=>
+
+          `${client.name}
+           ${client.company_name||""}
+           ${client.phone||""}`
+          .toLowerCase()
+          .includes(query)
+
+        )
+        .slice(0,12);
+
+
+    showResults(
+      event.target,
+      matches,
+      selectClient,
+      client=>
+        `<strong>
+          ${escapeHTML(client.name)}
+        </strong>
+        <small>
+          ${escapeHTML(
+            client.company_name||
+            client.phone||
+            ""
+          )}
+        </small>`
+    );
+
+  });
+
+
+function selectClient(client){
+
+  selectedClientId=client.id;
+
+  $("clientSearch").value="";
+
+
+  $("selectedClientText")
+    .textContent=
+      client.company_name
+      ?`${client.name} — ${client.company_name}`
+      :client.name;
+
+
+  $("selectedClient")
+    .style.display="flex";
+
+
+  if(selectedAssignmentId){
+
+    const assignment=
+      assignments.find(
+        item=>item.id===selectedAssignmentId
+      );
+
+
+    if(
+      assignment&&
+      assignment.client_id!==client.id
+    ){
+
+      clearAssignment();
+
+    }
+
+  }
+
+}
+
+
+function clearClient(){
+
+  selectedClientId=null;
+
+  $("selectedClient")
+    .style.display="none";
+
+  $("clientSearch").value="";
+
+}
+
+
+$("clearClient")
+  .addEventListener(
+    "click",
+    clearClient
+  );
+
+
+/* ASSIGNMENT SEARCH */
+$("assignmentSearch")
+  .addEventListener("input",event=>{
+
+    const query=
+      event.target.value
+        .trim()
+        .toLowerCase();
+
+
+    const matches=
+      assignments
+        .filter(assignment=>{
+
+          const client=
+            assignment.clients?.name||
+            "";
+
+          const service=
+            assignment.services?.name||
+            "";
+
+          const searchable=
+            `${client}
+             ${service}
+             ${assignment.status||""}`
+            .toLowerCase();
+
+
+          return(
+            (!selectedClientId||
+              assignment.client_id===
+              selectedClientId
+            )&&
+            searchable.includes(query)
+          );
+
+        })
+        .slice(0,12);
+
+
+    showResults(
+      event.target,
+      matches,
+      selectAssignment,
+      assignment=>
+        `<strong>
+          ${escapeHTML(
+            assignment.services?.name||
+            "Service"
+          )}
+        </strong>
+        <small>
+          ${escapeHTML(
+            assignment.clients?.name||
+            "Client"
+          )}
+          ·
+          ${escapeHTML(
+            assignment.status||
+            ""
+          )}
+        </small>`
+    );
+
+  });
+
+
+function selectAssignment(assignment){
+
+  selectedAssignmentId=
+    assignment.id;
+
+  $("assignmentSearch").value="";
+
+
+  $("selectedAssignmentText")
+    .textContent=
+      `${assignment.services?.name||"Service"}
+       — 
+       ${assignment.clients?.name||"Client"}`;
+
+
+  $("selectedAssignment")
+    .style.display="flex";
+
+
+  if(
+    !selectedClientId&&
+    assignment.client_id
+  ){
+
+    const client=
+      clients.find(
+        item=>
+          item.id===
+          assignment.client_id
+      );
+
+
+    if(client)selectClient(client);
+
+  }
+
+}
+
+
+function clearAssignment(){
+
+  selectedAssignmentId=null;
+
+  $("selectedAssignment")
+    .style.display="none";
+
+  $("assignmentSearch").value="";
+
+}
+
+
+$("clearAssignment")
+  .addEventListener(
+    "click",
+    clearAssignment
+  );
+
+
+document.addEventListener("click",event=>{
+
+  if(
+    activeResults&&
+    !event.target.closest(".search-box")
+  ){
+
+    closeResults();
+
+  }
+
+});
+
+
+window.addEventListener(
+  "scroll",
+  closeResults,
+  true
+);
+
+
+window.addEventListener(
+  "resize",
+  closeResults
+);
+
+
+/* ITEMS */
+function addItem(item={}){
+
+  const row=
+    document.createElement("div");
+
+  row.className="item";
+
+
+  row.dataset.id=
+    item.id||"";
+
+
+  row.innerHTML=`
+
+    <div class="item-grid">
+
+      <div class="field service-field">
+
+        <label>Service</label>
+
+        <div class="search-box">
+
+          <input
+            class="service-search"
+            placeholder="Search service..."
+            autocomplete="off">
+
+          <div
+            class="selected service-selected"
+            style="display:none">
+
+            <span class="service-name"></span>
+
+            <button
+              type="button"
+              class="clear service-clear"
+              aria-label="Clear service">
+              ×
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="field description-field">
+
+        <label>Description</label>
+
+        <input
+          class="description"
+          placeholder="Item description">
+
+      </div>
+
+
+      <div class="field quantity-field">
+
+        <label>Quantity</label>
+
+        <input
+          class="quantity"
+          type="number"
+          min="0.01"
+          step="0.01"
+          value="1">
+
+      </div>
+
+
+      <div class="field price-field">
+
+        <label>Unit Price</label>
+
+        <input
+          class="unit-price"
+          type="number"
+          min="0"
+          step="0.01"
+          value="0">
+
+      </div>
+
+
+      <div class="field amount-field">
+
+        <label>Amount</label>
+
+        <div class="item-total">
+          0.00
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="remove-item">
+        × Remove
+      </button>
+
+    </div>
+
+  `;
+
+
+  $("itemsList")
+    .appendChild(row);
+
+
+  row._serviceId=
+    item.service_id||null;
+
+
+  const serviceInput=
+    row.querySelector(
+      ".service-search"
+    );
+
+  const selected=
+    row.querySelector(
+      ".service-selected"
+    );
+
+  const serviceName=
+    row.querySelector(
+      ".service-name"
+    );
+
+  const description=
+    row.querySelector(
+      ".description"
+    );
+
+  const quantity=
+    row.querySelector(
+      ".quantity"
+    );
+
+  const unitPrice=
+    row.querySelector(
+      ".unit-price"
+    );
+
+
+  description.value=
+    item.description||"";
+
+  quantity.value=
+    item.quantity??1;
+
+  unitPrice.value=
+    item.unit_price??0;
+
+
+  if(item.service_id){
+
+    const service=
+      services.find(
+        item=>item.id===
+          item.service_id
+      );
+
+
+    if(service){
+
+      serviceName.textContent=
+        service.name;
+
+      selected.style.display=
+        "flex";
+
+    }
+
+  }
+
+
+  serviceInput
+    .addEventListener(
+      "input",
+      event=>{
+
+        const query=
+          event.target.value
+            .trim()
+            .toLowerCase();
+
+
+        row._serviceId=null;
+
+        selected.style.display=
+          "none";
+
+
+        const matches=
+          services
+            .filter(service=>
+
+              `${service.name}
+               ${service.description||""}`
+              .toLowerCase()
+              .includes(query)
+
+            )
+            .slice(0,12);
+
+
+        showResults(
+          serviceInput,
+          matches,
+          service=>{
+
+            row._serviceId=
+              service.id;
+
+            serviceName.textContent=
+              service.name;
+
+            selected.style.display=
+              "flex";
+
+            serviceInput.value="";
+
+
+            if(!description.value){
+
+              description.value=
+                service.name;
+
+            }
+
+
+            if(
+              Number(unitPrice.value)===
+              0
+            ){
+
+              unitPrice.value=
+                Number(service.price||0);
+
+            }
+
+
+            calculateTotals();
+
+          },
+          service=>
+            `<strong>
+              ${escapeHTML(service.name)}
+            </strong>
+            <small>
+              ${money(service.price)}
+              ·
+              ${escapeHTML(
+                service.description||
+                ""
+              )}
+            </small>`
+        );
+
+      }
+    );
+
+
+  row.querySelector(
+    ".service-clear"
+  ).addEventListener(
+    "click",
+    ()=>{
+
+      row._serviceId=null;
+
+      selected.style.display=
+        "none";
+
+      serviceInput.value="";
+
+    }
+  );
+
+
+  row.querySelector(
+    ".remove-item"
+  ).addEventListener(
+    "click",
+    ()=>{
+
+      row.remove();
+
+      calculateTotals();
+
+    }
+  );
+
+
+  row.querySelectorAll("input")
+    .forEach(input=>{
+
+      input.addEventListener(
+        "input",
+        calculateTotals
+      );
+
+    });
+
+
+  calculateTotals();
+
+}
+
+
+/* ADD ITEM */
+$("addItem")
+  .addEventListener(
+    "click",
+    ()=>addItem()
+  );
+
+
+/* CALCULATIONS */
+function calculateTotals(){
+
+  let subtotal=0;
+
+
+  document
+    .querySelectorAll(".item")
+    .forEach(row=>{
+
+      const quantity=
+        Number(
+          row.querySelector(
+            ".quantity"
+          ).value
+        )||0;
+
+
+      const unitPrice=
+        Number(
+          row.querySelector(
+            ".unit-price"
+          ).value
+        )||0;
+
+
+      const amount=
+        quantity*unitPrice;
+
+
+      row.querySelector(
+        ".item-total"
+      ).textContent=
+        money(amount);
+
+
+      subtotal+=amount;
+
+    });
+
+
+  const tax=
+    Math.max(
+      0,
+      Number($("tax").value)||0
+    );
+
+
+  $("subtotal").textContent=
+    money(subtotal);
+
+  $("taxTotal").textContent=
+    money(tax);
+
+  $("grandTotal").textContent=
+    money(subtotal+tax);
+
+}
+
+
+$("tax")
+  .addEventListener(
+    "input",
+    calculateTotals
+  );
+
+
+/* MODAL */
+function openModal(invoice=null){
+
+  editingId=
+    invoice?.id||null;
+
+
+  $("modalTitle").textContent=
+    invoice
+    ?"Edit Invoice"
+    :"New Invoice";
+
+
+  $("saveBtn").textContent=
+    invoice
+    ?"Update Invoice"
+    :"Save Invoice";
+
+
+  $("invoiceNumber").value=
+    invoice?.invoice_number||
+    makeInvoiceNumber();
+
+
+  $("invoiceStatus").value=
+    invoice?.status||
+    "draft";
+
+
+  $("issueDate").value=
+    invoice?.issue_date||
+    today();
+
+
+  $("dueDate").value=
+    invoice?.due_date||
+    today();
+
+
+  $("tax").value=
+    invoice?.tax||
+    0;
+
+
+  $("notes").value=
+    invoice?.notes||
+    "";
+
+
+  clearClient();
+
+  clearAssignment();
+
+
+  $("itemsList").innerHTML="";
+
+
+  if(invoice?.client_id){
+
+    const client=
+      clients.find(
+        item=>item.id===
+          invoice.client_id
+      );
+
+
+    if(client)selectClient(client);
+
+  }
+
+
+  if(invoice?.assignment_id){
+
+    const assignment=
+      assignments.find(
+        item=>item.id===
+          invoice.assignment_id
+      );
+
+
+    if(assignment){
+
+      selectAssignment(
+        assignment
+      );
+
+    }
+
+  }
+
+
+  $("modalBg")
+    .classList
+    .add("open");
+
+
+  if(invoice){
+
+    loadInvoiceItems(
+      invoice.id
+    );
+
+  }else{
+
+    addItem();
+
+  }
+
+}
+
+
+async function loadInvoiceItems(
+  invoiceId
+){
+
+  const {
+    data,
+    error
+  }=await supabaseClient
+    .from("invoice_items")
+    .select("*")
+    .eq("invoice_id",invoiceId)
+    .eq("business_id",businessId)
+    .order("created_at");
+
+
+  if(error){
+
+    showMessage(
+      "Could not load invoice items.",
+      true
+    );
+
+    addItem();
+
+    return;
+
+  }
+
+
+  if(data?.length){
+
+    data.forEach(item=>
+      addItem(item)
+    );
+
+  }else{
+
+    addItem();
+
+  }
+
+
+  calculateTotals();
+
+}
+
+
+function closeModal(){
+
+  $("modalBg")
+    .classList
+    .remove("open");
+
+
+  closeResults();
+
+  editingId=null;
+
+}
+
+
+$("newInvoice")
+  .addEventListener(
+    "click",
+    ()=>openModal()
+  );
+
+
+$("closeModal")
+  .addEventListener(
+    "click",
+    closeModal
+  );
+
+
+$("cancelModal")
+  .addEventListener(
+    "click",
+    closeModal
+  );
+
+
+$("modalBg")
+  .addEventListener(
+    "click",
+    event=>{
+
+      if(
+        event.target===
+        $("modalBg")
+      ){
+
+        closeModal();
+
+      }
+
+    }
+  );
+
+
+/* ESCAPE */
+document.addEventListener(
+  "keydown",
+  event=>{
+
+    if(event.key==="Escape"){
+
+      closeResults();
+
+      menuPanel
+        .classList
+        .remove("open");
+
+      menuBtn.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      if(
+        $("modalBg")
+          .classList
+          .contains("open")
+      ){
+
+        closeModal();
+
+      }
+
+    }
+
+  }
+);
+
+
+/* VALIDATE ITEMS */
+function getItems(){
+
+  const items=[];
+
+
+  for(
+    const row of
+    document.querySelectorAll(".item")
+  ){
+
+    const quantity=
+      Number(
+        row.querySelector(
+          ".quantity"
+        ).value
+      );
+
+
+    const unitPrice=
+      Number(
+        row.querySelector(
+          ".unit-price"
+        ).value
+      );
+
+
+    const description=
+      row.querySelector(
+        ".description"
+      ).value.trim();
+
+
+    if(
+      !description||
+      quantity<=0||
+      unitPrice<0
+    ){
+
+      return null;
+
+    }
+
+
+    items.push({
+
+      id:
+        row.dataset.id||
+        null,
+
+      service_id:
+        row._serviceId||
+        null,
+
+      description,
+
+      quantity,
+
+      unit_price:
+        unitPrice,
+
+      amount:
+        quantity*unitPrice
+
+    });
+
+  }
+
+
+  return items.length?
+    items:
+    null;
+
+}
+
+
+/* SAVE */
+$("invoiceForm")
+  .addEventListener(
+    "submit",
+    async event=>{
+
+      event.preventDefault();
+
+
+      const issue=
+        $("issueDate").value;
+
+
+      const due=
+        $("dueDate").value;
+
+
+      const tax=
+        Math.max(
+          0,
+          Number($("tax").value)||0
+        );
+
+
+      const items=
+        getItems();
+
+
+      if(!selectedClientId){
+
+        showMessage(
+          "Please select a client.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      if(!items){
+
+        showMessage(
+          "Please add at least one valid invoice item.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      if(due<issue){
+
+        showMessage(
+          "Due date cannot be before issue date.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      const subtotal=
+        items.reduce(
+          (sum,item)=>
+            sum+item.amount,
+          0
+        );
+
+
+      const total=
+        subtotal+tax;
+
+
+      const number=
+        $("invoiceNumber")
+          .value
+          .trim();
+
+
+      if(!number){
+
+        showMessage(
+          "Invoice number is required.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      let duplicateQuery=
+        supabaseClient
+          .from("invoices")
+          .select("id")
+          .eq(
+            "business_id",
+            businessId
+          )
+          .eq(
+            "invoice_number",
+            number
+          );
+
+
+      if(editingId){
+
+        duplicateQuery=
+          duplicateQuery.neq(
+            "id",
+            editingId
+          );
+
+      }
+
+
+      const {
+        data:duplicates,
+        error:duplicateError
+      }=
+        await duplicateQuery;
+
+
+      if(duplicateError){
+
+        showMessage(
+          "Could not check invoice number.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      if(duplicates?.length){
+
+        showMessage(
+          "That invoice number already exists.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      const invoiceData={
+
+        business_id:
+          businessId,
+
+        client_id:
+          selectedClientId,
+
+        assignment_id:
+          selectedAssignmentId||
+          null,
+
+        invoice_number:
+          number,
+
+        issue_date:
+          issue,
+
+        due_date:
+          due,
+
+        subtotal,
+
+        tax,
+
+        total,
+
+        status:
+          $("invoiceStatus").value,
+
+        notes:
+          $("notes").value.trim()
+
+      };
+
+
+      $("saveBtn").disabled=
+        true;
+
+
+      const wasEditing=
+        Boolean(editingId);
+
+
+      try{
+
+        let invoiceId=
+          editingId;
+
+
+        if(wasEditing){
+
+          const {
+            error
+          }=await supabaseClient
+            .from("invoices")
+            .update(invoiceData)
+            .eq(
+              "id",
+              editingId
+            )
+            .eq(
+              "business_id",
+              businessId
+            );
+
+
+          if(error)throw error;
+
+
+          const {
+            data:oldItems,
+            error:oldError
+          }=await supabaseClient
+            .from("invoice_items")
+            .select("id")
+            .eq(
+              "invoice_id",
+              editingId
+            )
+            .eq(
+              "business_id",
+              businessId
+            );
+
+
+          if(oldError)throw oldError;
+
+
+          const oldIds=
+            (oldItems||[])
+              .map(item=>item.id);
+
+
+          const newIds=
+            items
+              .filter(item=>item.id)
+              .map(item=>item.id);
+
+
+          const removeIds=
+            oldIds.filter(
+              id=>!newIds.includes(id)
+            );
+
+
+          if(removeIds.length){
+
+            const {
+              error
+            }=await supabaseClient
+              .from("invoice_items")
+              .delete()
+              .in(
+                "id",
+                removeIds
+              )
+              .eq(
+                "business_id",
+                businessId
+              );
+
+
+            if(error)throw error;
+
+          }
+
+
+          for(
+            const item of items
+          ){
+
+            if(item.id){
+
+              const {
+                error
+              }=await supabaseClient
+                .from("invoice_items")
+                .update({
+
+                  service_id:
+                    item.service_id,
+
+                  description:
+                    item.description,
+
+                  quantity:
+                    item.quantity,
+
+                  unit_price:
+                    item.unit_price,
+
+                  amount:
+                    item.amount
+
+                })
+                .eq(
+                  "id",
+                  item.id
+                )
+                .eq(
+                  "invoice_id",
+                  invoiceId
+                )
+                .eq(
+                  "business_id",
+                  businessId
+                );
+
+
+              if(error)throw error;
+
+            }else{
+
+              const {
+                error
+              }=await supabaseClient
+                .from("invoice_items")
+                .insert({
+
+                  business_id:
+                    businessId,
+
+                  invoice_id:
+                    invoiceId,
+
+                  service_id:
+                    item.service_id,
+
+                  description:
+                    item.description,
+
+                  quantity:
+                    item.quantity,
+
+                  unit_price:
+                    item.unit_price,
+
+                  amount:
+                    item.amount
+
+                });
+
+
+              if(error)throw error;
+
+            }
+
+          }
+
+        }else{
+
+          const {
+            data:invoice,
+            error
+          }=await supabaseClient
+            .from("invoices")
+            .insert(invoiceData)
+            .select("id")
+            .single();
+
+
+          if(error)throw error;
+
+
+          invoiceId=
+            invoice.id;
+
+
+          const {
+            error:itemError
+          }=await supabaseClient
+            .from("invoice_items")
+            .insert(
+
+              items.map(item=>({
+
+                business_id:
+                  businessId,
+
+                invoice_id:
+                  invoiceId,
+
+                service_id:
+                  item.service_id,
+
+                description:
+                  item.description,
+
+                quantity:
+                  item.quantity,
+
+                unit_price:
+                  item.unit_price,
+
+                amount:
+                  item.amount
+
+              }))
+
+            );
+
+
+          if(itemError){
+
+            await supabaseClient
+              .from("invoices")
+              .delete()
+              .eq(
+                "id",
+                invoiceId
+              )
+              .eq(
+                "business_id",
+                businessId
+              );
+
+
+            throw itemError;
+
+          }
+
+        }
+
+
+        closeModal();
+
+
+        showMessage(
+          wasEditing
+          ?"Invoice updated successfully."
+          :"Invoice created successfully."
+        );
+
+
+        await loadData();
+
+
+      }catch(error){
+
+        console.error(error);
+
+
+        showMessage(
+          error.message||
+          "Could not save invoice.",
+          true
+        );
+
+
+      }finally{
+
+        $("saveBtn").disabled=
+          false;
+
+      }
+
+    }
+  );
+
+
+/* EDIT */
+async function editInvoice(id){
+
+  const invoice=
+    invoices.find(
+      item=>item.id===id
+    );
+
+
+  if(invoice){
+
+    openModal(invoice);
+
+  }
+
+}
+
+
+/* DELETE */
+async function deleteInvoice(id){
+
+  const invoice=
+    invoices.find(
+      item=>item.id===id
+    );
+
+
+  if(!invoice)return;
+
+
+  if(
+    !confirm(
+      `Delete ${invoice.invoice_number}?`
+    )
+  ){
+
+    return;
+
+  }
+
+
+  const {
+    count:itemCount,
+    error:itemError
+  }=await supabaseClient
+    .from("invoice_items")
+    .select(
+      "id",
+      {
+        count:"exact",
+        head:true
+      }
+    )
+    .eq(
+      "invoice_id",
+      id
+    )
+    .eq(
+      "business_id",
+      businessId
+    );
+
+
+  if(itemError){
+
+    showMessage(
+      "Could not check invoice items.",
+      true
+    );
+
+    return;
+
+  }
+
+
+  const {
+    count:paymentCount,
+    error:paymentError
+  }=await supabaseClient
+    .from("invoice_payments")
+    .select(
+      "id",
+      {
+        count:"exact",
+        head:true
+      }
+    )
+    .eq(
+      "invoice_id",
+      id
+    )
+    .eq(
+      "business_id",
+      businessId
+    );
+
+
+  if(paymentError){
+
+    showMessage(
+      "Could not check invoice payments.",
+      true
+    );
+
+    return;
+
+  }
+
+
+  if(
+    itemCount||
+    paymentCount
+  ){
+
+    showMessage(
+      "This invoice has records attached. Use Cancelled instead of deleting it.",
+      true
+    );
+
+    return;
+
+  }
+
+
+  const {
+    error
+  }=await supabaseClient
+    .from("invoices")
+    .delete()
+    .eq(
+      "id",
+      id
+    )
+    .eq(
+      "business_id",
+      businessId
+    );
+
+
+  if(error){
+
+    showMessage(
+      error.message||
+      "Could not delete invoice.",
+      true
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "Invoice deleted."
+  );
+
+
+  await loadData();
+
+}
+
+
+/* FILTERS */
+$("invoiceSearch")
+  .addEventListener(
+    "input",
+    renderInvoices
+  );
+
+
+$("statusFilter")
+  .addEventListener(
+    "change",
+    renderInvoices
+  );
+
+
+$("refreshBtn")
+  .addEventListener(
+    "click",
+    loadData
+  );
+
+
+/* START */
+async function start(){
+
+  businessId=
+    await getBusiness();
+
+
+  if(businessId){
+
+    await loadData();
+
+  }
+
+}
+
+
+start();
+</script>
+
+</body>
+</html>

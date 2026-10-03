@@ -108,43 +108,158 @@
 
 
 /* =========================================================
-   DASHBOARD CONTROLS
+   TOP BAR
+   MENU LEFT / REFRESH RIGHT
 ========================================================= */
 
-.dashboard-header .dashboard-controls {
+.dashboard-topbar {
 
-    display: grid !important;
+    display: flex;
 
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr)) !important;
+    align-items: center;
 
-    gap: 10px !important;
+    justify-content: space-between;
 
-    width: 100% !important;
+    gap: 12px;
 
-    margin-top: 18px !important;
+    margin-top: 18px;
 
-    padding: 0 !important;
-
-    position: static !important;
+    position: relative;
 
 }
 
 
-/* ALL FOUR CONTROLS */
+/* =========================================================
+   DUKAFLOW MENU WRAPPER
+========================================================= */
 
-.dashboard-header .dashboard-controls
-.refresh-button,
+.dashboard-menu-wrapper {
 
-.dashboard-header .dashboard-controls
-.manage-users-button,
+    position: relative;
 
-.dashboard-header .dashboard-controls
-.logout-button {
+    width: auto;
 
-    width: 100% !important;
+    margin: 0;
 
-    min-height: 46px;
+}
+
+
+/* =========================================================
+   COMPACT DUKAFLOW MENU BUTTON
+========================================================= */
+
+.dashboard-menu-button {
+
+    width: auto;
+
+    min-height: 42px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.30);
+
+    border-radius: 9px;
+
+    background:
+        rgba(255,255,255,0.16);
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 10px 13px;
+
+    box-sizing: border-box;
+
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+
+}
+
+
+.dashboard-menu-button:hover {
+
+    background:
+        rgba(255,255,255,0.25);
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+.dashboard-menu-button.menu-open {
+
+    background:
+        rgba(255,255,255,0.28);
+
+    box-shadow:
+        0 5px 16px
+        rgba(0,0,0,0.12);
+
+}
+
+
+.dashboard-menu-button-icon {
+
+    font-size: 18px;
+
+    line-height: 1;
+
+}
+
+
+.dashboard-menu-button-text {
+
+    letter-spacing: 0.1px;
+
+}
+
+
+.dashboard-menu-chevron {
+
+    font-size: 11px;
+
+    opacity: 0.85;
+
+    transition:
+        transform 0.18s ease;
+
+}
+
+
+.dashboard-menu-button.menu-open
+.dashboard-menu-chevron {
+
+    transform:
+        rotate(180deg);
+
+}
+
+
+/* =========================================================
+   REFRESH BUTTON
+========================================================= */
+
+.dashboard-topbar .refresh-button {
+
+    width: auto;
+
+    min-height: 42px;
 
     box-sizing: border-box;
 
@@ -154,13 +269,13 @@
 
     justify-content: center;
 
-    padding: 11px 14px;
+    padding: 10px 14px;
 
     border-radius: 9px;
 
     cursor: pointer;
 
-    font-weight: bold;
+    font-weight: 800;
 
     font-size: 14px;
 
@@ -173,21 +288,6 @@
         background 0.18s ease,
         opacity 0.18s ease;
 
-    position: static !important;
-
-    margin: 0 !important;
-
-    float: none !important;
-
-}
-
-
-/* =========================================================
-   REFRESH
-========================================================= */
-
-.refresh-button {
-
     background:
         rgba(255,255,255,0.18);
 
@@ -197,10 +297,14 @@
         1px solid
         rgba(255,255,255,0.30);
 
+    margin: 0;
+
+    float: none;
+
 }
 
 
-.refresh-button:hover {
+.dashboard-topbar .refresh-button:hover {
 
     background:
         rgba(255,255,255,0.28);
@@ -212,57 +316,430 @@
 
 
 /* =========================================================
-   MANAGE USERS
+   MENU PANEL
 ========================================================= */
 
-.manage-users-button {
+.dashboard-menu {
+
+    position: absolute;
+
+    top: calc(100% + 9px);
+
+    left: 0;
+
+    right: auto;
+
+    width: 290px;
+
+    z-index: 1000;
 
     background:
-        rgba(255,255,255,0.18);
-
-    color: white;
+        rgba(255,255,255,0.98);
 
     border:
         1px solid
-        rgba(255,255,255,0.30);
+        rgba(228,233,230,0.95);
+
+    border-radius: 15px;
+
+    padding: 9px;
+
+    box-shadow:
+        0 18px 45px
+        rgba(0,0,0,0.18);
+
+    backdrop-filter:
+        blur(14px);
+
+    -webkit-backdrop-filter:
+        blur(14px);
+
+    transform-origin:
+        top left;
+
+    animation:
+        dashboardMenuOpen
+        0.16s ease;
 
 }
 
 
-.manage-users-button:hover {
+.dashboard-menu[hidden] {
 
-    background:
-        rgba(255,255,255,0.28);
+    display: none;
 
-    transform:
-        translateY(-1px);
+}
+
+
+@keyframes dashboardMenuOpen {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-5px)
+            scale(0.985);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
 
 }
 
 
 /* =========================================================
-   LOGOUT
+   MENU HEADER
 ========================================================= */
 
-.logout-button {
+.dashboard-menu-header {
 
-    background: #ffffff;
+    display: flex;
 
-    color: #b42318;
+    align-items: center;
 
-    border:
+    gap: 11px;
+
+    padding:
+        12px 12px 10px;
+
+    border-bottom:
         1px solid
-        rgba(255,255,255,0.80);
+        var(--border);
+
+    margin-bottom: 7px;
 
 }
 
 
-.logout-button:hover {
+.dashboard-menu-logo {
 
-    background: #fff4f3;
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #087f3f,
+            #0aa35a
+        );
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: white;
+
+    font-size: 19px;
+
+    box-shadow:
+        0 5px 13px
+        rgba(8,127,63,0.20);
+
+}
+
+
+.dashboard-menu-heading {
+
+    min-width: 0;
+
+}
+
+
+.dashboard-menu-heading strong {
+
+    display: block;
+
+    color:
+        var(--text);
+
+    font-size: 14px;
+
+    line-height: 1.2;
+
+}
+
+
+.dashboard-menu-heading span {
+
+    display: block;
+
+    color:
+        var(--muted);
+
+    font-size: 11px;
+
+    margin-top: 3px;
+
+}
+
+
+/* =========================================================
+   MENU LINKS
+========================================================= */
+
+.dashboard-menu-links {
+
+    display: grid;
+
+    gap: 4px;
+
+}
+
+
+.dashboard-menu a,
+.dashboard-menu button {
+
+    width: 100%;
+
+    min-height: 45px;
+
+    box-sizing: border-box;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: transparent;
+
+    color:
+        var(--text);
+
+    text-decoration: none;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding:
+        10px 12px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    transition:
+        background 0.16s ease,
+        color 0.16s ease,
+        transform 0.16s ease;
+
+}
+
+
+.dashboard-menu a:hover,
+.dashboard-menu button:hover {
+
+    background:
+        var(--green-light);
+
+    color:
+        var(--green);
 
     transform:
-        translateY(-1px);
+        translateX(2px);
+
+}
+
+
+.dashboard-menu-icon {
+
+    width: 28px;
+
+    height: 28px;
+
+    flex:
+        0 0 28px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background:
+        #f1f5f3;
+
+    font-size: 15px;
+
+}
+
+
+.dashboard-menu a:hover
+.dashboard-menu-icon,
+.dashboard-menu button:hover
+.dashboard-menu-icon {
+
+    background:
+        #dff4e8;
+
+}
+
+
+.dashboard-menu-label {
+
+    flex: 1;
+
+}
+
+
+.dashboard-menu-arrow {
+
+    color:
+        #9aa59f;
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
+   SPECIAL MENU ITEMS
+========================================================= */
+
+.dashboard-menu .service-menu-link
+.dashboard-menu-icon {
+
+    background:
+        #eee9ff;
+
+}
+
+
+.dashboard-menu .service-menu-link:hover {
+
+    background:
+        #f1edff;
+
+    color:
+        #6848bd;
+
+}
+
+
+.dashboard-menu .admin-menu-link
+.dashboard-menu-icon {
+
+    background:
+        #e8f1ff;
+
+}
+
+
+.dashboard-menu .admin-menu-link:hover {
+
+    background:
+        #edf4ff;
+
+    color:
+        #1769aa;
+
+}
+
+
+.dashboard-menu .owner-menu-link
+.dashboard-menu-icon {
+
+    background:
+        #fff2d9;
+
+}
+
+
+.dashboard-menu .owner-menu-link:hover {
+
+    background:
+        #fff7e8;
+
+    color:
+        #b46a00;
+
+}
+
+
+/* =========================================================
+   MENU DIVIDER
+========================================================= */
+
+.dashboard-menu-divider {
+
+    height: 1px;
+
+    background:
+        var(--border);
+
+    margin:
+        6px 4px;
+
+}
+
+
+/* =========================================================
+   MENU LOGOUT
+========================================================= */
+
+.dashboard-menu .menu-logout {
+
+    color:
+        #b42318;
+
+}
+
+
+.dashboard-menu .menu-logout
+.dashboard-menu-icon {
+
+    background:
+        #fff0ee;
+
+}
+
+
+.dashboard-menu .menu-logout:hover {
+
+    background:
+        #fff4f3;
+
+    color:
+        #b42318;
+
+}
+
+
+/* =========================================================
+   MENU DISABLED
+========================================================= */
+
+.dashboard-menu a.menu-disabled {
+
+    pointer-events: none;
+
+    opacity: 0.42;
+
+    filter:
+        grayscale(0.25);
 
 }
 
@@ -1342,14 +1819,6 @@
 
     }
 
-
-    .dashboard-header .dashboard-controls {
-
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr)) !important;
-
-    }
-
 }
 
 
@@ -1371,26 +1840,70 @@
     }
 
 
-    .dashboard-header .dashboard-controls {
+    .dashboard-topbar {
 
-        grid-template-columns:
-            1fr !important;
+        align-items: center;
 
-        gap: 8px !important;
+        gap: 8px;
 
     }
 
 
-    .dashboard-header .dashboard-controls
-    .refresh-button,
+    .dashboard-menu-button {
 
-    .dashboard-header .dashboard-controls
-    .manage-users-button,
+        min-height: 44px;
 
-    .dashboard-header .dashboard-controls
-    .logout-button {
+        padding:
+            10px 11px;
 
-        min-height: 45px;
+    }
+
+
+    .dashboard-menu-button-text {
+
+        font-size: 13px;
+
+    }
+
+
+    .dashboard-topbar .refresh-button {
+
+        min-height: 44px;
+
+        padding:
+            10px 11px;
+
+        font-size: 13px;
+
+    }
+
+
+    .dashboard-menu {
+
+        width:
+            min(290px, calc(100vw - 40px));
+
+        border-radius: 13px;
+
+        padding: 7px;
+
+    }
+
+
+    .dashboard-menu-header {
+
+        padding:
+            10px 10px 9px;
+
+    }
+
+
+    .dashboard-menu a,
+    .dashboard-menu button {
+
+        min-height: 43px;
+
+        font-size: 13px;
 
     }
 
@@ -1546,6 +2059,23 @@
 
     }
 
+
+    .dashboard-topbar .refresh-button {
+
+        font-size: 12px;
+
+        padding:
+            10px 9px;
+
+    }
+
+
+    .dashboard-menu-button-text {
+
+        display: none;
+
+    }
+
 }
 
 </style>
@@ -1590,35 +2120,6 @@ window.supabaseClient =
 <script src="auth-guard.js"></script>
 
 <script src="role-guard.js"></script>
-
-
-<!-- =========================================================
-     NAVIGATION
-========================================================= -->
-
-<nav class="main-nav">
-
-<a href="index.html">
-    🏠 Dashboard
-</a>
-
-<a href="products.html">
-    📦 Products
-</a>
-
-<a href="sales.html">
-    💰 Sales
-</a>
-
-<a href="expenses.html">
-    💸 Expenses
-</a>
-
-<a href="reports.html">
-    📊 Reports
-</a>
-
-</nav>
 
 
 <div class="page-container">
@@ -1686,7 +2187,284 @@ Update Password
     Smart Business Management System
 </p>
 
-<div class="dashboard-controls">
+
+<!-- =====================================================
+     TOP BAR
+     MENU LEFT / REFRESH RIGHT
+===================================================== -->
+
+<div class="dashboard-topbar">
+
+
+<!-- =====================================================
+     DUKAFLOW MENU
+===================================================== -->
+
+<div
+    class="dashboard-menu-wrapper"
+    id="dashboardMenuWrapper"
+>
+
+<button
+    type="button"
+    id="dashboardMenuButton"
+    class="dashboard-menu-button"
+    aria-expanded="false"
+    aria-controls="dashboardMenu"
+>
+
+<span class="dashboard-menu-button-icon">
+    ☰
+</span>
+
+<span class="dashboard-menu-button-text">
+    DukaFlow Menu
+</span>
+
+<span class="dashboard-menu-chevron">
+    ▼
+</span>
+
+</button>
+
+
+<div
+    id="dashboardMenu"
+    class="dashboard-menu"
+    hidden
+>
+
+
+<div class="dashboard-menu-header">
+
+<div class="dashboard-menu-logo">
+    D
+</div>
+
+<div class="dashboard-menu-heading">
+
+<strong>
+    DukaFlow
+</strong>
+
+<span>
+    Navigate your business workspace
+</span>
+
+</div>
+
+</div>
+
+
+<div class="dashboard-menu-links">
+
+
+<a
+href="index.html"
+data-protected="false"
+>
+
+<span class="dashboard-menu-icon">
+    🏠
+</span>
+
+<span class="dashboard-menu-label">
+    Dashboard
+</span>
+
+<span class="dashboard-menu-arrow">
+    ›
+</span>
+
+</a>
+
+
+<a
+href="products.html"
+data-protected="true"
+>
+
+<span class="dashboard-menu-icon">
+    📦
+</span>
+
+<span class="dashboard-menu-label">
+    Products & Stock
+</span>
+
+<span class="dashboard-menu-arrow">
+    ›
+</span>
+
+</a>
+
+
+<a
+href="sales.html"
+data-protected="true"
+>
+
+<span class="dashboard-menu-icon">
+    💰
+</span>
+
+<span class="dashboard-menu-label">
+    Sales
+</span>
+
+<span class="dashboard-menu-arrow">
+    ›
+</span>
+
+</a>
+
+
+<a
+href="expenses.html"
+data-protected="true"
+>
+
+<span class="dashboard-menu-icon">
+    💸
+</span>
+
+<span class="dashboard-menu-label">
+    Expenses
+</span>
+
+<span class="dashboard-menu-arrow">
+    ›
+</span>
+
+</a>
+
+
+<a
+href="reports.html"
+data-protected="true"
+>
+
+<span class="dashboard-menu-icon">
+    📊
+</span>
+
+<span class="dashboard-menu-label">
+    Reports
+</span>
+
+<span class="dashboard-menu-arrow">
+    ›
+</span>
+
+</a>
+
+
+<div class="dashboard-menu-divider"></div>
+
+
+<a
+href="users.html"
+id="menuManageUsersLink"
+class="admin-menu-link"
+style="display: none;"
+data-protected="true"
+>
+
+<span class="dashboard-menu-icon">
+    👥
+</span>
+
+<span class="dashboard-menu-label">
+    Manage Users
+</span>
+
+<span class="dashboard-menu-arrow">
+    ›
+</span>
+
+</a>
+
+
+<a
+href="service-dashboard.html"
+id="menuServiceBusinessLink"
+class="service-menu-link"
+style="display: none;"
+data-protected="true"
+>
+
+<span class="dashboard-menu-icon">
+    🧑‍💼
+</span>
+
+<span class="dashboard-menu-label">
+    Service Business
+</span>
+
+<span class="dashboard-menu-arrow">
+    ›
+</span>
+
+</a>
+
+
+<a
+href="platform-owner.html"
+id="menuPlatformOwnerLink"
+class="owner-menu-link"
+style="display: none;"
+data-protected="true"
+>
+
+<span class="dashboard-menu-icon">
+    👑
+</span>
+
+<span class="dashboard-menu-label">
+    Platform Owner
+</span>
+
+<span class="dashboard-menu-arrow">
+    ›
+</span>
+
+</a>
+
+
+<div class="dashboard-menu-divider"></div>
+
+
+<button
+type="button"
+class="menu-logout"
+onclick="logoutUser()"
+>
+
+<span class="dashboard-menu-icon">
+    🚪
+</span>
+
+<span class="dashboard-menu-label">
+    Logout
+</span>
+
+<span class="dashboard-menu-arrow">
+    ›
+</span>
+
+</button>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     ONLY STANDALONE DASHBOARD CONTROL
+===================================================== -->
 
 <button
 type="button"
@@ -1698,44 +2476,6 @@ class="refresh-button"
 
 </button>
 
-
-<a
-href="users.html"
-id="manageUsersButton"
-class="manage-users-button"
-style="display: none;"
->
-
-👥 Manage Users
-
-</a>
-
-
-<!-- =====================================================
-     PLATFORM OWNER
-===================================================== -->
-
-<a
-href="platform-owner.html"
-id="platformOwnerButton"
-class="manage-users-button"
-style="display: none;"
->
-
-👑 Platform Owner
-
-</a>
-
-
-<button
-type="button"
-onclick="logoutUser()"
-class="logout-button"
->
-
-🚪 Logout
-
-</button>
 
 </div>
 
@@ -2402,7 +3142,7 @@ async function handlePasswordRecovery() {
 
     document
         .querySelectorAll(
-            ".main-nav, .dashboard-header, #subscriptionSection, #subscriptionLock, #dashboardMessage, .section-heading, .dashboard, .dashboard-actions, .stock-alerts, .support-section"
+            ".dashboard-header, #subscriptionSection, #subscriptionLock, #dashboardMessage, .section-heading, .dashboard, .dashboard-actions, .stock-alerts, .support-section"
         )
         .forEach(
             function(element) {
@@ -2809,31 +3549,6 @@ async function loadSubscription() {
 
         document
             .querySelectorAll(
-                ".main-nav a"
-            )
-            .forEach(
-                function(link) {
-
-                    if (
-                        link.getAttribute(
-                            "href"
-                        ) !== "index.html"
-                    ) {
-
-                        link.style.pointerEvents =
-                            "none";
-
-                        link.style.opacity =
-                            "0.45";
-
-                    }
-
-                }
-            );
-
-
-        document
-            .querySelectorAll(
                 ".dashboard-actions a"
             )
             .forEach(
@@ -2844,6 +3559,25 @@ async function loadSubscription() {
 
                     link.style.opacity =
                         "0.45";
+
+                }
+            );
+
+
+        /* =====================================================
+           DISABLE PROTECTED DUKAFLOW MENU LINKS
+        ===================================================== */
+
+        document
+            .querySelectorAll(
+                ".dashboard-menu a[data-protected='true']"
+            )
+            .forEach(
+                function(link) {
+
+                    link.classList.add(
+                        "menu-disabled"
+                    );
 
                 }
             );
@@ -3173,20 +3907,20 @@ async function getCurrentUser() {
 
 async function setupManageUsersButton() {
 
-    const button =
+    const menuButton =
         document.getElementById(
-            "manageUsersButton"
+            "menuManageUsersLink"
         );
 
 
-    if (!button) {
+    if (!menuButton) {
 
         return;
 
     }
 
 
-    button.style.display =
+    menuButton.style.display =
         "none";
 
 
@@ -3247,30 +3981,12 @@ async function setupManageUsersButton() {
             profile.role;
 
 
-        /*
-         * DukaFlow has only two application roles:
-         *
-         * admin
-         * staff
-         *
-         * Only admin can manage users.
-         */
-
         if (
             profile.role === "admin"
         ) {
 
-            button.style.display =
+            menuButton.style.display =
                 "flex";
-
-        }
-
-        else if (
-            profile.role === "staff"
-        ) {
-
-            button.style.display =
-                "none";
 
         }
 
@@ -3283,7 +3999,7 @@ async function setupManageUsersButton() {
             error
         );
 
-        button.style.display =
+        menuButton.style.display =
             "none";
 
     }
@@ -3292,25 +4008,136 @@ async function setupManageUsersButton() {
 
 
 // =========================================================
-// PLATFORM OWNER BUTTON
+// SERVICE BUSINESS MENU
 // =========================================================
 
-async function setupPlatformOwnerButton() {
+async function setupServiceBusinessButton() {
 
-    const button =
+    const menuButton =
         document.getElementById(
-            "platformOwnerButton"
+            "menuServiceBusinessLink"
         );
 
 
-    if (!button) {
+    if (!menuButton) {
 
         return;
 
     }
 
 
-    button.style.display =
+    menuButton.style.display =
+        "none";
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+        await window.supabaseClient
+            .auth
+            .getUser();
+
+
+        if (
+            error ||
+            !data ||
+            !data.user
+        ) {
+
+            return;
+
+        }
+
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+        await window.supabaseClient
+            .from("profiles")
+            .select(
+                "role"
+            )
+            .eq(
+                "user_id",
+                data.user.id
+            )
+            .single();
+
+
+        if (
+            profileError ||
+            !profile
+        ) {
+
+            console.error(
+                "Service Business menu error:",
+                profileError
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Service Business is currently available
+         * to business administrators.
+         *
+         * We are deliberately NOT using business_type
+         * yet. That architecture can be introduced
+         * later after the service workspace is polished.
+         */
+
+        if (
+            profile.role === "admin"
+        ) {
+
+            menuButton.style.display =
+                "flex";
+
+        }
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Service Business menu error:",
+            error
+        );
+
+        menuButton.style.display =
+            "none";
+
+    }
+
+}
+
+
+// =========================================================
+// PLATFORM OWNER MENU
+// =========================================================
+
+async function setupPlatformOwnerButton() {
+
+    const menuButton =
+        document.getElementById(
+            "menuPlatformOwnerLink"
+        );
+
+
+    if (!menuButton) {
+
+        return;
+
+    }
+
+
+    menuButton.style.display =
         "none";
 
 
@@ -3355,7 +4182,7 @@ async function setupPlatformOwnerButton() {
         if (profileError) {
 
             console.error(
-                "Platform owner button error:",
+                "Platform owner menu error:",
                 profileError
             );
 
@@ -3369,7 +4196,7 @@ async function setupPlatformOwnerButton() {
             profile.is_platform_owner === true
         ) {
 
-            button.style.display =
+            menuButton.style.display =
                 "flex";
 
         }
@@ -3379,11 +4206,181 @@ async function setupPlatformOwnerButton() {
     catch(error) {
 
         console.error(
-            "Platform owner button error:",
+            "Platform owner menu error:",
             error
         );
 
     }
+
+}
+
+
+// =========================================================
+// DUKAFLOW MENU
+// =========================================================
+
+function setupDashboardMenu() {
+
+    const menuButton =
+        document.getElementById(
+            "dashboardMenuButton"
+        );
+
+    const menu =
+        document.getElementById(
+            "dashboardMenu"
+        );
+
+    const wrapper =
+        document.getElementById(
+            "dashboardMenuWrapper"
+        );
+
+
+    if (
+        !menuButton ||
+        !menu ||
+        !wrapper
+    ) {
+
+        return;
+
+    }
+
+
+    function openMenu() {
+
+        menu.hidden =
+            false;
+
+        menuButton
+            .classList
+            .add(
+                "menu-open"
+            );
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+    }
+
+
+    function closeMenu() {
+
+        menu.hidden =
+            true;
+
+        menuButton
+            .classList
+            .remove(
+                "menu-open"
+            );
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    }
+
+
+    function toggleMenu() {
+
+        if (
+            menu.hidden
+        ) {
+
+            openMenu();
+
+        }
+
+        else {
+
+            closeMenu();
+
+        }
+
+    }
+
+
+    menuButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+            toggleMenu();
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                !wrapper.contains(
+                    event.target
+                )
+            ) {
+
+                closeMenu();
+
+            }
+
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
+                closeMenu();
+
+            }
+
+        }
+    );
+
+
+    menu
+        .querySelectorAll(
+            "a"
+        )
+        .forEach(
+            function(link) {
+
+                link.addEventListener(
+                    "click",
+                    function() {
+
+                        if (
+                            link.classList.contains(
+                                "menu-disabled"
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        closeMenu();
+
+                    }
+                );
+
+            }
+        );
 
 }
 
@@ -4354,39 +5351,6 @@ async function loadDashboard() {
 
 
 // =========================================================
-// ACTIVE NAVIGATION
-// =========================================================
-
-const currentPage =
-    window.location.pathname
-        .split("/")
-        .pop();
-
-
-document
-    .querySelectorAll(
-        ".main-nav a"
-    )
-    .forEach(
-        function(link) {
-
-            if (
-                link.getAttribute(
-                    "href"
-                ) === currentPage
-            ) {
-
-                link.classList.add(
-                    "active"
-                );
-
-            }
-
-        }
-    );
-
-
-// =========================================================
 // START DASHBOARD
 // =========================================================
 
@@ -4410,9 +5374,13 @@ else if (
                 isAuthenticated
             ) {
 
+                setupDashboardMenu();
+
                 await setupManageUsersButton();
 
                 await setupPlatformOwnerButton();
+
+                await setupServiceBusinessButton();
 
                 await loadDashboard();
 
@@ -4434,9 +5402,13 @@ else {
         "load",
         async function() {
 
+            setupDashboardMenu();
+
             await setupManageUsersButton();
 
             await setupPlatformOwnerButton();
+
+            await setupServiceBusinessButton();
 
             await loadDashboard();
 
@@ -4498,4 +5470,4 @@ if (
 
 </body>
 
-    </html>
+</html>

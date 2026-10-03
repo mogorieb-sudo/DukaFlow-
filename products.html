@@ -155,6 +155,133 @@
 
 
 /* =========================================================
+   DUKAFLOW MENU
+========================================================= */
+
+.dukaflow-menu-wrapper {
+    width: 100%;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.dukaflow-menu-button {
+    width: 100%;
+    min-height: 52px;
+
+    padding: 13px 16px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: linear-gradient(
+        135deg,
+        #087f3f,
+        #0b7a3b
+    );
+
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.dukaflow-menu-button:hover {
+    background: linear-gradient(
+        135deg,
+        #076d36,
+        #096b34
+    );
+}
+
+.dukaflow-menu-arrow {
+    transition: transform 0.2s ease;
+}
+
+.dukaflow-menu-button[aria-expanded="true"]
+.dukaflow-menu-arrow {
+    transform: rotate(180deg);
+}
+
+.dukaflow-menu-panel {
+    display: none;
+
+    width: 100%;
+
+    margin-top: 8px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.12);
+
+    overflow: hidden;
+
+    z-index: 100;
+}
+
+.dukaflow-menu-panel.open {
+    display: block;
+}
+
+.dukaflow-menu-panel a {
+    display: block;
+
+    padding: 13px 16px;
+
+    color: #1f2937;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.dukaflow-menu-panel a:last-child {
+    border-bottom: none;
+}
+
+.dukaflow-menu-panel a:hover {
+    background: #f0fdf4;
+    color: #087f3f;
+}
+
+.dukaflow-menu-panel a.active {
+    background: #ecfdf5;
+    color: #087f3f;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header {
+    margin-bottom: 20px;
+}
+
+.page-header h1 {
+    margin-bottom: 5px;
+}
+
+.page-header p {
+    margin-top: 0;
+}
+
+
+/* =========================================================
    MOBILE
 ========================================================= */
 
@@ -166,6 +293,10 @@
 
     .action-buttons button {
         width: 100%;
+    }
+
+    .dukaflow-menu-button {
+        min-height: 50px;
     }
 
 }
@@ -193,42 +324,85 @@
 
 
 <!-- =========================================================
-     NAVIGATION
+     DUKAFLOW MENU
 ========================================================= -->
 
-<nav class="main-nav">
+<div class="dukaflow-menu-wrapper">
 
-<a href="index.html">
-🏠 Dashboard
-</a>
+    <button
+        type="button"
+        class="dukaflow-menu-button"
+        id="dukaflowMenuButton"
+        aria-expanded="false"
+        aria-controls="dukaflowMenuPanel"
+    >
 
-<a href="products.html">
-📦 Products
-</a>
+        <span>
+            ☰ DukaFlow Menu
+        </span>
 
-<a href="sales.html">
-💰 Sales
-</a>
+        <span
+            class="dukaflow-menu-arrow"
+        >
+            ▼
+        </span>
 
-<a href="expenses.html">
-💸 Expenses
-</a>
+    </button>
 
-<a href="reports.html">
-📊 Reports
-</a>
 
-</nav>
+    <div
+        class="dukaflow-menu-panel"
+        id="dukaflowMenuPanel"
+    >
+
+        <a href="index.html">
+            🏠 Dashboard
+        </a>
+
+        <a
+            href="products.html"
+            class="active"
+        >
+            📦 Products & Stock
+        </a>
+
+        <a href="sales.html">
+            💰 Sales
+        </a>
+
+        <a href="expenses.html">
+            💸 Expenses
+        </a>
+
+        <a href="reports.html">
+            📊 Reports
+        </a>
+
+        <a href="manage-users.html">
+            👥 Manage Users
+        </a>
+
+        <a href="service-dashboard.html">
+            🧩 Service Business
+        </a>
+
+    </div>
+
+</div>
 
 
 <div class="page-container">
 
+
+<div class="page-header">
 
 <h1>PRODUCTS</h1>
 
 <p>
 Manage your business products
 </p>
+
+</div>
 
 
 <!-- =========================================================
@@ -459,6 +633,99 @@ Action
 
 
 <script>
+
+
+// =========================================================
+// DUKAFLOW MENU
+// =========================================================
+
+const dukaflowMenuButton =
+    document.getElementById(
+        "dukaflowMenuButton"
+    );
+
+const dukaflowMenuPanel =
+    document.getElementById(
+        "dukaflowMenuPanel"
+    );
+
+
+dukaflowMenuButton.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+        const isOpen =
+            dukaflowMenuPanel.classList.contains(
+                "open"
+            );
+
+
+        dukaflowMenuPanel.classList.toggle(
+            "open"
+        );
+
+
+        dukaflowMenuButton.setAttribute(
+            "aria-expanded",
+            String(!isOpen)
+        );
+
+    }
+);
+
+
+// Close menu when clicking outside
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            !event.target.closest(
+                ".dukaflow-menu-wrapper"
+            )
+        ) {
+
+            dukaflowMenuPanel.classList.remove(
+                "open"
+            );
+
+            dukaflowMenuButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+    }
+);
+
+
+// Close menu with Escape
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            dukaflowMenuPanel.classList.remove(
+                "open"
+            );
+
+            dukaflowMenuButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+    }
+);
 
 
 // =========================================================

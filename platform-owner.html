@@ -367,6 +367,204 @@ body {
 
 
 /* =========================================================
+   DUKAFLOW MENU
+========================================================= */
+
+.dukaflow-menu-wrapper {
+
+    width:
+        min(
+            1400px,
+            calc(100% - 32px)
+        );
+
+    margin:
+        22px auto 0;
+
+    position:
+        relative;
+
+}
+
+
+.dukaflow-menu-button {
+
+    width:
+        100%;
+
+    min-height:
+        52px;
+
+    padding:
+        13px 16px;
+
+    border:
+        none;
+
+    border-radius:
+        14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #087f3f,
+            #0b7a3b
+        );
+
+    color:
+        white;
+
+    font-size:
+        15px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    box-shadow:
+        0 8px 20px
+        rgba(8,127,63,0.16);
+
+}
+
+
+.dukaflow-menu-button:hover {
+
+    background:
+        linear-gradient(
+            135deg,
+            #076d36,
+            #096b34
+        );
+
+}
+
+
+.dukaflow-menu-arrow {
+
+    transition:
+        transform 0.2s ease;
+
+}
+
+
+.dukaflow-menu-button[aria-expanded="true"]
+.dukaflow-menu-arrow {
+
+    transform:
+        rotate(180deg);
+
+}
+
+
+.dukaflow-menu-panel {
+
+    display:
+        none;
+
+    width:
+        100%;
+
+    margin-top:
+        8px;
+
+    background:
+        white;
+
+    border:
+        1px solid
+        #e2e8f0;
+
+    border-radius:
+        14px;
+
+    box-shadow:
+        0 14px 30px
+        rgba(15,23,42,0.12);
+
+    overflow:
+        hidden;
+
+    z-index:
+        100;
+
+}
+
+
+.dukaflow-menu-panel.open {
+
+    display:
+        block;
+
+}
+
+
+.dukaflow-menu-panel a {
+
+    display:
+        block;
+
+    padding:
+        13px 16px;
+
+    color:
+        #1f2937;
+
+    text-decoration:
+        none;
+
+    font-weight:
+        700;
+
+    border-bottom:
+        1px solid
+        #f1f5f9;
+
+}
+
+
+.dukaflow-menu-panel a:last-child {
+
+    border-bottom:
+        none;
+
+}
+
+
+.dukaflow-menu-panel a:hover {
+
+    background:
+        #f0fdf4;
+
+    color:
+        #087f3f;
+
+}
+
+
+.dukaflow-menu-panel a.active {
+
+    background:
+        #ecfdf5;
+
+    color:
+        #087f3f;
+
+}
+
+
+/* =========================================================
    MAIN
 ========================================================= */
 
@@ -1673,6 +1871,34 @@ footer {
     }
 
 
+    .dukaflow-menu-wrapper {
+
+        width:
+            calc(100% - 20px);
+
+        margin-top:
+            14px;
+
+    }
+
+
+    .dukaflow-menu-button {
+
+        min-height:
+            50px;
+
+        padding:
+            12px 14px;
+
+        font-size:
+            14px;
+
+        border-radius:
+            13px;
+
+    }
+
+
     .container {
 
         width:
@@ -1949,6 +2175,60 @@ footer {
     </div>
 
 </header>
+
+
+<!-- =========================================================
+     DUKAFLOW MENU
+========================================================= -->
+
+<div class="dukaflow-menu-wrapper">
+
+    <button
+        type="button"
+        class="dukaflow-menu-button"
+        id="dukaflowMenuButton"
+        aria-expanded="false"
+        aria-controls="dukaflowMenuPanel"
+    >
+
+        <span>
+            ☰ DukaFlow Menu
+        </span>
+
+        <span class="dukaflow-menu-arrow">
+            ▼
+        </span>
+
+    </button>
+
+
+    <div
+        class="dukaflow-menu-panel"
+        id="dukaflowMenuPanel"
+    >
+
+        <a href="index.html">
+            🏠 Dashboard
+        </a>
+
+        <a href="index.html?owner_view=1">
+            🏪 My Business
+        </a>
+
+        <a href="service-dashboard.html">
+            🧩 Service Business
+        </a>
+
+        <a
+            href="platform-owner.html"
+            class="active"
+        >
+            👑 Platform Owner
+        </a>
+
+    </div>
+
+</div>
 
 
 <!-- =========================================================
@@ -2362,6 +2642,102 @@ const supabaseClient =
 
 
 let platformBusinesses = [];
+
+
+/* =========================================================
+   DUKAFLOW MENU
+========================================================= */
+
+const dukaflowMenuButton =
+    document.getElementById(
+        "dukaflowMenuButton"
+    );
+
+
+const dukaflowMenuPanel =
+    document.getElementById(
+        "dukaflowMenuPanel"
+    );
+
+
+dukaflowMenuButton.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+
+        const isOpen =
+            dukaflowMenuPanel
+                .classList
+                .contains("open");
+
+
+        dukaflowMenuPanel
+            .classList
+            .toggle("open");
+
+
+        dukaflowMenuButton
+            .setAttribute(
+                "aria-expanded",
+                String(!isOpen)
+            );
+
+    }
+);
+
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            !event.target.closest(
+                ".dukaflow-menu-wrapper"
+            )
+        ) {
+
+            dukaflowMenuPanel
+                .classList
+                .remove("open");
+
+
+            dukaflowMenuButton
+                .setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            dukaflowMenuPanel
+                .classList
+                .remove("open");
+
+
+            dukaflowMenuButton
+                .setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+        }
+
+    }
+);
 
 
 /* =========================================================

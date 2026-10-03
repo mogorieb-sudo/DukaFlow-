@@ -1,0 +1,3736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087f3f">
+
+<title>DukaFlow - Service Reports</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --green:#087f3f;
+  --green2:#0b7a3b;
+  --green-dark:#066b35;
+  --green-soft:#ecfdf5;
+
+  --blue:#2563eb;
+  --blue-soft:#eff6ff;
+
+  --purple:#7c3aed;
+  --purple-soft:#f5f3ff;
+
+  --orange:#ea580c;
+  --orange-soft:#fff7ed;
+
+  --red:#dc2626;
+  --red-soft:#fef2f2;
+
+  --cyan:#0891b2;
+  --cyan-soft:#ecfeff;
+
+  --bg:#f4f7f6;
+  --white:#fff;
+  --text:#17202a;
+  --muted:#64748b;
+  --border:#dce7e1;
+
+  --shadow:0 10px 28px rgba(15,23,42,.07);
+  --radius:18px;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.page{
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+  padding:20px;
+}
+
+/* ==========================================
+   DUKAFLOW MENU
+========================================== */
+
+.menu-wrap{
+  width:100%;
+  position:relative;
+  margin-bottom:18px;
+}
+
+.menu-btn{
+  width:100%;
+  min-height:52px;
+  padding:13px 16px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(135deg,#087f3f,#0b7a3b);
+  color:#fff;
+  font-size:15px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 8px 20px rgba(8,127,63,.16);
+}
+
+.menu-btn:hover{
+  background:linear-gradient(135deg,#076d36,#096b34);
+}
+
+.menu-arrow{
+  transition:transform .2s ease;
+}
+
+.menu-btn[aria-expanded="true"] .menu-arrow{
+  transform:rotate(180deg);
+}
+
+.menu-panel{
+  display:none;
+  width:100%;
+  margin-top:8px;
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  box-shadow:0 14px 30px rgba(15,23,42,.12);
+  overflow:hidden;
+  position:relative;
+  z-index:100;
+}
+
+.menu-panel.open{
+  display:block;
+}
+
+.menu-panel a{
+  display:block;
+  padding:13px 16px;
+  color:#1f2937;
+  text-decoration:none;
+  font-weight:700;
+  border-bottom:1px solid #f1f5f9;
+}
+
+.menu-panel a:last-child{
+  border-bottom:none;
+}
+
+.menu-panel a:hover{
+  background:#f0fdf4;
+  color:var(--green);
+}
+
+.menu-panel a.active{
+  background:#ecfdf5;
+  color:var(--green);
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:20px;
+}
+
+.header-text{
+  min-width:0;
+}
+
+.header-text h1{
+  margin:0;
+  font-size:28px;
+  line-height:1.2;
+}
+
+.header-text p{
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.refresh-btn{
+  flex:0 0 auto;
+  min-height:46px;
+  padding:0 17px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:#fff;
+  color:var(--text);
+  font-weight:800;
+  box-shadow:0 5px 14px rgba(15,23,42,.05);
+}
+
+.refresh-btn:hover{
+  background:var(--green-soft);
+  color:var(--green);
+}
+
+/* ==========================================
+   MESSAGE
+========================================== */
+
+.message{
+  display:none;
+  margin-bottom:16px;
+  padding:12px 14px;
+  border-radius:11px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.message.show{
+  display:block;
+}
+
+.message.success{
+  background:#dcfce7;
+  color:#166534;
+  border:1px solid #bbf7d0;
+}
+
+.message.error{
+  background:#fee2e2;
+  color:#991b1b;
+  border:1px solid #fecaca;
+}
+
+/* ==========================================
+   SUMMARY
+========================================== */
+
+.summary{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:22px;
+}
+
+.summary-card{
+  min-width:0;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:17px;
+  box-shadow:var(--shadow);
+}
+
+.summary-card:nth-child(1){
+  background:linear-gradient(135deg,#ecfdf5,#dff7eb);
+}
+
+.summary-card:nth-child(2){
+  background:linear-gradient(135deg,#eff6ff,#e4efff);
+}
+
+.summary-card:nth-child(3){
+  background:linear-gradient(135deg,#f5f3ff,#ece7ff);
+}
+
+.summary-card:nth-child(4){
+  background:linear-gradient(135deg,#ecfeff,#dff9fc);
+}
+
+.summary-card:nth-child(5){
+  background:linear-gradient(135deg,#fff7ed,#ffedd5);
+}
+
+.summary-card:nth-child(6){
+  background:linear-gradient(135deg,#fef2f2,#fee2e2);
+}
+
+.summary-label{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.45px;
+}
+
+.summary-value{
+  margin-top:7px;
+  font-size:25px;
+  font-weight:900;
+  line-height:1.15;
+}
+
+.summary-small{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+
+/* ==========================================
+   REPORT NAV
+========================================== */
+
+.report-nav{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:22px;
+}
+
+.report-nav button{
+  min-height:52px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  background:#fff;
+  color:#334155;
+  font-weight:800;
+  box-shadow:0 5px 14px rgba(15,23,42,.04);
+}
+
+.report-nav button:hover{
+  background:var(--green-soft);
+  color:var(--green);
+}
+
+.report-nav button.active{
+  background:linear-gradient(135deg,#087f3f,#0b7a3b);
+  color:#fff;
+  border-color:transparent;
+  box-shadow:0 8px 18px rgba(8,127,63,.16);
+}
+
+/* ==========================================
+   REPORT SECTION
+========================================== */
+
+.report-section{
+  display:none;
+}
+
+.report-section.active{
+  display:block;
+}
+
+.section-header{
+  margin-bottom:13px;
+}
+
+.section-header h2{
+  margin:0;
+  font-size:20px;
+}
+
+.section-header p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* ==========================================
+   FILTER
+========================================== */
+
+.filter-bar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+
+.filter-search{
+  flex:1 1 280px;
+}
+
+.filter-search input,
+.filter-bar select{
+  width:100%;
+  min-height:44px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#fff;
+  padding:10px 12px;
+  outline:none;
+}
+
+.filter-search input:focus,
+.filter-bar select:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(8,127,63,.08);
+}
+
+.filter-select{
+  flex:0 0 180px;
+}
+
+/* ==========================================
+   REPORT CARDS
+========================================== */
+
+.report-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+  margin-bottom:20px;
+}
+
+.report-card{
+  min-width:0;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+
+.report-card.green{
+  background:linear-gradient(135deg,#ecfdf5,#dcfce7);
+}
+
+.report-card.blue{
+  background:linear-gradient(135deg,#eff6ff,#dbeafe);
+}
+
+.report-card.purple{
+  background:linear-gradient(135deg,#f5f3ff,#ede9fe);
+}
+
+.report-card.orange{
+  background:linear-gradient(135deg,#fff7ed,#ffedd5);
+}
+
+.report-card.cyan{
+  background:linear-gradient(135deg,#ecfeff,#cffafe);
+}
+
+.report-card.red{
+  background:linear-gradient(135deg,#fef2f2,#fee2e2);
+}
+
+.report-card h3{
+  margin:0;
+  font-size:16px;
+}
+
+.report-card p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* ==========================================
+   TABLE CARD
+========================================== */
+
+.table-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  margin-bottom:20px;
+}
+
+.table-scroll{
+  width:100%;
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  min-width:800px;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#f0fdf4;
+}
+
+th{
+  padding:14px 13px;
+  text-align:left;
+  font-size:11px;
+  color:#475569;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  white-space:nowrap;
+}
+
+td{
+  padding:14px 13px;
+  border-top:1px solid #edf2ef;
+  font-size:13px;
+  vertical-align:middle;
+}
+
+tbody tr:hover{
+  background:#fafdfb;
+}
+
+.name{
+  font-weight:800;
+}
+
+.sub{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.money{
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.positive{
+  color:#15803d;
+}
+
+.warning{
+  color:#c2410c;
+}
+
+.danger{
+  color:#b91c1c;
+}
+
+/* ==========================================
+   STATUS
+========================================== */
+
+.status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:900;
+  text-transform:capitalize;
+  white-space:nowrap;
+}
+
+.status-active,
+.status-paid,
+.status-present{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status-completed,
+.status-sent,
+.status-late{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+
+.status-draft,
+.status-partial,
+.status-off{
+  background:#f1f5f9;
+  color:#475569;
+}
+
+.status-overdue,
+.status-cancelled,
+.status-absent{
+  background:#fee2e2;
+  color:#b91c1c;
+}
+
+/* ==========================================
+   ATTENDANCE MINI BARS
+========================================== */
+
+.rate{
+  min-width:100px;
+}
+
+.rate-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.rate-track{
+  flex:1;
+  height:7px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.rate-fill{
+  height:100%;
+  background:linear-gradient(90deg,#087f3f,#22c55e);
+  border-radius:999px;
+}
+
+.rate-number{
+  min-width:40px;
+  font-size:11px;
+  font-weight:900;
+  text-align:right;
+}
+
+/* ==========================================
+   EMPTY / LOADING
+========================================== */
+
+.loading,
+.empty{
+  padding:38px 20px;
+  text-align:center;
+  color:var(--muted);
+}
+
+.empty strong{
+  display:block;
+  margin-bottom:6px;
+  color:var(--text);
+  font-size:16px;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.footer{
+  padding:25px 5px 10px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media(max-width:1100px){
+
+  .summary{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+}
+
+@media(max-width:800px){
+
+  .report-nav{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .report-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:700px){
+
+  .page{
+    padding:14px;
+  }
+
+  .header{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .header-text h1{
+    font-size:24px;
+  }
+
+  .refresh-btn{
+    width:100%;
+  }
+
+  .summary{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .filter-bar{
+    flex-direction:column;
+  }
+
+  .filter-search,
+  .filter-select{
+    width:100%;
+    flex:1 1 auto;
+  }
+
+  .report-nav{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:430px){
+
+  .summary{
+    grid-template-columns:1fr;
+  }
+
+  .report-nav{
+    grid-template-columns:1fr;
+  }
+
+  .summary-value{
+    font-size:23px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <!-- ==========================================
+       DUKAFLOW MENU
+  =========================================== -->
+
+  <div class="menu-wrap">
+
+    <button
+      type="button"
+      class="menu-btn"
+      id="menuButton"
+      aria-expanded="false"
+      aria-controls="menuPanel"
+    >
+      <span>☰ DukaFlow Menu</span>
+      <span class="menu-arrow">▼</span>
+    </button>
+
+    <div
+      class="menu-panel"
+      id="menuPanel"
+    >
+
+      <a href="index.html">
+        🏠 Dashboard
+      </a>
+
+      <a href="products.html">
+        📦 Products & Stock
+      </a>
+
+      <a href="sales.html">
+        💰 Sales
+      </a>
+
+      <a href="expenses.html">
+        💸 Expenses
+      </a>
+
+      <a href="reports.html">
+        📊 Reports
+      </a>
+
+      <a href="users.html">
+        👥 Manage Users
+      </a>
+
+      <a href="service-dashboard.html">
+        🧩 Service Dashboard
+      </a>
+
+      <a href="service-clients.html">
+        👤 Clients
+      </a>
+
+      <a href="service-services.html">
+        🛠️ Services
+      </a>
+
+      <a href="service-assignments.html">
+        📋 Assignments
+      </a>
+
+      <a href="service-attendance.html">
+        🕒 Attendance
+      </a>
+
+      <a href="service-invoices.html">
+        🧾 Invoices
+      </a>
+
+      <a href="service-payments.html">
+        💳 Payments
+      </a>
+
+      <a
+        href="service-reports.html"
+        class="active"
+      >
+        📊 Service Reports
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==========================================
+       HEADER
+  =========================================== -->
+
+  <div class="header">
+
+    <div class="header-text">
+
+      <h1>
+        📊 Service Reports
+      </h1>
+
+      <p>
+        Understand clients, services, assignments, attendance and finances.
+      </p>
+
+    </div>
+
+    <button
+      type="button"
+      class="refresh-btn"
+      id="refreshButton"
+    >
+      🔄 Refresh Reports
+    </button>
+
+  </div>
+
+
+  <div
+    id="message"
+    class="message"
+  ></div>
+
+
+  <!-- ==========================================
+       SUMMARY
+  =========================================== -->
+
+  <div class="summary">
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Active Clients
+      </div>
+
+      <div
+        class="summary-value"
+        id="activeClients"
+      >
+        0
+      </div>
+
+      <div class="summary-small">
+        Current active clients
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Active Services
+      </div>
+
+      <div
+        class="summary-value"
+        id="activeServices"
+      >
+        0
+      </div>
+
+      <div class="summary-small">
+        Services currently available
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Active Assignments
+      </div>
+
+      <div
+        class="summary-value"
+        id="activeAssignments"
+      >
+        0
+      </div>
+
+      <div class="summary-small">
+        Ongoing client work
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Staff
+      </div>
+
+      <div
+        class="summary-value"
+        id="totalStaff"
+      >
+        0
+      </div>
+
+      <div class="summary-small">
+        Staff members
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Total Invoiced
+      </div>
+
+      <div
+        class="summary-value"
+        id="totalInvoiced"
+      >
+        KSh 0.00
+      </div>
+
+      <div class="summary-small">
+        Non-cancelled invoices
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Outstanding
+      </div>
+
+      <div
+        class="summary-value"
+        id="outstandingBalance"
+      >
+        KSh 0.00
+      </div>
+
+      <div class="summary-small">
+        Amount still outstanding
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==========================================
+       REPORT NAVIGATION
+  =========================================== -->
+
+  <div class="report-nav">
+
+    <button
+      type="button"
+      class="active"
+      data-report="clients"
+    >
+      👥 Clients
+    </button>
+
+    <button
+      type="button"
+      data-report="services"
+    >
+      🛠️ Services
+    </button>
+
+    <button
+      type="button"
+      data-report="assignments"
+    >
+      📋 Assignments
+    </button>
+
+    <button
+      type="button"
+      data-report="attendance"
+    >
+      🕒 Attendance
+    </button>
+
+    <button
+      type="button"
+      data-report="invoices"
+    >
+      🧾 Invoices
+    </button>
+
+    <button
+      type="button"
+      data-report="payments"
+    >
+      💳 Payments
+    </button>
+
+    <button
+      type="button"
+      data-report="outstanding"
+    >
+      💰 Outstanding
+    </button>
+
+  </div>
+
+
+  <!-- ==========================================
+       CLIENT REPORT
+  =========================================== -->
+
+  <section
+    class="report-section active"
+    id="report-clients"
+  >
+
+    <div class="section-header">
+
+      <h2>
+        👥 Client Report
+      </h2>
+
+      <p>
+        See assignments, invoicing, payments and balances by client.
+      </p>
+
+    </div>
+
+
+    <div class="filter-bar">
+
+      <div class="filter-search">
+
+        <input
+          type="search"
+          id="clientSearch"
+          placeholder="Search client or company..."
+          autocomplete="off"
+        >
+
+      </div>
+
+      <div class="filter-select">
+
+        <select id="clientStatusFilter">
+
+          <option value="">
+            All Clients
+          </option>
+
+          <option value="active">
+            Active
+          </option>
+
+          <option value="inactive">
+            Inactive
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-card">
+
+      <div class="table-scroll">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Client</th>
+              <th>Status</th>
+              <th>Assignments</th>
+              <th>Invoices</th>
+              <th>Invoiced</th>
+              <th>Paid</th>
+              <th>Outstanding</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="clientsBody">
+
+            <tr>
+              <td colspan="7">
+                <div class="loading">
+                  Loading client report...
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==========================================
+       SERVICE REPORT
+  =========================================== -->
+
+  <section
+    class="report-section"
+    id="report-services"
+  >
+
+    <div class="section-header">
+
+      <h2>
+        🛠️ Service Report
+      </h2>
+
+      <p>
+        Compare services by assignments, invoicing, payments and outstanding balances.
+      </p>
+
+    </div>
+
+
+    <div class="filter-bar">
+
+      <div class="filter-search">
+
+        <input
+          type="search"
+          id="serviceSearch"
+          placeholder="Search service..."
+          autocomplete="off"
+        >
+
+      </div>
+
+      <div class="filter-select">
+
+        <select id="serviceStatusFilter">
+
+          <option value="">
+            All Services
+          </option>
+
+          <option value="active">
+            Active
+          </option>
+
+          <option value="inactive">
+            Inactive
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-card">
+
+      <div class="table-scroll">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Service</th>
+              <th>Status</th>
+              <th>Active Assignments</th>
+              <th>Total Assignments</th>
+              <th>Invoiced</th>
+              <th>Paid</th>
+              <th>Outstanding</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="servicesBody">
+
+            <tr>
+              <td colspan="7">
+                <div class="loading">
+                  Loading service report...
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==========================================
+       ASSIGNMENT REPORT
+  =========================================== -->
+
+  <section
+    class="report-section"
+    id="report-assignments"
+  >
+
+    <div class="section-header">
+
+      <h2>
+        📋 Assignment Report
+      </h2>
+
+      <p>
+        Track client work, assigned staff, dates and attendance records.
+      </p>
+
+    </div>
+
+
+    <div class="filter-bar">
+
+      <div class="filter-search">
+
+        <input
+          type="search"
+          id="assignmentSearch"
+          placeholder="Search client, service or staff..."
+          autocomplete="off"
+        >
+
+      </div>
+
+      <div class="filter-select">
+
+        <select id="assignmentStatusFilter">
+
+          <option value="">
+            All Statuses
+          </option>
+
+          <option value="active">
+            Active
+          </option>
+
+          <option value="completed">
+            Completed
+          </option>
+
+          <option value="cancelled">
+            Cancelled
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-card">
+
+      <div class="table-scroll">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Client</th>
+              <th>Service</th>
+              <th>Staff</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Status</th>
+              <th>Attendance</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="assignmentsBody">
+
+            <tr>
+              <td colspan="7">
+                <div class="loading">
+                  Loading assignment report...
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==========================================
+       ATTENDANCE REPORT
+  =========================================== -->
+
+  <section
+    class="report-section"
+    id="report-attendance"
+  >
+
+    <div class="section-header">
+
+      <h2>
+        🕒 Attendance Report
+      </h2>
+
+      <p>
+        Review staff attendance records and attendance rates.
+      </p>
+
+    </div>
+
+
+    <div class="filter-bar">
+
+      <div class="filter-search">
+
+        <input
+          type="search"
+          id="attendanceSearch"
+          placeholder="Search staff..."
+          autocomplete="off"
+        >
+
+      </div>
+
+    </div>
+
+
+    <div class="table-card">
+
+      <div class="table-scroll">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Staff</th>
+              <th>Total Records</th>
+              <th>Present</th>
+              <th>Late</th>
+              <th>Absent</th>
+              <th>Off</th>
+              <th>Attendance Rate</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="attendanceBody">
+
+            <tr>
+              <td colspan="7">
+                <div class="loading">
+                  Loading attendance report...
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==========================================
+       INVOICE REPORT
+  =========================================== -->
+
+  <section
+    class="report-section"
+    id="report-invoices"
+  >
+
+    <div class="section-header">
+
+      <h2>
+        🧾 Invoice Report
+      </h2>
+
+      <p>
+        Overview of invoice status and service-business billing.
+      </p>
+
+    </div>
+
+
+    <div class="report-grid">
+
+      <div class="report-card green">
+
+        <h3>
+          Total Invoices
+        </h3>
+
+        <p>
+          All non-cancelled invoice records.
+        </p>
+
+        <div
+          class="summary-value"
+          id="invoiceTotal"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="report-card blue">
+
+        <h3>
+          Draft Invoices
+        </h3>
+
+        <p>
+          Invoices still being prepared.
+        </p>
+
+        <div
+          class="summary-value"
+          id="invoiceDraft"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="report-card cyan">
+
+        <h3>
+          Sent Invoices
+        </h3>
+
+        <p>
+          Invoices issued to clients.
+        </p>
+
+        <div
+          class="summary-value"
+          id="invoiceSent"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="report-card green">
+
+        <h3>
+          Paid Invoices
+        </h3>
+
+        <p>
+          Invoices fully paid.
+        </p>
+
+        <div
+          class="summary-value"
+          id="invoicePaid"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="report-card orange">
+
+        <h3>
+          Partial Invoices
+        </h3>
+
+        <p>
+          Invoices with partial payment.
+        </p>
+
+        <div
+          class="summary-value"
+          id="invoicePartial"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="report-card red">
+
+        <h3>
+          Overdue Invoices
+        </h3>
+
+        <p>
+          Invoices currently overdue.
+        </p>
+
+        <div
+          class="summary-value"
+          id="invoiceOverdue"
+        >
+          0
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-card">
+
+      <div class="table-scroll">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Metric</th>
+              <th>Value</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td class="name">
+                Total Invoiced
+              </td>
+
+              <td
+                class="money"
+                id="invoiceTotalValue"
+              >
+                KSh 0.00
+              </td>
+            </tr>
+
+            <tr>
+              <td class="name">
+                Total Received
+              </td>
+
+              <td
+                class="money positive"
+                id="invoicePaidValue"
+              >
+                KSh 0.00
+              </td>
+            </tr>
+
+            <tr>
+              <td class="name">
+                Outstanding Balance
+              </td>
+
+              <td
+                class="money warning"
+                id="invoiceOutstandingValue"
+              >
+                KSh 0.00
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==========================================
+       PAYMENT REPORT
+  =========================================== -->
+
+  <section
+    class="report-section"
+    id="report-payments"
+  >
+
+    <div class="section-header">
+
+      <h2>
+        💳 Payment Report
+      </h2>
+
+      <p>
+        See money received by payment method.
+      </p>
+
+    </div>
+
+
+    <div class="report-grid">
+
+      <div class="report-card green">
+
+        <h3>
+          Total Received
+        </h3>
+
+        <p>
+          All valid invoice payments.
+        </p>
+
+        <div
+          class="summary-value"
+          id="paymentTotal"
+        >
+          KSh 0.00
+        </div>
+
+      </div>
+
+
+      <div class="report-card blue">
+
+        <h3>
+          Cash
+        </h3>
+
+        <p>
+          Payments received in cash.
+        </p>
+
+        <div
+          class="summary-value"
+          id="paymentCash"
+        >
+          KSh 0.00
+        </div>
+
+      </div>
+
+
+      <div class="report-card green">
+
+        <h3>
+          M-Pesa
+        </h3>
+
+        <p>
+          Payments received through M-Pesa.
+        </p>
+
+        <div
+          class="summary-value"
+          id="paymentMpesa"
+        >
+          KSh 0.00
+        </div>
+
+      </div>
+
+
+      <div class="report-card cyan">
+
+        <h3>
+          Bank
+        </h3>
+
+        <p>
+          Payments received through bank.
+        </p>
+
+        <div
+          class="summary-value"
+          id="paymentBank"
+        >
+          KSh 0.00
+        </div>
+
+      </div>
+
+
+      <div class="report-card purple">
+
+        <h3>
+          Card
+        </h3>
+
+        <p>
+          Payments received by card.
+        </p>
+
+        <div
+          class="summary-value"
+          id="paymentCard"
+        >
+          KSh 0.00
+        </div>
+
+      </div>
+
+
+      <div class="report-card orange">
+
+        <h3>
+          Other
+        </h3>
+
+        <p>
+          Other recorded payment methods.
+        </p>
+
+        <div
+          class="summary-value"
+          id="paymentOther"
+        >
+          KSh 0.00
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-card">
+
+      <div class="table-scroll">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Payment Method</th>
+              <th>Amount Received</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td class="name">
+                Cash
+              </td>
+
+              <td
+                class="money"
+                id="paymentCashTable"
+              >
+                KSh 0.00
+              </td>
+            </tr>
+
+            <tr>
+              <td class="name">
+                M-Pesa
+              </td>
+
+              <td
+                class="money"
+                id="paymentMpesaTable"
+              >
+                KSh 0.00
+              </td>
+            </tr>
+
+            <tr>
+              <td class="name">
+                Bank
+              </td>
+
+              <td
+                class="money"
+                id="paymentBankTable"
+              >
+                KSh 0.00
+              </td>
+            </tr>
+
+            <tr>
+              <td class="name">
+                Card
+              </td>
+
+              <td
+                class="money"
+                id="paymentCardTable"
+              >
+                KSh 0.00
+              </td>
+            </tr>
+
+            <tr>
+              <td class="name">
+                Other
+              </td>
+
+              <td
+                class="money"
+                id="paymentOtherTable"
+              >
+                KSh 0.00
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==========================================
+       OUTSTANDING REPORT
+  =========================================== -->
+
+  <section
+    class="report-section"
+    id="report-outstanding"
+  >
+
+    <div class="section-header">
+
+      <h2>
+        💰 Outstanding Balances
+      </h2>
+
+      <p>
+        Identify clients with unpaid service invoices.
+      </p>
+
+    </div>
+
+
+    <div class="filter-bar">
+
+      <div class="filter-search">
+
+        <input
+          type="search"
+          id="outstandingSearch"
+          placeholder="Search client or company..."
+          autocomplete="off"
+        >
+
+      </div>
+
+    </div>
+
+
+    <div class="table-card">
+
+      <div class="table-scroll">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Client</th>
+              <th>Total Invoiced</th>
+              <th>Total Paid</th>
+              <th>Outstanding</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="outstandingBody">
+
+            <tr>
+              <td colspan="4">
+                <div class="loading">
+                  Loading outstanding report...
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <div class="footer">
+    Built & developed by Brian Mogorie © 2026 DukaFlow
+  </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   SUPABASE
+========================================== */
+
+const SUPABASE_URL =
+  "https://uwfghbctckinymatcbro.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_Qj4YqDW3lU2ouxevXa0upg_zbxzJG-X";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* ==========================================
+   STATE
+========================================== */
+
+let businessId = null;
+
+let clientReports = [];
+let serviceReports = [];
+let assignmentReports = [];
+let attendanceReports = [];
+let outstandingReports = [];
+
+let invoiceSummary = null;
+let paymentSummary = null;
+
+
+/* ==========================================
+   HELPERS
+========================================== */
+
+function $(id){
+  return document.getElementById(id);
+}
+
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+function number(value){
+
+  const result =
+    Number(value);
+
+  return Number.isFinite(result)
+    ? result
+    : 0;
+
+}
+
+
+function money(value){
+
+  return `KSh ${number(value).toLocaleString(
+    "en-KE",
+    {
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    }
+  )}`;
+
+}
+
+
+function integer(value){
+
+  return number(value).toLocaleString(
+    "en-KE",
+    {
+      maximumFractionDigits:0
+    }
+  );
+
+}
+
+
+function formatDate(value){
+
+  if(!value){
+    return "—";
+  }
+
+  const date =
+    new Date(
+      value + "T00:00:00"
+    );
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+    return escapeHTML(value);
+  }
+
+  return date.toLocaleDateString(
+    "en-KE",
+    {
+      day:"2-digit",
+      month:"short",
+      year:"numeric"
+    }
+  );
+
+}
+
+
+function showMessage(
+  message,
+  type="success"
+){
+
+  const element =
+    $("message");
+
+  element.textContent =
+    message;
+
+  element.className =
+    `message show ${type}`;
+
+  clearTimeout(
+    showMessage.timer
+  );
+
+  showMessage.timer =
+    setTimeout(
+      function(){
+
+        element.className =
+          "message";
+
+      },
+      4000
+    );
+
+}
+
+
+/* ==========================================
+   MENU
+========================================== */
+
+function setupMenu(){
+
+  const button =
+    $("menuButton");
+
+  const panel =
+    $("menuPanel");
+
+  if(!button || !panel){
+    return;
+  }
+
+
+  button.addEventListener(
+    "click",
+    function(event){
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      const open =
+        panel.classList.contains(
+          "open"
+        );
+
+      panel.classList.toggle(
+        "open"
+      );
+
+      button.setAttribute(
+        "aria-expanded",
+        String(!open)
+      );
+
+    }
+  );
+
+
+  document.addEventListener(
+    "click",
+    function(event){
+
+      if(
+        !event.target.closest(
+          ".menu-wrap"
+        )
+      ){
+
+        panel.classList.remove(
+          "open"
+        );
+
+        button.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+
+      }
+
+    }
+  );
+
+
+  document.addEventListener(
+    "keydown",
+    function(event){
+
+      if(event.key === "Escape"){
+
+        panel.classList.remove(
+          "open"
+        );
+
+        button.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ==========================================
+   BUSINESS
+========================================== */
+
+async function getBusiness(){
+
+  const {
+    data:{
+      user
+    },
+    error
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if(error){
+    throw error;
+  }
+
+
+  if(!user){
+
+    window.location.href =
+      "login.html";
+
+    return null;
+
+  }
+
+
+  const {
+    data:profile,
+    error:profileError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select("business_id")
+      .eq(
+        "user_id",
+        user.id
+      )
+      .single();
+
+
+  if(profileError){
+    throw profileError;
+  }
+
+
+  if(!profile?.business_id){
+
+    throw new Error(
+      "No business is associated with this account."
+    );
+
+  }
+
+
+  return profile.business_id;
+
+}
+
+
+/* ==========================================
+   LOAD REPORTING VIEWS
+========================================== */
+
+async function loadReports(){
+
+  businessId =
+    await getBusiness();
+
+
+  if(!businessId){
+    return;
+  }
+
+
+  const [
+    clientsResult,
+    servicesResult,
+    assignmentsResult,
+    attendanceResult,
+    invoiceResult,
+    paymentResult,
+    outstandingResult
+  ] =
+    await Promise.all([
+
+      supabaseClient
+        .from("service_client_summary")
+        .select("*")
+        .eq(
+          "business_id",
+          businessId
+        )
+        .order(
+          "name",
+          {
+            ascending:true
+          }
+        ),
+
+      supabaseClient
+        .from("service_service_summary")
+        .select("*")
+        .eq(
+          "business_id",
+          businessId
+        )
+        .order(
+          "name",
+          {
+            ascending:true
+          }
+        ),
+
+      supabaseClient
+        .from("service_assignment_summary")
+        .select("*")
+        .eq(
+          "business_id",
+          businessId
+        )
+        .order(
+          "start_date",
+          {
+            ascending:false
+          }
+        ),
+
+      supabaseClient
+        .from("service_attendance_summary")
+        .select("*")
+        .eq(
+          "business_id",
+          businessId
+        )
+        .order(
+          "staff_name",
+          {
+            ascending:true
+          }
+        ),
+
+      supabaseClient
+        .from("service_invoice_summary")
+        .select("*")
+        .eq(
+          "business_id",
+          businessId
+        )
+        .maybeSingle(),
+
+      supabaseClient
+        .from("service_payment_summary")
+        .select("*")
+        .eq(
+          "business_id",
+          businessId
+        )
+        .maybeSingle(),
+
+      supabaseClient
+        .from("service_outstanding_summary")
+        .select("*")
+        .eq(
+          "business_id",
+          businessId
+        )
+        .order(
+          "outstanding_balance",
+          {
+            ascending:false
+          }
+        )
+
+    ]);
+
+
+  if(clientsResult.error){
+    throw clientsResult.error;
+  }
+
+  if(servicesResult.error){
+    throw servicesResult.error;
+  }
+
+  if(assignmentsResult.error){
+    throw assignmentsResult.error;
+  }
+
+  if(attendanceResult.error){
+    throw attendanceResult.error;
+  }
+
+  if(invoiceResult.error){
+    throw invoiceResult.error;
+  }
+
+  if(paymentResult.error){
+    throw paymentResult.error;
+  }
+
+  if(outstandingResult.error){
+    throw outstandingResult.error;
+  }
+
+
+  clientReports =
+    clientsResult.data || [];
+
+  serviceReports =
+    servicesResult.data || [];
+
+  assignmentReports =
+    assignmentsResult.data || [];
+
+  attendanceReports =
+    attendanceResult.data || [];
+
+  outstandingReports =
+    outstandingResult.data || [];
+
+  invoiceSummary =
+    invoiceResult.data || {};
+
+  paymentSummary =
+    paymentResult.data || {};
+
+
+  renderSummary();
+
+  renderClients();
+
+  renderServices();
+
+  renderAssignments();
+
+  renderAttendance();
+
+  renderInvoices();
+
+  renderPayments();
+
+  renderOutstanding();
+
+}
+
+
+/* ==========================================
+   SUMMARY
+========================================== */
+
+function renderSummary(){
+
+  const activeClients =
+    clientReports.filter(
+      item =>
+        item.status === "active"
+    ).length;
+
+
+  const activeServices =
+    serviceReports.filter(
+      item =>
+        item.status === "active"
+    ).length;
+
+
+  const activeAssignments =
+    assignmentReports.filter(
+      item =>
+        item.status === "active"
+    ).length;
+
+
+  const totalStaff =
+    attendanceReports.length;
+
+
+  const totalInvoiced =
+    number(
+      invoiceSummary.total_invoiced
+    );
+
+
+  const outstanding =
+    number(
+      invoiceSummary.outstanding_balance
+    );
+
+
+  $("activeClients")
+    .textContent =
+    integer(activeClients);
+
+  $("activeServices")
+    .textContent =
+    integer(activeServices);
+
+  $("activeAssignments")
+    .textContent =
+    integer(activeAssignments);
+
+  $("totalStaff")
+    .textContent =
+    integer(totalStaff);
+
+  $("totalInvoiced")
+    .textContent =
+    money(totalInvoiced);
+
+  $("outstandingBalance")
+    .textContent =
+    money(outstanding);
+
+}
+
+
+/* ==========================================
+   STATUS HTML
+========================================== */
+
+function statusHTML(status){
+
+  const safeStatus =
+    String(
+      status || "unknown"
+    ).toLowerCase();
+
+
+  let className =
+    "status-draft";
+
+
+  if(
+    safeStatus === "active" ||
+    safeStatus === "paid" ||
+    safeStatus === "present"
+  ){
+
+    className =
+      "status-active";
+
+  }else if(
+    safeStatus === "completed" ||
+    safeStatus === "sent" ||
+    safeStatus === "late"
+  ){
+
+    className =
+      "status-completed";
+
+  }else if(
+    safeStatus === "overdue" ||
+    safeStatus === "cancelled" ||
+    safeStatus === "absent"
+  ){
+
+    className =
+      "status-overdue";
+
+  }
+
+
+  return `
+    <span class="status ${className}">
+      ${escapeHTML(status || "Unknown")}
+    </span>
+  `;
+
+}
+
+
+/* ==========================================
+   CLIENT REPORT
+========================================== */
+
+function renderClients(){
+
+  const body =
+    $("clientsBody");
+
+  const search =
+    $("clientSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const status =
+    $("clientStatusFilter")
+      .value;
+
+
+  const rows =
+    clientReports.filter(
+      item => {
+
+        if(
+          status &&
+          item.status !== status
+        ){
+          return false;
+        }
+
+
+        const text =
+          [
+            item.name,
+            item.company_name,
+            item.phone,
+            item.email
+          ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        return (
+          !search ||
+          text.includes(search)
+        );
+
+      }
+    );
+
+
+  if(!rows.length){
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="7">
+          <div class="empty">
+            <strong>No client report data</strong>
+            There are no matching clients.
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    rows.map(
+      item => {
+
+        const outstanding =
+          number(
+            item.outstanding_balance
+          );
+
+
+        return `
+          <tr>
+
+            <td>
+
+              <div class="name">
+                ${escapeHTML(
+                  item.name
+                )}
+              </div>
+
+              ${
+                item.company_name
+                  ? `
+                    <div class="sub">
+                      ${escapeHTML(
+                        item.company_name
+                      )}
+                    </div>
+                  `
+                  : ""
+              }
+
+            </td>
+
+            <td>
+              ${statusHTML(
+                item.status
+              )}
+            </td>
+
+            <td>
+              ${integer(
+                item.active_assignments
+              )}
+            </td>
+
+            <td>
+              ${integer(
+                item.total_invoices
+              )}
+            </td>
+
+            <td class="money">
+              ${money(
+                item.total_invoiced
+              )}
+            </td>
+
+            <td class="money positive">
+              ${money(
+                item.total_paid
+              )}
+            </td>
+
+            <td class="money ${
+              outstanding > 0
+                ? "warning"
+                : "positive"
+            }">
+              ${money(
+                outstanding
+              )}
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* ==========================================
+   SERVICE REPORT
+========================================== */
+
+function renderServices(){
+
+  const body =
+    $("servicesBody");
+
+  const search =
+    $("serviceSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const status =
+    $("serviceStatusFilter")
+      .value;
+
+
+  const rows =
+    serviceReports.filter(
+      item => {
+
+        if(
+          status &&
+          item.status !== status
+        ){
+          return false;
+        }
+
+
+        const text =
+          [
+            item.name,
+            item.description
+          ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        return (
+          !search ||
+          text.includes(search)
+        );
+
+      }
+    );
+
+
+  if(!rows.length){
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="7">
+          <div class="empty">
+            <strong>No service report data</strong>
+            There are no matching services.
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    rows.map(
+      item => {
+
+        const outstanding =
+          number(
+            item.outstanding_balance
+          );
+
+
+        return `
+          <tr>
+
+            <td>
+
+              <div class="name">
+                ${escapeHTML(
+                  item.name
+                )}
+              </div>
+
+              ${
+                item.description
+                  ? `
+                    <div class="sub">
+                      ${escapeHTML(
+                        item.description
+                      )}
+                    </div>
+                  `
+                  : ""
+              }
+
+            </td>
+
+            <td>
+              ${statusHTML(
+                item.status
+              )}
+            </td>
+
+            <td>
+              ${integer(
+                item.active_assignments
+              )}
+            </td>
+
+            <td>
+              ${integer(
+                item.total_assignments
+              )}
+            </td>
+
+            <td class="money">
+              ${money(
+                item.total_invoiced
+              )}
+            </td>
+
+            <td class="money positive">
+              ${money(
+                item.total_paid
+              )}
+            </td>
+
+            <td class="money ${
+              outstanding > 0
+                ? "warning"
+                : "positive"
+            }">
+              ${money(
+                outstanding
+              )}
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* ==========================================
+   ASSIGNMENT REPORT
+========================================== */
+
+function renderAssignments(){
+
+  const body =
+    $("assignmentsBody");
+
+  const search =
+    $("assignmentSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const status =
+    $("assignmentStatusFilter")
+      .value;
+
+
+  const rows =
+    assignmentReports.filter(
+      item => {
+
+        if(
+          status &&
+          item.status !== status
+        ){
+          return false;
+        }
+
+
+        const text =
+          [
+            item.client_name,
+            item.company_name,
+            item.service_name,
+            item.staff_name,
+            item.staff_username,
+            item.notes
+          ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        return (
+          !search ||
+          text.includes(search)
+        );
+
+      }
+    );
+
+
+  if(!rows.length){
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="7">
+          <div class="empty">
+            <strong>No assignment report data</strong>
+            There are no matching assignments.
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    rows.map(
+      item => {
+
+        return `
+          <tr>
+
+            <td>
+
+              <div class="name">
+                ${escapeHTML(
+                  item.client_name ||
+                  "Unknown client"
+                )}
+              </div>
+
+              ${
+                item.company_name
+                  ? `
+                    <div class="sub">
+                      ${escapeHTML(
+                        item.company_name
+                      )}
+                    </div>
+                  `
+                  : ""
+              }
+
+            </td>
+
+
+            <td>
+
+              <div class="name">
+                ${escapeHTML(
+                  item.service_name ||
+                  "Unknown service"
+                )}
+              </div>
+
+            </td>
+
+
+            <td>
+
+              <div class="name">
+                ${escapeHTML(
+                  item.staff_name ||
+                  "Unassigned"
+                )}
+              </div>
+
+              ${
+                item.staff_username
+                  ? `
+                    <div class="sub">
+                      @${escapeHTML(
+                        item.staff_username
+                      )}
+                    </div>
+                  `
+                  : ""
+              }
+
+            </td>
+
+
+            <td>
+              ${formatDate(
+                item.start_date
+              )}
+            </td>
+
+
+            <td>
+              ${formatDate(
+                item.end_date
+              )}
+            </td>
+
+
+            <td>
+              ${statusHTML(
+                item.status
+              )}
+            </td>
+
+
+            <td>
+              ${integer(
+                item.attendance_records
+              )}
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* ==========================================
+   ATTENDANCE REPORT
+========================================== */
+
+function renderAttendance(){
+
+  const body =
+    $("attendanceBody");
+
+  const search =
+    $("attendanceSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const rows =
+    attendanceReports.filter(
+      item => {
+
+        const text =
+          [
+            item.staff_name,
+            item.staff_username
+          ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        return (
+          !search ||
+          text.includes(search)
+        );
+
+      }
+    );
+
+
+  if(!rows.length){
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="7">
+          <div class="empty">
+            <strong>No attendance report data</strong>
+            There are no matching staff attendance records.
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    rows.map(
+      item => {
+
+        const rate =
+          Math.max(
+            0,
+            Math.min(
+              100,
+              number(
+                item.attendance_rate
+              )
+            )
+          );
+
+
+        return `
+          <tr>
+
+            <td>
+
+              <div class="name">
+                ${escapeHTML(
+                  item.staff_name ||
+                  "Staff member"
+                )}
+              </div>
+
+              ${
+                item.staff_username
+                  ? `
+                    <div class="sub">
+                      @${escapeHTML(
+                        item.staff_username
+                      )}
+                    </div>
+                  `
+                  : ""
+              }
+
+            </td>
+
+
+            <td>
+              ${integer(
+                item.total_records
+              )}
+            </td>
+
+
+            <td class="positive">
+              ${integer(
+                item.present_days
+              )}
+            </td>
+
+
+            <td>
+              ${integer(
+                item.late_days
+              )}
+            </td>
+
+
+            <td class="danger">
+              ${integer(
+                item.absent_days
+              )}
+            </td>
+
+
+            <td>
+              ${integer(
+                item.off_days
+              )}
+            </td>
+
+
+            <td class="rate">
+
+              <div class="rate-row">
+
+                <div class="rate-track">
+
+                  <div
+                    class="rate-fill"
+                    style="width:${rate}%"
+                  ></div>
+
+                </div>
+
+                <div class="rate-number">
+                  ${rate.toFixed(1)}%
+                </div>
+
+              </div>
+
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* ==========================================
+   INVOICE REPORT
+========================================== */
+
+function renderInvoices(){
+
+  const data =
+    invoiceSummary || {};
+
+
+  $("invoiceTotal")
+    .textContent =
+    integer(
+      data.total_invoices
+    );
+
+  $("invoiceDraft")
+    .textContent =
+    integer(
+      data.draft_invoices
+    );
+
+  $("invoiceSent")
+    .textContent =
+    integer(
+      data.sent_invoices
+    );
+
+  $("invoicePaid")
+    .textContent =
+    integer(
+      data.paid_invoices
+    );
+
+  $("invoicePartial")
+    .textContent =
+    integer(
+      data.partial_invoices
+    );
+
+  $("invoiceOverdue")
+    .textContent =
+    integer(
+      data.overdue_invoices
+    );
+
+
+  $("invoiceTotalValue")
+    .textContent =
+    money(
+      data.total_invoiced
+    );
+
+  $("invoicePaidValue")
+    .textContent =
+    money(
+      data.total_paid
+    );
+
+  $("invoiceOutstandingValue")
+    .textContent =
+    money(
+      data.outstanding_balance
+    );
+
+}
+
+
+/* ==========================================
+   PAYMENT REPORT
+========================================== */
+
+function renderPayments(){
+
+  const data =
+    paymentSummary || {};
+
+
+  const total =
+    number(
+      data.total_received
+    );
+
+  const cash =
+    number(
+      data.cash_received
+    );
+
+  const mpesa =
+    number(
+      data.mpesa_received
+    );
+
+  const bank =
+    number(
+      data.bank_received
+    );
+
+  const card =
+    number(
+      data.card_received
+    );
+
+  const other =
+    number(
+      data.other_received
+    );
+
+
+  $("paymentTotal")
+    .textContent =
+    money(total);
+
+  $("paymentCash")
+    .textContent =
+    money(cash);
+
+  $("paymentMpesa")
+    .textContent =
+    money(mpesa);
+
+  $("paymentBank")
+    .textContent =
+    money(bank);
+
+  $("paymentCard")
+    .textContent =
+    money(card);
+
+  $("paymentOther")
+    .textContent =
+    money(other);
+
+
+  $("paymentCashTable")
+    .textContent =
+    money(cash);
+
+  $("paymentMpesaTable")
+    .textContent =
+    money(mpesa);
+
+  $("paymentBankTable")
+    .textContent =
+    money(bank);
+
+  $("paymentCardTable")
+    .textContent =
+    money(card);
+
+  $("paymentOtherTable")
+    .textContent =
+    money(other);
+
+}
+
+
+/* ==========================================
+   OUTSTANDING REPORT
+========================================== */
+
+function renderOutstanding(){
+
+  const body =
+    $("outstandingBody");
+
+  const search =
+    $("outstandingSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const rows =
+    outstandingReports.filter(
+      item => {
+
+        const text =
+          [
+            item.client_name,
+            item.company_name
+          ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        return (
+          !search ||
+          text.includes(search)
+        );
+
+      }
+    );
+
+
+  if(!rows.length){
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="4">
+          <div class="empty">
+            <strong>No outstanding balances</strong>
+            No matching outstanding client balances were found.
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    rows.map(
+      item => {
+
+        const outstanding =
+          number(
+            item.outstanding_balance
+          );
+
+
+        return `
+          <tr>
+
+            <td>
+
+              <div class="name">
+                ${escapeHTML(
+                  item.client_name ||
+                  "Unknown client"
+                )}
+              </div>
+
+              ${
+                item.company_name
+                  ? `
+                    <div class="sub">
+                      ${escapeHTML(
+                        item.company_name
+                      )}
+                    </div>
+                  `
+                  : ""
+              }
+
+            </td>
+
+
+            <td class="money">
+              ${money(
+                item.total_invoiced
+              )}
+            </td>
+
+
+            <td class="money positive">
+              ${money(
+                item.total_paid
+              )}
+            </td>
+
+
+            <td class="money ${
+              outstanding > 0
+                ? "warning"
+                : "positive"
+            }">
+              ${money(
+                outstanding
+              )}
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* ==========================================
+   REPORT TABS
+========================================== */
+
+function setupReportNavigation(){
+
+  document
+    .querySelectorAll(
+      "[data-report]"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            const report =
+              this.dataset.report;
+
+
+            document
+              .querySelectorAll(
+                "[data-report]"
+              )
+              .forEach(
+                item =>
+                  item.classList.remove(
+                    "active"
+                  )
+              );
+
+
+            document
+              .querySelectorAll(
+                ".report-section"
+              )
+              .forEach(
+                section =>
+                  section.classList.remove(
+                    "active"
+                  )
+              );
+
+
+            this.classList.add(
+              "active"
+            );
+
+
+            const target =
+              $(
+                `report-${report}`
+              );
+
+
+            if(target){
+
+              target.classList.add(
+                "active"
+              );
+
+            }
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* ==========================================
+   FILTERS
+========================================== */
+
+function setupFilters(){
+
+  $("clientSearch")
+    .addEventListener(
+      "input",
+      renderClients
+    );
+
+
+  $("clientStatusFilter")
+    .addEventListener(
+      "change",
+      renderClients
+    );
+
+
+  $("serviceSearch")
+    .addEventListener(
+      "input",
+      renderServices
+    );
+
+
+  $("serviceStatusFilter")
+    .addEventListener(
+      "change",
+      renderServices
+    );
+
+
+  $("assignmentSearch")
+    .addEventListener(
+      "input",
+      renderAssignments
+    );
+
+
+  $("assignmentStatusFilter")
+    .addEventListener(
+      "change",
+      renderAssignments
+    );
+
+
+  $("attendanceSearch")
+    .addEventListener(
+      "input",
+      renderAttendance
+    );
+
+
+  $("outstandingSearch")
+    .addEventListener(
+      "input",
+      renderOutstanding
+    );
+
+}
+
+
+/* ==========================================
+   REFRESH
+========================================== */
+
+function setupRefresh(){
+
+  $("refreshButton")
+    .addEventListener(
+      "click",
+      async function(){
+
+        const button =
+          $("refreshButton");
+
+        const original =
+          button.textContent;
+
+        button.disabled =
+          true;
+
+        button.textContent =
+          "Refreshing...";
+
+
+        try{
+
+          await loadReports();
+
+          showMessage(
+            "Service reports refreshed successfully."
+          );
+
+        }catch(error){
+
+          console.error(
+            "Refresh reports error:",
+            error
+          );
+
+          showMessage(
+            error.message ||
+            "Unable to refresh service reports.",
+            "error"
+          );
+
+        }finally{
+
+          button.disabled =
+            false;
+
+          button.textContent =
+            original;
+
+        }
+
+      }
+    );
+
+}
+
+
+/* ==========================================
+   START
+========================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function(){
+
+    setupMenu();
+
+    setupReportNavigation();
+
+    setupFilters();
+
+    setupRefresh();
+
+
+    try{
+
+      await loadReports();
+
+    }catch(error){
+
+      console.error(
+        "Service reports error:",
+        error
+      );
+
+
+      showMessage(
+        error.message ||
+        "Unable to load service reports.",
+        "error"
+      );
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>

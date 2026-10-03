@@ -211,7 +211,7 @@
 
 Don't have an account?
 
-<a href="register.html">
+<a href="signup.html">
     Create Account
 </a>
 
@@ -599,6 +599,10 @@ form.addEventListener(
             setTimeout(
                 function() {
 
+                    /* ==========================
+                       PLATFORM OWNER
+                    ========================== */
+
                     if (
                         profile.is_platform_owner === true
                     ) {
@@ -636,8 +640,17 @@ form.addEventListener(
                     }
 
 
+                    /* ==========================
+                       WORKSPACE ROUTER
+                       
+                       The router reads the
+                       business_type saved in
+                       Supabase Auth metadata
+                       during signup.
+                    ========================== */
+
                     window.location.replace(
-                        "index.html"
+                        "dashboard-router.html"
                     );
 
                 },
